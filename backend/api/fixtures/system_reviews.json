@@ -1,0 +1,122 @@
+[
+  {
+    "model": "api.systemreview",
+    "pk": 2,
+    "fields": {
+      "user": 2,
+      "rating": 5,
+      "comment": "This is by far the best platform I've used for finding student jobs. The messaging system makes it easy to communicate with potential employers. I especially like how simple it is to filter jobs based on location and schedule.",
+      "ease_of_navigation": 5,
+      "job_search_effectiveness": 5,
+      "application_process_simplicity": 4,
+      "message_system_effectiveness": 5,
+      "created_at": "2025-04-12T09:15:22.000Z",
+      "updated_at": "2025-04-12T09:15:22.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 3,
+    "fields": {
+      "user": 3,
+      "rating": 3,
+      "comment": "Decent platform overall. The job search functionality works well, but I find the application process a bit cumbersome. It would be nice to have a more streamlined way to apply to multiple jobs.",
+      "ease_of_navigation": 4,
+      "job_search_effectiveness": 4,
+      "application_process_simplicity": 3,
+      "message_system_effectiveness": 4,
+      "created_at": "2025-04-15T16:30:10.000Z",
+      "updated_at": "2025-04-15T16:30:10.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 1,
+    "fields": {
+      "user": 4,
+      "rating": 4,
+      "comment": "The platform is very intuitive and easy to use. I found a part-time job within a week of signing up. The job matching is quite accurate and the application process is straightforward.",
+      "ease_of_navigation": 5,
+      "job_search_effectiveness": 4,
+      "application_process_simplicity": 4,
+      "message_system_effectiveness": 4,
+      "created_at": "2025-04-10T14:23:45.000Z",
+      "updated_at": "2025-04-10T14:23:45.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 4,
+    "fields": {
+      "user": 5,
+      "rating": 4,
+      "comment": "Good experience overall. The filter options are very useful and the interface is clear. Would appreciate a bit more guidance during the application steps, but messaging worked well.",
+      "ease_of_navigation": 4,
+      "job_search_effectiveness": 4,
+      "application_process_simplicity": 3,
+      "message_system_effectiveness": 4,
+      "created_at": "2025-04-18T11:20:30.000Z",
+      "updated_at": "2025-04-18T11:20:30.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 5,
+    "fields": {
+      "user": 6,
+      "rating": 5,
+      "comment": "Excellent platform! Found qualified candidates quickly and the application tracking is seamless. Highly recommend to other employers looking for student workers.",
+      "ease_of_navigation": 5,
+      "job_search_effectiveness": 5,
+      "application_process_simplicity": 5,
+      "message_system_effectiveness": 5,
+      "created_at": "2025-04-13T08:45:00.000Z",
+      "updated_at": "2025-04-13T08:45:00.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 6,
+    "fields": {
+      "user": 7,
+      "rating": 3,
+      "comment": "Platform works but could use some improvements. Listing jobs is straightforward, but the messaging notifications sometimes lag. Overall acceptable.",
+      "ease_of_navigation": 4,
+      "job_search_effectiveness": 3,
+      "application_process_simplicity": 4,
+      "message_system_effectiveness": 4,
+      "created_at": "2025-04-19T14:10:22.000Z",
+      "updated_at": "2025-04-19T14:10:22.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 7,
+    "fields": {
+      "user": 8,
+      "rating": 4,
+      "comment": "Very user-friendly and responsive. I appreciate the clear dashboard and the ability to track all applications in one place. Minor improvement: add more filter criteria.",
+      "ease_of_navigation": 5,
+      "job_search_effectiveness": 4,
+      "application_process_simplicity": 5,
+      "message_system_effectiveness": 5,
+      "created_at": "2025-04-20T16:05:10.000Z",
+      "updated_at": "2025-04-20T16:05:10.000Z"
+    }
+  },
+  {
+    "model": "api.systemreview",
+    "pk": 8,
+    "fields": {
+      "user": 9,
+      "rating": 2,
+      "comment": "Not very impressed. The job matches were not relevant, and the application form was confusing at times. Messaging could be more reliable.",
+      "ease_of_navigation": 3,
+      "job_search_effectiveness": 3,
+      "application_process_simplicity": 3,
+      "message_system_effectiveness": 3,
+      "created_at": "2025-04-21T09:55:45.000Z",
+      "updated_at": "2025-04-21T09:55:45.000Z"
+    }
+  }
+]

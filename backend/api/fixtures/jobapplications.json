@@ -1,0 +1,132 @@
+[
+  {
+    "model": "api.jobapplication",
+    "pk": 1,
+    "fields": {
+      "job": 1,
+      "candidate": 1,
+      "cover_letter_file": "/cover_letters/alice_martin_fullstack.pdf",
+      "cv_file": "/cvs/alice_martin_cv.pdf",
+      "applied_at": "2025-04-15T09:30:00.000Z",
+      "status": "in_progress",
+      "status_updated_at": "2025-04-20T14:30:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 2,
+    "fields": {
+      "job": 5,
+      "candidate": 2,
+      "cover_letter_file": "/cover_letters/leo_durand_financial.pdf",
+      "cv_file": "/cvs/leo_durand_cv.pdf",
+      "applied_at": "2025-04-10T14:20:00.000Z",
+      "status": "accepted",
+      "status_updated_at": "2025-04-22T10:15:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 3,
+    "fields": {
+      "job": 2,
+      "candidate": 3,
+      "cover_letter_file": "/cover_letters/emma_schneider_frontend.pdf",
+      "cv_file": "/cvs/emma_schneider_cv.pdf",
+      "applied_at": "2025-04-12T11:45:00.000Z",
+      "status": "rejected",
+      "status_updated_at": "2025-04-18T16:30:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 4,
+    "fields": {
+      "job": 7,
+      "candidate": 4,
+      "cover_letter_file": "/cover_letters/marc_bernard_product.pdf",
+      "cv_file": "/cvs/marc_bernard_cv.pdf",
+      "applied_at": "2025-04-18T16:05:00.000Z",
+      "status": "received",
+      "status_updated_at": "2025-04-18T16:05:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 5,
+    "fields": {
+      "job": 10,
+      "candidate": 1,
+      "cover_letter_file": "/cover_letters/alice_martin_support.pdf",
+      "cv_file": "/cvs/alice_martin_cv.pdf",
+      "applied_at": "2025-04-16T10:15:00.000Z",
+      "status": "in_progress",
+      "status_updated_at": "2025-04-21T09:45:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 6,
+    "fields": {
+      "job": 8,
+      "candidate": 2,
+      "cover_letter_file": "/cover_letters/leo_durand_supplychain.pdf",
+      "cv_file": "/cvs/leo_durand_cv.pdf",
+      "applied_at": "2025-04-17T09:20:00.000Z",
+      "status": "received",
+      "status_updated_at": "2025-04-17T09:20:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 7,
+    "fields": {
+      "job": 9,
+      "candidate": 3,
+      "cover_letter_file": "/cover_letters/emma_schneider_network.pdf",
+      "cv_file": "/cvs/emma_schneider_cv.pdf",
+      "applied_at": "2025-04-14T13:40:00.000Z",
+      "status": "accepted",
+      "status_updated_at": "2025-04-25T11:20:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 8,
+    "fields": {
+      "job": 6,
+      "candidate": 4,
+      "cover_letter_file": "/cover_letters/marc_bernard_risk.pdf",
+      "cv_file": "/cvs/marc_bernard_cv.pdf",
+      "applied_at": "2025-04-11T08:30:00.000Z",
+      "status": "rejected",
+      "status_updated_at": "2025-04-19T14:10:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 9,
+    "fields": {
+      "job": 1,
+      "candidate": 2,
+      "cover_letter_file": "/cover_letters/leo_durand_fullstack.pdf",
+      "cv_file": "/cvs/leo_durand_cv.pdf",
+      "applied_at": "2025-04-19T15:10:00.000Z",
+      "status": "received",
+      "status_updated_at": "2025-04-19T15:10:00.000Z"
+    }
+  },
+  {
+    "model": "api.jobapplication",
+    "pk": 10,
+    "fields": {
+      "job": 5,
+      "candidate": 3,
+      "cover_letter_file": "/cover_letters/emma_schneider_financial.pdf",
+      "cv_file": "/cvs/emma_schneider_cv.pdf",
+      "applied_at": "2025-04-20T11:05:00.000Z",
+      "status": "in_progress",
+      "status_updated_at": "2025-04-22T15:30:00.000Z"
+    }
+  }
+]

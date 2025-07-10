@@ -1,0 +1,86 @@
+[
+  {
+    "model": "api.employerprofile",
+    "pk": 1,
+    "fields": {
+      "user": 2,
+      "first_name": "Marie",
+      "last_name": "Dubois",
+      "address": "25 Rue des le porte",
+      "postal_code": "1203",
+      "city": "Geneva",
+      "email": "marie.dubois@rolex.com",
+      "phone": "+41 75 123 45 67",
+      "birthdate": "1955-11-15",
+      "company_name": "Rolex",
+      "company_address": "Rolex, 15 Av. Roro",
+      "company_postal_code": "1207",
+      "company_city": "Geneva",
+      "company_phone": "+41 22 789 65 43",
+      "company_logo": "/company_logos/fixture_rolex_logo.png"
+    }
+  },
+  {
+    "model": "api.employerprofile",
+    "pk": 2,
+    "fields": {
+      "user": 3,
+      "first_name": "Jean",
+      "last_name": "Martin",
+      "address": "Bahnhofstrasse 18",
+      "postal_code": "8001",
+      "city": "Zurich",
+      "email": "jean.martin@ubs.com",
+      "phone": "+41 44 123 45 67",
+      "birthdate": "1970-04-22",
+      "company_name": "UBS",
+      "company_address": "Bahnhofstrasse 45",
+      "company_postal_code": "8001",
+      "company_city": "Zurich",
+      "company_phone": "+41 44 234 56 78",
+      "company_logo": "/company_logos/fixture_ubs_logo.png"
+    }
+  },
+  {
+    "model": "api.employerprofile",
+    "pk": 3,
+    "fields": {
+      "user": 4,
+      "first_name": "Alain",
+      "last_name": "Girard",
+      "address": "Avenue Nestlé 55",
+      "postal_code": "1000",
+      "city": "Lausanne",
+      "email": "alain.girard@nestle.com",
+      "phone": "+41 21 345 67 89",
+      "birthdate": "1982-09-10",
+      "company_name": "Nestlé",
+      "company_address": "Avenue Nestlé 55",
+      "company_postal_code": "1000",
+      "company_city": "Lausanne",
+      "company_phone": "+41 21 456 78 90",
+      "company_logo": "/company_logos/fixture_nestle_logo.png"
+    }
+  },
+  {
+    "model": "api.employerprofile",
+    "pk": 4,
+    "fields": {
+      "user": 5,
+      "first_name": "Sophie",
+      "last_name": "Muller",
+      "address": "Römergasse 5",
+      "postal_code": "3000",
+      "city": "Bern",
+      "email": "sophie.muller@swisscom.ch",
+      "phone": "+41 31 789 01 23",
+      "birthdate": "1990-12-01",
+      "company_name": "Swisscom",
+      "company_address": "Römergasse 16",
+      "company_postal_code": "3000",
+      "company_city": "Bern",
+      "company_phone": "+41 31 890 12 34",
+      "company_logo": "/company_logos/fixture_swisscom_logo.png"
+    }
+  }
+]

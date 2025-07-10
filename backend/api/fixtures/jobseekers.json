@@ -1,0 +1,66 @@
+[
+  {
+    "model": "api.jobseekerprofile",
+    "pk": 1,
+    "fields": {
+      "user": 6,
+      "first_name": "Alice",
+      "last_name": "Martin",
+      "address": "12 Main Street",
+      "postal_code": "1201",
+      "city": "Geneva",
+      "email": "alice@martin.com",
+      "phone": "+41 79 123 45 67",
+      "birthdate": "1994-05-12",
+      "profile_picture": "profile_pictures/place_holder.png"
+    }
+  },
+  {
+    "model": "api.jobseekerprofile",
+    "pk": 2,
+    "fields": {
+      "user": 7,
+      "first_name": "Leo",
+      "last_name": "Durand",
+      "address": "45 Avenue de la Gare",
+      "postal_code": "1003",
+      "city": "Lausanne",
+      "email": "leo@durand.com",
+      "phone": "+41 76 987 65 43",
+      "birthdate": "1990-11-23",
+      "profile_picture": "profile_pictures/place_holder.png"
+    }
+  },
+  {
+    "model": "api.jobseekerprofile",
+    "pk": 3,
+    "fields": {
+      "user": 8,
+      "first_name": "Emma",
+      "last_name": "Schneider",
+      "address": "22 Bahnhofstrasse",
+      "postal_code": "8001",
+      "city": "Zurich",
+      "email": "emma@schneider.com",
+      "phone": "+41 44 123 45 67",
+      "birthdate": "1992-07-05",
+      "profile_picture": "profile_pictures/place_holder.png"
+    }
+  },
+  {
+    "model": "api.jobseekerprofile",
+    "pk": 4,
+    "fields": {
+      "user": 9,
+      "first_name": "Marc",
+      "last_name": "Bernard",
+      "address": "7 Rue du Lac",
+      "postal_code": "2000",
+      "city": "Neuchâtel",
+      "email": "marc@bernard.com",
+      "phone": "+41 32 678 65 43",
+      "birthdate": "1988-02-17",
+      "profile_picture": "profile_pictures/place_holder.png"
+    }
+  }
+]

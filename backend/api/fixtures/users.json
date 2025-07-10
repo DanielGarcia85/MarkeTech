@@ -1,0 +1,128 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "username": "admin",
+      "password": "pbkdf2_sha256$870000$BphEuz3mndZGPlccv0KaMx$fwjnduM4lU+ZnOmRYaX9Zh+e4G555Fr5pJZ4wqDPPiQ=",
+      "email": "admin@admin.com",
+      "first_name": "Admin",
+      "last_name": "Admin",
+      "is_superuser": true,
+      "is_staff": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "username": "marie.dubois@rolex.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "marie.dubois@rolex.com",
+      "first_name": "Marie",
+      "last_name": "Dubois",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "username": "jean.martin@ubs.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "jean.martin@ubs.com",
+      "first_name": "Jean",
+      "last_name": "Martin",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "username": "alain.girard@nestle.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "alain.girard@nestle.com",
+      "first_name": "Alain",
+      "last_name": "Girard",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+      "username": "sophie.muller@swisscom.ch",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "sophie.muller@swisscom.ch",
+      "first_name": "Sophie",
+      "last_name": "Muller",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+      "username": "alice@martin.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "alice@martin.com",
+      "first_name": "Alice",
+      "last_name": "Martin",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+      "username": "leo@durand.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "leo@durand.com",
+      "first_name": "Leo",
+      "last_name": "Durand",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 8,
+    "fields": {
+      "username": "emma@schneider.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "emma@schneider.com",
+      "first_name": "Emma",
+      "last_name": "Schneider",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 9,
+    "fields": {
+      "username": "marc@bernard.com",
+      "password": "pbkdf2_sha256$870000$8XX2sCIyZ72B21GWNKsxvJ$ID+udXYCENXV/AhwtMqgJYT7IhqLpnsnzMqfcBjgwRI=",
+      "email": "marc@bernard.com",
+      "first_name": "Marc",
+      "last_name": "Bernard",
+      "is_superuser": false,
+      "is_staff": false,
+      "is_active": true
+    }
+  }
+]

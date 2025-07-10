@@ -1,0 +1,138 @@
+[
+  {
+    "model": "api.jobpost",
+    "pk": 1,
+    "fields": {
+      "title": "Fullstack Developer",
+      "description": "We are looking for a passionate Fullstack Developer to join our dynamic tech team. You will design and implement scalable web applications using Vue.js on the frontend and Django on the backend. Collaborate with cross-functional teams to define, design, and ship new features regularly. We value clean, testable code and a problem-solving mindset. This role provides opportunities to grow and take ownership of impactful projects.",
+      "location": "Geneva",
+      "salary_min": "95000.00",
+      "salary_max": "100000.00",
+      "years_experience": 2,
+      "company_name": "Rolex",
+      "company_logo": "company_logos/fixture_rolex_logo.png",
+      "is_visible": true,
+      "employer_id":1,
+      "created_at": "2025-04-03T22:00:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 2,
+    "fields": {
+      "title": "Frontend Engineer",
+      "description": "We are seeking a creative and detail-oriented Frontend Engineer to enhance our user-facing applications. You'll use Vue.js and Tailwind CSS to deliver responsive and visually polished interfaces. Working closely with product designers, you'll ensure consistent user experiences across platforms. We value developers who think like users and can contribute to UX decisions. An eye for design and accessibility is a big plus.",
+      "location": "Zurich",
+      "salary_min": "80000.00",
+      "salary_max": "90000.00",
+      "years_experience": 1,
+      "company_name": "Rolex",
+      "company_logo": "company_logos/fixture_rolex_logo.png",
+      "is_visible": true,
+      "employer_id":1,
+      "created_at": "2025-04-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 5,
+    "fields": {
+      "title": "Financial Analyst Intern",
+      "description": "UBS is hiring a Financial Analyst Intern to support our team with market research, financial modeling, and data analysis. You will prepare reports and presentations for senior management and collaborate with cross-border teams.",
+      "location": "Zurich",
+      "salary_min": "75000.00",
+      "salary_max": "80000.00",
+      "years_experience": 0,
+      "company_name": "UBS",
+      "company_logo": "company_logos/fixture_ubs_logo.png",
+      "is_visible": true,
+      "employer_id": 2,
+      "created_at": "2025-04-05T08:00:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 6,
+    "fields": {
+      "title": "Risk Management Consultant",
+      "description": "Join UBS’s Risk Management division as a Consultant. You will assess credit, market, and operational risks, develop mitigation strategies, and work with global teams to implement best practices.",
+      "location": "Zurich",
+      "salary_min": "100000.00",
+      "salary_max": "105000.00",
+      "years_experience": 2,
+      "company_name": "UBS",
+      "company_logo": "company_logos/fixture_ubs_logo.png",
+      "is_visible": true,
+      "employer_id": 2,
+      "created_at": "2025-04-07T11:15:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 7,
+    "fields": {
+      "title": "Product Development Assistant",
+      "description": "Nestlé seeks a Product Development Assistant to help formulate new food and beverage products. You will conduct lab tests, document results, and coordinate with R&D teams to refine recipes and processes.",
+      "location": "Lausanne",
+      "salary_min": "65000.00",
+      "salary_max": "70000.00",
+      "years_experience": 1,
+      "company_name": "Nestlé",
+      "company_logo": "company_logos/fixture_nestle_logo.png",
+      "is_visible": true,
+      "employer_id": 3,
+      "created_at": "2025-04-08T13:45:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 8,
+    "fields": {
+      "title": "Supply Chain Coordinator",
+      "description": "Nestlé is looking for a Supply Chain Coordinator to optimize logistics and inventory. You will liaise with suppliers, track shipments, and implement process improvements to ensure timely product delivery.",
+      "location": "Lausanne",
+      "salary_min": "120000.00",
+      "salary_max": "130000.00",
+      "years_experience": 2,
+      "company_name": "Nestlé",
+      "company_logo": "company_logos/fixture_nestle_logo.png",
+      "is_visible": true,
+      "employer_id": 3,
+      "created_at": "2025-04-11T10:00:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 9,
+    "fields": {
+      "title": "Network Engineer Trainee",
+      "description": "Swisscom invites applications for a Network Engineer Trainee. You will assist in maintaining network infrastructure, troubleshooting connectivity issues, and learning about telecommunication protocols.",
+      "location": "Bern",
+      "salary_min": "55000.00",
+      "salary_max": "60000.00",
+      "years_experience": 0,
+      "company_name": "Swisscom",
+      "company_logo": "company_logos/fixture_swisscom_logo.png",
+      "is_visible": true,
+      "employer_id": 4,
+      "created_at": "2025-04-06T09:30:00Z"
+    }
+  },
+  {
+    "model": "api.jobpost",
+    "pk": 10,
+    "fields": {
+      "title": "Customer Support Specialist",
+      "description": "Join Swisscom’s customer support team to provide technical assistance via phone and email. You will resolve customer inquiries, document solutions in the knowledge base, and escalate complex issues to engineering teams.",
+      "location": "Bern",
+      "salary_min": "98000.00",
+      "salary_max": "100000.00",
+      "years_experience": 2,
+      "company_name": "Swisscom",
+      "company_logo": "company_logos/fixture_swisscom_logo.png",
+      "is_visible": true,
+      "employer_id": 4,
+      "created_at": "2025-04-09T12:20:00Z"
+    }
+  }
+]
