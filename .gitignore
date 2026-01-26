@@ -1,0 +1,81 @@
+############################################
+# OS
+############################################
+# Fichier caché généré par macOS
+.DS_Store
+# Fichier caché généré par Windows (aperçus)
+Thumbs.db
+
+############################################
+# VS Code
+############################################
+# Ignore toute la configuration locale VS Code
+.vscode/*
+# Mais conserve la liste des extensions recommandées
+!.vscode/extensions.json
+
+############################################
+# Python
+############################################
+# Cache Python compilé automatiquement
+__pycache__/
+# Fichiers Python compilés (.pyc, .pyo, .pyd)
+*.py[cod
+# Ancien format de bytecode Python
+*.pyo
+# Extensions compilées Python (Windows)
+*.pyd
+
+############################################
+# Django
+############################################
+# Base SQLite locale de développement
+*.sqlite3
+# Fichiers statiques collectés (générés par collectstatic)
+staticfiles/
+# Fichiers uploadés (contenu utilisateur)
+media/
+
+############################################
+# Node
+############################################
+# Dépendances Node installées localement
+node_modules/
+# Frontend buildé (généré par Vite)
+dist/
+
+############################################
+# Virtual Environments
+############################################
+# Environnement virtuel Python (nom courant)
+.venv/
+# Variante classique d’environnement virtuel
+venv/
+# Autre variante d’environnement virtuel
+env/
+
+############################################
+# Env files / Secrets
+############################################
+# Fichier contenant les secrets (jamais versionné)
+.env
+# Variantes locales (.env.dev, .env.prod, etc.)
+.env.*
+# Exemple public de variables d’environnement
+!.env.example
+
+############################################
+# Logs
+############################################
+# Dossier de logs générés
+logs/
+# Tous les fichiers .log
+*.log
+# Documentation perso
+docPerso/
+
+############################################
+# Docker
+############################################
+# Archives d’images Docker exportées
+*.tar
