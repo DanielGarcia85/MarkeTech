@@ -53,6 +53,12 @@ dist/
 venv/
 # Autre variante d’environnement virtuel
 env/
+# Environnement virtuel avec nom personnalisé
+.env
+# Variantes locales (.env.dev, .env.prod, etc.)
+.env.*
+# Exemple public de variables d’environnement
+!.env.example
 
 ############################################
 # Env files / Secrets
