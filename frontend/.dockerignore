@@ -1,0 +1,18 @@
+# Ignore node modules and build output
+node_modules
+dist
+
+# Vite cache
+.vite
+
+# Environment variables
+.git
+
+# OS files
+.DS_Store
+
+# Logs
+npm-debug.log*
+
+# Yarn logs
+yarn-error.log*
