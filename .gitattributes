@@ -1,5 +1,5 @@
-#Tous les fichiers texte du projet seront stockés dans Git avec des fins de ligne LF.
+# All text files in the project will be stored in Git with LF line endings
 * text=auto eol=lf
 
-#Les fichiers batch Windows garderont des fins de ligne CRLF.
+# Windows batch files will retain CRLF line endings
 *.bat text eol=crlf

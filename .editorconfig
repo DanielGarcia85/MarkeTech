@@ -1,6 +1,6 @@
-# Le fichier .editorconfig permet d’uniformiser automatiquement le formatage du code
-# (indentation, encodage, fins de ligne, espaces) entre tous les éditeurs et développeurs.
-# Il garantit que le code reste propre et cohérent, quel que soit l’outil utilisé.
+# The .editorconfig file automatically standardizes code formatting
+# (indentation, encoding, line endings, spaces) across all editors and developers.
+# It ensures that code remains clean and consistent, regardless of the tool used.
 
 root = true
 

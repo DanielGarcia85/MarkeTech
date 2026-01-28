@@ -5,7 +5,6 @@ from rest_framework import viewsets
 from .models import Message
 from .serializers import MessageSerializer
 
-
 @api_view(["GET"])
 def health(request):
     return Response({"status": "ok"})
