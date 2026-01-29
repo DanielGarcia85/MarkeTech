@@ -1,0 +1,27 @@
+
+services:
+  proxy:
+    image: nginx:stable-alpine
+    container_name: reverse-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_data:/staticfiles:ro
+      - media_data:/media:ro
+      # On ajoutera plus tard TLS/certs quand on sera sur le VPS
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  static_data:
+    external: true
+    name: marketech_static_data
+  media_data:
+    external: true
+    name: marketech_media_data

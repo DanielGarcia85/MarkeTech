@@ -1,15 +1,18 @@
-version: "3.9"
 
 services:
   db:
     image: postgres:16-alpine
+    container_name: marketech-db-postgres
     restart: unless-stopped
     env_file:
       - ./.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # IMPORTANT: In production, we do not expose Postgres on the host.
+    #ports:
+    #  - "5432:5432"
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -19,16 +22,44 @@ services:
   backend:
     build:
       context: ./backend
+    container_name: marketech-backend
     restart: unless-stopped
     env_file:
       - ./.env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
-    ports:
-      - "8000:8000"
+    # IMPORTANT: no public ports here
+    #ports:
+    #  - "8000:8000"
+    networks:
+      - internal
+      - proxy
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - static_data:/app/staticfiles
+      - media_data:/app/media
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: marketech-frontend
+    restart: unless-stopped
+    # IMPORTANT: no public ports here
+    #ports:
+    #  - "80:80"
+    networks:
+      - proxy
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
+  static_data:
+  media_data:
+
+networks:
+  internal:
+  proxy:
+    external: true
