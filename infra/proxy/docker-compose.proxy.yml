@@ -8,8 +8,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - static_data:/staticfiles:ro
-      - media_data:/media:ro
+      - marketech_static_data:/staticfiles:ro
+      - marketech_media_data:/media:ro
       # On ajoutera plus tard TLS/certs quand on sera sur le VPS
     networks:
       - proxy
@@ -19,9 +19,8 @@ networks:
     external: true
 
 volumes:
-  static_data:
+  marketech_static_data:
     external: true
-    name: marketech_static_data
-  media_data:
+  marketech_media_data:
     external: true
-    name: marketech_media_data
+
