@@ -1,6 +1,11 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 
+const accessToken = ref(localStorage.getItem("access_token") || "");
+const refreshToken = ref(localStorage.getItem("refresh_token") || "");
+
+const loginForm = ref({ username: "admin", password: "admin" });
+
 const props = defineProps({
   // standard DRF endpoint (router): /api/messages/
   endpoint: { type: String, default: "/api/messages/" },
@@ -25,11 +30,39 @@ const editForm = ref({
 const canCreate = computed(() => form.value.subject.trim().length > 0);
 const canSave = computed(() => editForm.value.subject.trim().length > 0);
 
+async function login() {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const data = await apiFetch("/api/token/", {
+      method: "POST",
+      body: JSON.stringify({
+        username: loginForm.value.username.trim(),
+        password: loginForm.value.password,
+      }),
+    });
+
+    accessToken.value = data.access;
+    refreshToken.value = data.refresh;
+
+    localStorage.setItem("access_token", accessToken.value);
+    localStorage.setItem("refresh_token", refreshToken.value);
+
+    await loadList();
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    loading.value = false;
+  }
+}
+
 async function apiFetch(url, options = {}) {
   const res = await fetch(url, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
+      ...(accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {}),
       ...(options.headers || {}),
     },
     ...options,
@@ -155,30 +188,56 @@ onMounted(loadList);
 </script>
 
 <template>
-  <section style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 12px;">
-    <div style="display:flex; justify-content: space-between; align-items: center; gap: 12px;">
-      <h2 style="margin: 0;">{{ title }}</h2>
-      <button @click="loadList" :disabled="loading" style="padding: 6px 10px; cursor: pointer;">
+  <section style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 12px">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+      <h2 style="margin: 0">{{ title }}</h2>
+      <button @click="loadList" :disabled="loading" style="padding: 6px 10px; cursor: pointer">
         {{ loading ? "..." : "Refresh" }}
       </button>
     </div>
 
-    <p v-if="error" style="margin-top: 8px; color: #b00020;">Error: {{ error }}</p>
+    <p v-if="error" style="margin-top: 8px; color: #b00020">Error: {{ error }}</p>
+
+    <!-- Auth -->
+    <div style="margin-top: 12px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px">
+      <h3 style="margin: 0 0 8px 0">Auth (JWT)</h3>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+        <input
+          v-model="loginForm.username"
+          placeholder="username"
+          style="padding: 8px; min-width: 180px"
+        />
+        <input
+          v-model="loginForm.password"
+          placeholder="password"
+          type="password"
+          style="padding: 8px; min-width: 180px"
+        />
+        <button @click="login" :disabled="loading" style="padding: 8px 12px; cursor: pointer">
+          Login
+        </button>
+      </div>
+
+      <p style="margin: 8px 0 0 0; font-size: 0.9em; opacity: 0.8">
+        Token: <span v-if="accessToken">✅ présent</span><span v-else>❌ absent</span>
+      </p>
+    </div>
 
     <!-- Create -->
-    <div style="margin-top: 12px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px;">
-      <h3 style="margin: 0 0 8px 0;">Create</h3>
+    <div style="margin-top: 12px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px">
+      <h3 style="margin: 0 0 8px 0">Create</h3>
 
-      <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
         <input
           v-model="form.subject"
           placeholder="Subject (required)"
-          style="padding: 8px; min-width: 240px; flex: 1;"
+          style="padding: 8px; min-width: 240px; flex: 1"
         />
         <button
           @click="createItem"
           :disabled="loading || !canCreate"
-          style="padding: 8px 12px; cursor: pointer;"
+          style="padding: 8px 12px; cursor: pointer"
         >
           Create
         </button>
@@ -188,30 +247,34 @@ onMounted(loadList);
         v-model="form.body"
         placeholder="Body (optional)"
         rows="3"
-        style="margin-top: 8px; padding: 8px; width: 100%;"
+        style="margin-top: 8px; padding: 8px; width: 100%"
       />
     </div>
 
     <!-- List -->
-    <div style="margin-top: 12px;">
-      <h3 style="margin: 0 0 8px 0;">List</h3>
+    <div style="margin-top: 12px">
+      <h3 style="margin: 0 0 8px 0">List</h3>
 
       <p v-if="loading && items.length === 0">Loading…</p>
       <p v-else-if="items.length === 0">No messages yet.</p>
 
-      <ul v-else style="padding-left: 18px;">
-        <li v-for="it in items" :key="it.id" style="margin-bottom: 10px;">
-          <div style="display:flex; align-items: center; justify-content: space-between; gap: 10px;">
+      <ul v-else style="padding-left: 18px">
+        <li v-for="it in items" :key="it.id" style="margin-bottom: 10px">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; gap: 10px"
+          >
             <div>
               <strong>#{{ it.id }}</strong> — {{ it.subject }}
-              <div style="font-size: 0.9em; opacity: 0.8; white-space: pre-wrap;">
+              <div style="font-size: 0.9em; opacity: 0.8; white-space: pre-wrap">
                 {{ it.body }}
               </div>
             </div>
 
-            <div style="display:flex; gap: 8px;">
-              <button @click="startEdit(it)" :disabled="loading" style="cursor: pointer;">Edit</button>
-              <button @click="deleteItem(it.id)" :disabled="loading" style="cursor: pointer;">
+            <div style="display: flex; gap: 8px">
+              <button @click="startEdit(it)" :disabled="loading" style="cursor: pointer">
+                Edit
+              </button>
+              <button @click="deleteItem(it.id)" :disabled="loading" style="cursor: pointer">
                 Delete
               </button>
             </div>
@@ -220,25 +283,32 @@ onMounted(loadList);
           <!-- Edit -->
           <div
             v-if="editingId === it.id"
-            style="margin-top: 8px; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;"
+            style="
+              margin-top: 8px;
+              padding: 10px;
+              background: rgba(0, 0, 0, 0.05);
+              border-radius: 8px;
+            "
           >
-            <div style="display:flex; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap">
               <input
                 v-model="editForm.subject"
                 placeholder="Subject (required)"
-                style="padding: 8px; min-width: 240px; flex: 1;"
+                style="padding: 8px; min-width: 240px; flex: 1"
               />
-              <button @click="saveEdit" :disabled="loading || !canSave" style="cursor: pointer;">
+              <button @click="saveEdit" :disabled="loading || !canSave" style="cursor: pointer">
                 Save
               </button>
-              <button @click="cancelEdit" :disabled="loading" style="cursor: pointer;">Cancel</button>
+              <button @click="cancelEdit" :disabled="loading" style="cursor: pointer">
+                Cancel
+              </button>
             </div>
 
             <textarea
               v-model="editForm.body"
               placeholder="Body"
               rows="3"
-              style="margin-top: 8px; padding: 8px; width: 100%;"
+              style="margin-top: 8px; padding: 8px; width: 100%"
             />
           </div>
         </li>
