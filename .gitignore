@@ -72,7 +72,7 @@ logs/
 # All .log files
 *.log
 # Personal documentation
-docPerso/
+#docPerso/
 
 ############################################
 # Docker
