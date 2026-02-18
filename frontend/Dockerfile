@@ -29,8 +29,8 @@ FROM nginx:stable-alpine AS production
 # Copy built files from the build stage to nginx's public folder
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Optional: copy custom nginx config (if needed)
-#COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# Optional: copy custom nginx config (if needed) -> Yes, we need it to handle SPA routing
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port (useful if running directly, not needed with docker-compose)
 EXPOSE 80
