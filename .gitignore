@@ -71,8 +71,6 @@ env/
 logs/
 # All .log files
 *.log
-# Personal documentation
-#docPerso/
 
 ############################################
 # Docker

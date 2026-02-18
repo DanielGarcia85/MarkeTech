@@ -1,9 +1,0 @@
-| Type       | Quand l’utiliser                                       |
-| ---------- | ------------------------------------------------------ |
-| `feat`     | Nouvelle fonctionnalité                                |
-| `fix`      | Correction de bug                                      |
-| `docs`     | Documentation uniquement                               |
-| `style`    | Formatage (espaces, indentations, pas de logique)      |
-| `refactor` | Réorganisation du code sans changer le comportement    |
-| `test`     | Ajout ou modification de tests                         |
-| `chore`    | Config projet, tooling, gitignore, docker, dépendances |
