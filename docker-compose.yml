@@ -46,7 +46,7 @@ services:
       context: ./frontend
     container_name: marketech-frontend
     restart: unless-stopped
-    # IMPORTANT: no public ports here
+    # IMPORTANT: no public ports here (Only when running in local docker)
     #ports:
     #  - "80:80"
     networks:
