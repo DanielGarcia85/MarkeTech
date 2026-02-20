@@ -1,11 +1,10 @@
 
 services:
-  db:
+  marketech-db:
     image: postgres:16-alpine
-    container_name: marketech-db-postgres
     restart: unless-stopped
     env_file:
-      - ./.env
+      - /srv/marketech/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     # IMPORTANT: In production, we do not expose Postgres on the host.
@@ -19,13 +18,12 @@ services:
       timeout: 3s
       retries: 20
 
-  backend:
+  marketech-backend:
     build:
       context: ./backend
-    container_name: marketech-backend
     restart: unless-stopped
     env_file:
-      - ./.env
+      - /srv/marketech/.env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
     # IMPORTANT: no public ports here
@@ -35,16 +33,15 @@ services:
       - internal
       - proxy
     depends_on:
-      db:
+      marketech-db:
         condition: service_healthy
     volumes:
       - static_data:/app/staticfiles
       - media_data:/app/media
 
-  frontend:
+  marketech-frontend:
     build:
       context: ./frontend
-    container_name: marketech-frontend
     restart: unless-stopped
     # IMPORTANT: no public ports here (Only when running in local docker)
     #ports:
@@ -52,7 +49,7 @@ services:
     networks:
       - proxy
     depends_on:
-      - backend
+      - marketech-backend
 
 volumes:
   postgres_data:
