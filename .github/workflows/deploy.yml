@@ -8,15 +8,13 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-    steps:
-      - name: Deploy (pull + rebuild)
-        shell: bash
-        run: |
-          - name: Checkout repository
-            uses: actions/checkout@v4
 
-          - name: Deploy with Docker Compose
-            run: |
-              cd /home/danielgarcia/apps/marketech
-              git pull origin main
-              docker compose up -d --build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          cd /home/danielgarcia/apps/marketech
+          git pull origin main
+          docker compose up -d --build
