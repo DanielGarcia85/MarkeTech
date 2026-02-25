@@ -20,6 +20,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Inject prod .env into workspace
+        run: |
+          set -euo pipefail
+          install -m 640 -g deploy /srv/apps/marketech/.env ./.env
+          ls -la ./.env
+
       - name: Deploy
         run: |
           set -euo pipefail
