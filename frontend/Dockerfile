@@ -1,8 +1,8 @@
 # ---- 1. Build stage ----
 
 # Image for building the frontend application
-# Uses Node.js 20 on Alpine Linux for a lightweight build environment
-FROM node:20-alpine AS build
+# Uses Node.js 24 on Alpine Linux for a lightweight build environment
+FROM node:24-alpine AS build
 
 # Set working directory
 WORKDIR /app
