@@ -55,7 +55,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     # Management of static files
     "django.contrib.staticfiles",
+    # Project applications
+    "accounts",
 ]
+
+# Model used for every user account, instead of Django's default one. Must be
+# set before the first migration is created.
+AUTH_USER_MODEL = "accounts.User"
 
 # ── Middleware ────────────────────────────────────────────────────────
 
