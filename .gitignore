@@ -28,3 +28,7 @@ __pycache__/
 # ── Environment files ─────────────────────────────────────────────────
 # Local secrets and settings, never versioned
 .env
+
+# ── Node ──────────────────────────────────────────────────────────────
+# Packages installed by npm
+node_modules/
