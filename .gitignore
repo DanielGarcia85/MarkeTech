@@ -23,3 +23,7 @@ __pycache__/
 # ── Django ────────────────────────────────────────────────────────────
 # Local development database
 *.sqlite3
+
+# ── Environment files ─────────────────────────────────────────────────
+# Local secrets and settings, never versioned
+.env
