@@ -1,0 +1,15 @@
+// .vscode/settings.json
+//
+// VS Code workspace settings — Python interpreter shared by both workstations
+// ─────────────────────────────────────────────────────────────────────────────
+// The repository is synchronised between two PCs through OneDrive. A virtual
+// environment stores absolute paths, so each PC has its own (.venvdaniel on
+// one, .venvgarciad on the other). The folder name is not hard-coded here: it
+// is read from the LOCAL_PC_VENV environment variable, defined once per PC.
+{
+  // Python interpreter of this workstation's own virtual environment
+  "python.defaultInterpreterPath": "${workspaceFolder}/${env:LOCAL_PC_VENV}/Scripts/python.exe",
+
+  // Activate that environment automatically in every new integrated terminal
+  "python.terminal.activateEnvironment": true
+}
