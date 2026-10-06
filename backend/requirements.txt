@@ -1,0 +1,8 @@
+# backend/requirements.txt
+#
+# Python dependencies — packages required by the backend
+# ─────────────────────────────────────────────────────────────────────────────
+# Every version is pinned. A version is only changed by an explicit decision.
+
+# ── Web framework ─────────────────────────────────────────────────────
+Django==6.1.1
