@@ -1,0 +1,18 @@
+# .editorconfig
+#
+# EditorConfig — formatting rules shared by every editor
+# ─────────────────────────────────────────────────────────────────────────────
+# Keeps encoding, line endings and indentation consistent on both workstations.
+# VS Code applies these rules through the EditorConfig extension.
+
+# Top-most EditorConfig file: do not look in parent folders
+root = true
+
+# ── All files ─────────────────────────────────────────────────────────
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2

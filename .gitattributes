@@ -1,0 +1,13 @@
+# .gitattributes
+#
+# Git attributes — line ending rules for every file in the repository
+# ─────────────────────────────────────────────────────────────────────────────
+# The project is edited on Windows and runs in Linux containers. A shell script
+# saved with Windows line endings (CRLF) fails inside a container, so every
+# text file is stored and checked out with Unix line endings (LF).
+
+# ── Line endings ──────────────────────────────────────────────────────
+# Let Git detect text files and normalise them to LF
+* text=auto eol=lf
+
+*.bat text eol=crlf
