@@ -21,8 +21,9 @@ import sys
 
 def main():
     """Run the Django command given on the command line."""
-    # Use the project settings unless the environment already names a module
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+    # Use the development settings unless the environment already names a
+    # module. A server must set DJANGO_SETTINGS_MODULE explicitly.
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

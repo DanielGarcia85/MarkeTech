@@ -1,14 +1,16 @@
-# backend/config/settings.py
+# backend/config/settings/base.py
 
 """
-Django settings — configuration of the whole backend
+Base settings — configuration shared by every environment
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
 ──────────────
-Declare every setting Django needs to start: security, installed applications,
-middleware chain, database, internationalisation, static files and email.
-Contains no secret: sensitive values are read from the environment.
+Declare the settings common to every environment: installed applications,
+middleware chain, templates, password rules, internationalisation, static
+files and email. Contains no secret and nothing specific to one environment:
+debug mode, allowed hosts and the database are set in the environment files,
+such as dev.py.
 
 References
 ──────────
@@ -25,7 +27,7 @@ from dotenv import load_dotenv
 
 # Folder that contains manage.py (backend/). Build other paths from it, for
 # example BASE_DIR / "subdir".
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Load the variables of the root .env file into the environment. When the
 # file does not exist, the call does nothing and the variables must already
@@ -37,13 +39,6 @@ load_dotenv(BASE_DIR.parent / ".env")
 # Read from the environment, with no fallback value: a missing key must stop
 # the application at startup.
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-
-# Detailed error pages. Must never be enabled in production.
-DEBUG = True
-
-# Host names this site is allowed to serve. While DEBUG is on, an empty list
-# accepts localhost only.
-ALLOWED_HOSTS = []
 
 # ── Applications ──────────────────────────────────────────────────────
 
@@ -106,16 +101,6 @@ TEMPLATES = [
 
 # Entry point used by the development server
 WSGI_APPLICATION = "config.wsgi.application"
-
-# ── Database ──────────────────────────────────────────────────────────
-
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
 
 # ── Password validation ───────────────────────────────────────────────
 
