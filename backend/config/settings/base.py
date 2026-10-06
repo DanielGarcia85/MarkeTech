@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     # Management of static files
     "django.contrib.staticfiles",
+    # Third-party applications
+    "rest_framework",
     # Project applications
     "accounts",
 ]
@@ -150,6 +152,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 # URL prefix of static files (CSS, JavaScript, images)
 STATIC_URL = "static/"
+
+# ── REST API ──────────────────────────────────────────────────────────
+
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    # Identify the user from the Django session cookie
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    # Deny by default: every view requires a logged-in user, unless it
+    # explicitly declares another permission
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
 
 # ── Email ─────────────────────────────────────────────────────────────
 

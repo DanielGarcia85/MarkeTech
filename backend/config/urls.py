@@ -28,8 +28,12 @@ References
 from django.contrib import admin
 from django.urls import path
 
+from .views import health
+
 # Django reads this list, in order, to find the route matching a request
 urlpatterns = [
     # Administration interface
     path("admin/", admin.site.urls),
+    # Health check of the backend
+    path("api/health/", health, name="health"),
 ]
