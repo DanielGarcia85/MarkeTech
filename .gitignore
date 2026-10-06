@@ -10,3 +10,8 @@
 CLAUDE.md
 # Local Claude Code settings and session data
 .claude/
+
+# ── Python virtual environments ───────────────────────────────────────
+# One environment per workstation: a venv stores absolute paths, so it
+# cannot be shared between the two machines
+.venvgarciad/
