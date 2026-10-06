@@ -1,0 +1,12 @@
+# .gitignore
+#
+# Git ignore rules — files that must never be versioned
+# ─────────────────────────────────────────────────────────────────────────────
+# Entries are added only when the file or folder actually appears in the
+# project, never in advance.
+
+# ── Claude Code ───────────────────────────────────────────────────────
+# Personal working context for the AI assistant (not a project deliverable)
+CLAUDE.md
+# Local Claude Code settings and session data
+.claude/
