@@ -10,4 +10,12 @@ export default {
   language: {
     label: "Language",
   },
+
+  // Status of the connection with the backend
+  health: {
+    label: "API status:",
+    checking: "Checking…",
+    online: "Online",
+    offline: "Unavailable",
+  },
 };

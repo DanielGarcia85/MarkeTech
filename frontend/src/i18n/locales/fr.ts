@@ -12,6 +12,14 @@ const fr: typeof en = {
   language: {
     label: "Langue",
   },
+
+  // Status of the connection with the backend
+  health: {
+    label: "État de l'API :",
+    checking: "Vérification…",
+    online: "En ligne",
+    offline: "Indisponible",
+  },
 };
 
 export default fr;

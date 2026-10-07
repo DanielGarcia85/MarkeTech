@@ -7,6 +7,7 @@
 -->
 
 <script setup lang="ts">
+import ApiStatus from "./components/ApiStatus.vue";
 import LanguageSwitcher from "./components/LanguageSwitcher.vue";
 
 // Name of the application, displayed as the page heading
@@ -17,5 +18,6 @@ const appName: string = "MarkeTech";
   <main>
     <h1>{{ appName }}</h1>
     <LanguageSwitcher />
+    <ApiStatus />
   </main>
 </template>
