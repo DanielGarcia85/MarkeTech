@@ -155,6 +155,10 @@ USE_TZ = True
 # URL prefix of static files (CSS, JavaScript, images)
 STATIC_URL = "static/"
 
+# Folder where the collectstatic command gathers every static file, so that
+# they can be served outside development
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 # ── REST API ──────────────────────────────────────────────────────────
 
 # https://www.django-rest-framework.org/api-guide/settings/
