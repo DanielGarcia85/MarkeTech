@@ -1,0 +1,57 @@
+# docker-compose.yml
+#
+# Docker Compose — the containers of the application and how they are linked
+# ─────────────────────────────────────────────────────────────────────────────
+# Started with "docker compose up". The values written ${LIKE_THIS} are read
+# from the .env file that sits next to this file.
+
+# Prefix of every container, network and volume created from this file
+name: marketech
+
+services:
+  # ── Database ────────────────────────────────────────────────────────
+  db:
+    image: postgres:18-alpine
+    # Restart after a crash or a reboot, unless it was stopped on purpose
+    restart: unless-stopped
+    # Database, user and password created the first time the container
+    # starts. The ":?" stops Compose with an error if a value is missing.
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    # Keep the data outside the container, so that it survives when the
+    # container is removed or rebuilt
+    volumes:
+      - db_data:/var/lib/postgresql
+    # Tells Docker when PostgreSQL is ready to accept connections
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── Backend ─────────────────────────────────────────────────────────
+  backend:
+    # Image built from backend/Dockerfile
+    build: ./backend
+    restart: unless-stopped
+    # Every variable of .env is passed to the container
+    env_file: .env
+    # Values that depend on this file, not on the environment: production
+    # settings, and the database reached by the name of its service
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      POSTGRES_HOST: db
+    # Wait for the database to be ready before starting
+    depends_on:
+      db:
+        condition: service_healthy
+    # Temporary: gives direct access to the backend from this machine only,
+    # until the frontend container exists and takes over this role
+    ports:
+      - "127.0.0.1:8000:8000"
+
+# Storage managed by Docker, kept between restarts
+volumes:
+  db_data:
