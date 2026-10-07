@@ -7,6 +7,8 @@
 -->
 
 <script setup lang="ts">
+import LanguageSwitcher from "./components/LanguageSwitcher.vue";
+
 // Name of the application, displayed as the page heading
 const appName: string = "MarkeTech";
 </script>
@@ -14,5 +16,6 @@ const appName: string = "MarkeTech";
 <template>
   <main>
     <h1>{{ appName }}</h1>
+    <LanguageSwitcher />
   </main>
 </template>
