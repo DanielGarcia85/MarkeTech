@@ -30,6 +30,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    # Reachable by the backend only
+    networks:
+      - internal
 
   # ── Backend ─────────────────────────────────────────────────────────
   backend:
@@ -47,10 +50,36 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # Temporary: gives direct access to the backend from this machine only,
-    # until the frontend container exists and takes over this role
+    # Talks to the database on one side, and to Nginx on the other
+    networks:
+      - internal
+      - web
+
+  # ── Frontend ────────────────────────────────────────────────────────
+  frontend:
+    # Image built from frontend/Dockerfile
+    build: ./frontend
+    restart: unless-stopped
+    # Nginx passes some requests on to the backend: start it first
+    depends_on:
+      - backend
+    # Only door of the application: port 8080 of this machine leads to
+    # Nginx, and is reachable from this machine only
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8080:80"
+    # Reaches the backend, but not the database
+    networks:
+      - web
+
+# Private networks between containers. Two of them, so that each container
+# only reaches the ones it needs.
+networks:
+  # Database and backend. "internal" also cuts this network off from the
+  # outside world: nothing in it can be reached from, or reach, the Internet.
+  internal:
+    internal: true
+  # Backend and Nginx
+  web:
 
 # Storage managed by Docker, kept between restarts
 volumes:
