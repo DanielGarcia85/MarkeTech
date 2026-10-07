@@ -17,4 +17,12 @@ export default defineConfig({
   // a link, because Vite cannot serve files from a path that contains "#",
   // which is the case of the OneDrive folder where this project is stored.
   resolve: { preserveSymlinks: true },
+
+  // Development only: passes every request starting with /api on to the
+  // Django backend, so the browser keeps talking to a single address.
+  server: {
+    proxy: {
+      "/api": "http://localhost:8000",
+    },
+  },
 });
