@@ -72,6 +72,8 @@ AUTH_USER_MODEL = "accounts.User"
 MIDDLEWARE = [
     # Security headers and HTTPS redirection
     "django.middleware.security.SecurityMiddleware",
+    # Serves static files itself, before the request reaches the views
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     # Loads the session identified by the cookie
     "django.contrib.sessions.middleware.SessionMiddleware",
     # Normalises URLs, for example by appending a missing trailing slash
