@@ -1,0 +1,19 @@
+# backend/.dockerignore
+#
+# Files left out of the backend image
+# ─────────────────────────────────────────────────────────────────────────────
+# Whatever is listed here is not sent to Docker when the image is built.
+
+# Local development database
+*.sqlite3
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Static files collected locally: the container collects its own
+staticfiles/
+
+# Docker files themselves
+Dockerfile
+.dockerignore

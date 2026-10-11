@@ -1,0 +1,32 @@
+// frontend/tsconfig.json
+//
+// TypeScript configuration — how the frontend code is type-checked
+// ─────────────────────────────────────────────────────────────────────────────
+// TypeScript only checks the code here: Vite is the tool that turns it into
+// JavaScript for the browser.
+{
+  "compilerOptions": {
+    // JavaScript version and built-in APIs the code is allowed to use
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    // Import rules matching the way Vite resolves modules
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    // Strictest set of type checks
+    "strict": true,
+
+    // Check only: never write JavaScript files, Vite handles that
+    "noEmit": true,
+
+    // Do not check the type files shipped inside dependencies
+    "skipLibCheck": true,
+
+    // Types of Vite-specific features, such as import.meta.env
+    "types": ["vite/client"]
+  },
+
+  // Files to check
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
+}

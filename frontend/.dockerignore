@@ -1,0 +1,18 @@
+# frontend/.dockerignore
+#
+# Files left out of the frontend image
+# ─────────────────────────────────────────────────────────────────────────────
+# Whatever is listed here is not sent to Docker when the image is built.
+
+# Dependencies installed on this machine: the image installs its own
+node_modules/
+
+# Result of a build made on this machine
+dist/
+
+# Documentation, not needed to build or run the application
+docs/
+
+# Docker files themselves
+Dockerfile
+.dockerignore

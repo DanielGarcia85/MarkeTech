@@ -1,0 +1,23 @@
+<!--
+  frontend/src/App.vue
+
+  Root component — top of the component tree
+  ───────────────────────────────────────────────────────────────────────────
+  Mounted by main.ts. Every other component is displayed inside this one.
+-->
+
+<script setup lang="ts">
+import ApiStatus from "./components/ApiStatus.vue";
+import LanguageSwitcher from "./components/LanguageSwitcher.vue";
+
+// Name of the application, displayed as the page heading
+const appName: string = "MarkeTech";
+</script>
+
+<template>
+  <main>
+    <h1>{{ appName }}</h1>
+    <LanguageSwitcher />
+    <ApiStatus />
+  </main>
+</template>

@@ -1,0 +1,93 @@
+# docker-compose.yml
+#
+# Docker Compose — the containers of the application and how they are linked
+# ─────────────────────────────────────────────────────────────────────────────
+# Started with "docker compose up". The values written ${LIKE_THIS} are read
+# from the .env file that sits next to this file.
+
+# Prefix of every container, network and volume created from this file
+name: marketech
+
+services:
+  # ── Database ────────────────────────────────────────────────────────
+  db:
+    image: postgres:18-alpine
+    # Restart after a crash or a reboot, unless it was stopped on purpose
+    restart: unless-stopped
+    # Database, user and password created the first time the container
+    # starts. The ":?" stops Compose with an error if a value is missing.
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    # Keep the data outside the container, so that it survives when the
+    # container is removed or rebuilt
+    volumes:
+      - db_data:/var/lib/postgresql
+    # Tells Docker when PostgreSQL is ready to accept connections
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # Reachable by the backend only
+    networks:
+      - internal
+
+  # ── Backend ─────────────────────────────────────────────────────────
+  backend:
+    # Image built from backend/Dockerfile
+    build: ./backend
+    restart: unless-stopped
+    # Every variable of .env is passed to the container
+    env_file: .env
+    # Values that depend on this file, not on the environment: production
+    # settings, and the database reached by the name of its service
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      POSTGRES_HOST: db
+    # Wait for the database to be ready before starting
+    depends_on:
+      db:
+        condition: service_healthy
+    # Talks to the database on one side, and to Nginx on the other
+    networks:
+      - internal
+      - web
+
+  # ── Frontend ────────────────────────────────────────────────────────
+  frontend:
+    # Image built from frontend/Dockerfile
+    build: ./frontend
+    restart: unless-stopped
+    # Nginx passes some requests on to the backend: start it first
+    depends_on:
+      - backend
+    # Local door of the application: port 8080 of this machine leads to
+    # Nginx, and is reachable from this machine only
+    ports:
+      - "127.0.0.1:8080:80"
+    # Reaches the backend, but not the database. Also joins the network of
+    # the machine's reverse proxy, which passes the visitors' requests on.
+    networks:
+      - web
+      - proxy
+
+# Networks between containers. Two private ones, so that each container only
+# reaches the ones it needs, and one shared with the reverse proxy.
+networks:
+  # Database and backend. "internal" also cuts this network off from the
+  # outside world: nothing in it can be reached from, or reach, the Internet.
+  internal:
+    internal: true
+  # Backend and Nginx
+  web:
+  # Nginx and the reverse proxy of the machine. "external" means that this
+  # file does not create the network: it must already exist, created by the
+  # reverse proxy or by "docker network create proxy".
+  proxy:
+    external: true
+
+# Storage managed by Docker, kept between restarts
+volumes:
+  db_data:
