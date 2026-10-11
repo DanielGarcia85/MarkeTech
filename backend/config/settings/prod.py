@@ -43,11 +43,14 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# HTTP requests are redirected to HTTPS by the server's reverse proxy, before
-# they reach the application. Django does not redirect them a second time:
-# that would break the plain-HTTP door on port 8080, used locally and for
-# tests. The deployment check that asks for it is therefore silenced.
-SILENCED_SYSTEM_CHECKS = ["security.W008"]
+# HTTPS is enforced by the server's reverse proxy, before requests reach the
+# application: it redirects HTTP to HTTPS and tells browsers to come back
+# over HTTPS only (HSTS header). Django does neither a second time. A
+# redirect would break the plain-HTTP door on port 8080, used locally and
+# for tests; and Django would add the header to its own responses only, not
+# to the pages of the Vue application. The two deployment checks that ask
+# for these settings are therefore silenced.
+SILENCED_SYSTEM_CHECKS = ["security.W004", "security.W008"]
 
 # ── Database ──────────────────────────────────────────────────────────
 
