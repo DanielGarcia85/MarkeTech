@@ -32,15 +32,22 @@ DEBUG = False
 # without spaces
 ALLOWED_HOSTS = os.environ["DJANGO_ALLOWED_HOSTS"].split(",")
 
-# The application sits behind a reverse proxy that ends the HTTPS connection
-# and passes requests on over plain HTTP. This header, set by that proxy,
-# tells Django that the visitor did come over HTTPS.
+# The application sits behind the server's reverse proxy, which ends the
+# HTTPS connection and passes requests on over plain HTTP. This header,
+# written by that proxy and passed on by the application's own Nginx, tells
+# Django that the visitor did come over HTTPS.
 # https://docs.djangoproject.com/en/6.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Send the session cookie and the form-protection cookie over HTTPS only
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+# HTTP requests are redirected to HTTPS by the server's reverse proxy, before
+# they reach the application. Django does not redirect them a second time:
+# that would break the plain-HTTP door on port 8080, used locally and for
+# tests. The deployment check that asks for it is therefore silenced.
+SILENCED_SYSTEM_CHECKS = ["security.W008"]
 
 # ── Database ──────────────────────────────────────────────────────────
 
