@@ -32,6 +32,16 @@ DEBUG = False
 # without spaces
 ALLOWED_HOSTS = os.environ["DJANGO_ALLOWED_HOSTS"].split(",")
 
+# The application sits behind a reverse proxy that ends the HTTPS connection
+# and passes requests on over plain HTTP. This header, set by that proxy,
+# tells Django that the visitor did come over HTTPS.
+# https://docs.djangoproject.com/en/6.1/ref/settings/#secure-proxy-ssl-header
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Send the session cookie and the form-protection cookie over HTTPS only
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # ── Database ──────────────────────────────────────────────────────────
 
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
