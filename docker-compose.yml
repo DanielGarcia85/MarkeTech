@@ -63,16 +63,18 @@ services:
     # Nginx passes some requests on to the backend: start it first
     depends_on:
       - backend
-    # Only door of the application: port 8080 of this machine leads to
+    # Local door of the application: port 8080 of this machine leads to
     # Nginx, and is reachable from this machine only
     ports:
       - "127.0.0.1:8080:80"
-    # Reaches the backend, but not the database
+    # Reaches the backend, but not the database. Also joins the network of
+    # the machine's reverse proxy, which passes the visitors' requests on.
     networks:
       - web
+      - proxy
 
-# Private networks between containers. Two of them, so that each container
-# only reaches the ones it needs.
+# Networks between containers. Two private ones, so that each container only
+# reaches the ones it needs, and one shared with the reverse proxy.
 networks:
   # Database and backend. "internal" also cuts this network off from the
   # outside world: nothing in it can be reached from, or reach, the Internet.
@@ -80,6 +82,11 @@ networks:
     internal: true
   # Backend and Nginx
   web:
+  # Nginx and the reverse proxy of the machine. "external" means that this
+  # file does not create the network: it must already exist, created by the
+  # reverse proxy or by "docker network create proxy".
+  proxy:
+    external: true
 
 # Storage managed by Docker, kept between restarts
 volumes:
