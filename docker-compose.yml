@@ -36,7 +36,10 @@ services:
 
   # ── Backend ─────────────────────────────────────────────────────────
   backend:
-    # Image built from backend/Dockerfile
+    # Image published by GitHub Actions, fetched with "docker compose pull".
+    # With "docker compose up --build", it is built from backend/Dockerfile
+    # instead: this is how a development machine runs its own code.
+    image: ghcr.io/danielgarcia85/marketech-backend:latest
     build: ./backend
     restart: unless-stopped
     # Every variable of .env is passed to the container
@@ -57,7 +60,9 @@ services:
 
   # ── Frontend ────────────────────────────────────────────────────────
   frontend:
-    # Image built from frontend/Dockerfile
+    # Same as the backend: published image, or built from frontend/Dockerfile
+    # with "--build"
+    image: ghcr.io/danielgarcia85/marketech-frontend:latest
     build: ./frontend
     restart: unless-stopped
     # Nginx passes some requests on to the backend: start it first
