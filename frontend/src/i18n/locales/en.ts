@@ -6,6 +6,11 @@
 // The other languages must provide exactly the same keys.
 
 export default {
+  // Notice displayed under the name of the application
+  app: {
+    notice: "This application is under construction.",
+  },
+
   // Language selector
   language: {
     label: "Language",

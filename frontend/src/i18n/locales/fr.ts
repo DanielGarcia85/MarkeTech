@@ -8,6 +8,11 @@
 import type en from "./en";
 
 const fr: typeof en = {
+  // Notice displayed under the name of the application
+  app: {
+    notice: "Cette application est en cours de construction.",
+  },
+
   // Language selector
   language: {
     label: "Langue",
