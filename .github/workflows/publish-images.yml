@@ -65,6 +65,10 @@ jobs:
       # the registry only when the push was made on main.
       - name: Build the image, and publish it from main
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        # Do not attach the record of the build to the run as a downloadable
+        # file: it is not used here
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: ./${{ matrix.service }}
           push: ${{ github.ref_name == 'main' }}
