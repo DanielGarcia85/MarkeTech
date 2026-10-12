@@ -39,7 +39,8 @@ services:
     # Image published by GitHub Actions, fetched with "docker compose pull".
     # With "docker compose up --build", it is built from backend/Dockerfile
     # instead: this is how a development machine runs its own code.
-    image: ghcr.io/danielgarcia85/marketech-backend:latest
+    # IMAGE_TAG chooses the version: "latest" unless .env says otherwise.
+    image: ghcr.io/danielgarcia85/marketech-backend:${IMAGE_TAG:-latest}
     build: ./backend
     restart: unless-stopped
     # Every variable of .env is passed to the container
@@ -60,9 +61,9 @@ services:
 
   # ── Frontend ────────────────────────────────────────────────────────
   frontend:
-    # Same as the backend: published image, or built from frontend/Dockerfile
-    # with "--build"
-    image: ghcr.io/danielgarcia85/marketech-frontend:latest
+    # Same as the backend: published image in the version given by IMAGE_TAG,
+    # or built from frontend/Dockerfile with "--build"
+    image: ghcr.io/danielgarcia85/marketech-frontend:${IMAGE_TAG:-latest}
     build: ./frontend
     restart: unless-stopped
     # Nginx passes some requests on to the backend: start it first
