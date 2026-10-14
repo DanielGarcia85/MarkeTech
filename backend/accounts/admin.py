@@ -62,7 +62,20 @@ class UserAdmin(DjangoUserAdmin):
     )
 
     # List of users
-    list_display = ("email", "first_name", "last_name", "role", "is_staff")
+    # List of users: every field of the model except the password hash
+    list_display = (
+        "id",
+        "email",
+        "first_name",
+        "last_name",
+        "role",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+        "last_login",
+        "date_joined",
+    )
     list_filter = ("role", "is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
+    date_hierarchy = "date_joined"
