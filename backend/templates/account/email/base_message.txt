@@ -1,0 +1,10 @@
+{# backend/templates/account/email/base_message.txt — frame of every e-mail: greeting, content, signature #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Bonjour,{% else %}Hello,{% endif %}
+
+{% block content %}{% endblock content %}
+
+{% if lang == "fr" %}À bientôt sur MarkeTech.
+
+MarkeTech : emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.{% else %}See you soon on MarkeTech.
+
+MarkeTech: tech jobs and student jobs for recent graduates and students.{% endif %}{% endautoescape %}

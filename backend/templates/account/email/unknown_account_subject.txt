@@ -1,0 +1,2 @@
+{# backend/templates/account/email/unknown_account_subject.txt — subject of the e-mail sent when a reset targets an address without account #}
+{% load i18n %}{% get_current_language as lang %}{% if lang == "fr" %}Aucun compte pour cette adresse{% else %}No account for this address{% endif %}

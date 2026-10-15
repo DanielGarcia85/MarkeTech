@@ -1,0 +1,17 @@
+{# backend/templates/account/email/account_already_exists_message.txt — body of the e-mail sent when a sign-up uses a taken address #}
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+
+{% block content %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Quelqu'un, peut-être vous, a tenté de créer un compte MarkeTech avec l'adresse {{ email }}. Or un compte existe déjà avec cette adresse.
+
+Si c'est vous et que vous avez oublié votre mot de passe, vous pouvez en choisir un nouveau ici :
+
+{{ password_reset_url }}
+
+Sinon, ignorez cet e-mail : rien n'a été modifié sur votre compte.{% else %}Someone, perhaps you, tried to create a MarkeTech account with the address {{ email }}. But an account already exists with this address.
+
+If it was you and you have forgotten your password, you can choose a new one here:
+
+{{ password_reset_url }}
+
+Otherwise, ignore this e-mail: nothing has changed on your account.{% endif %}{% endautoescape %}{% endblock content %}
