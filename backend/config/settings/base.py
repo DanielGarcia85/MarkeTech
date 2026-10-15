@@ -116,6 +116,8 @@ ACCOUNT_SIGNUP_FORM_CLASS = "accounts.forms.SignupForm"
 # A new account cannot log in before its address is verified by the link
 # sent by e-mail
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# Start of the subject of every e-mail sent by allauth
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MarkeTech] "
 
 # https://docs.allauth.org/en/latest/headless/configuration.html
 # No HTML page from allauth: the Vue frontend renders everything
