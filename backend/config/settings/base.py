@@ -81,6 +81,8 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     # Loads the session identified by the cookie
     "django.contrib.sessions.middleware.SessionMiddleware",
+    # Picks the language of the request (Accept-Language header)
+    "django.middleware.locale.LocaleMiddleware",
     # Normalises URLs, for example by appending a missing trailing slash
     "django.middleware.common.CommonMiddleware",
     # CSRF protection
@@ -141,11 +143,12 @@ HEADLESS_FRONTEND_URLS = {
 # Module that holds the root URL table
 ROOT_URLCONF = "config.urls"
 
-# HTML template engine, used by the administration interface
+# Template engine, used by the administration interface and the e-mails
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Searched before the applications: our files replace those of allauth
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -187,7 +190,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # ── Internationalisation ──────────────────────────────────────────────
 
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
-LANGUAGE_CODE = "en-us"
+# Languages offered by the application; English is the fallback
+LANGUAGES = [
+    ("en", "English"),
+    ("fr", "Français"),
+]
+LANGUAGE_CODE = "en"
 
 TIME_ZONE = "UTC"
 
