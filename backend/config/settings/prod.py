@@ -7,7 +7,8 @@ Production settings — configuration of the deployed application
 Responsibility
 ──────────────
 Complete the base settings for an environment exposed to real users: debug
-mode off, allowed hosts, PostgreSQL database and optimised static files.
+mode off, allowed hosts, PostgreSQL database, optimised static files and
+real e-mail sending.
 Every value that differs from one deployment to another is read from the
 environment, with no fallback value: a missing variable must stop the
 application at startup.
@@ -17,6 +18,7 @@ References
   - https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
   - https://docs.djangoproject.com/en/6.1/ref/settings/#databases
   - https://whitenoise.readthedocs.io/en/stable/django.html
+  - https://docs.djangoproject.com/en/6.1/topics/email/#smtp-backend
 """
 
 import os
@@ -81,3 +83,24 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+# ── Email ─────────────────────────────────────────────────────────────
+
+# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
+# Real sending, through the outgoing mail server of the provider, with the
+# login of the mailbox that sends. The connection is encrypted (STARTTLS).
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": os.environ["EMAIL_HOST"],
+            "port": int(os.environ["EMAIL_PORT"]),
+            "username": os.environ["EMAIL_HOST_USER"],
+            "password": os.environ["EMAIL_HOST_PASSWORD"],
+            "use_tls": True,
+        },
+    },
+}
+
+# Sender of the application's e-mails
+DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
