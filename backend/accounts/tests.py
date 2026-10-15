@@ -8,7 +8,8 @@ Responsibility
 ──────────────
 Check the authentication API as the frontend will use it: JSON requests to
 the browser client of allauth, CSRF protection enforced, e-mails read from
-the test outbox. Does not test allauth itself, only our configuration of it.
+the test outbox, in the language of the request. Does not test allauth
+itself, only our configuration of it.
 """
 
 import json
@@ -146,3 +147,26 @@ class AuthenticationApiTests(TestCase):
             {"email": "lea.doe@example.com", "password": "New-horse-10"},
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_emails_follow_the_language_of_the_request(self):
+        # fr-CH is not offered: Django falls back to plain fr
+        self.client = Client(
+            enforce_csrf_checks=True,
+            headers={"Accept-Language": "fr-CH,fr;q=0.9,en;q=0.8"},
+        )
+        self.sign_up()
+        self.assertEqual(
+            mail.outbox[0].subject,
+            "[MarkeTech] Confirmez votre adresse e-mail",
+        )
+        self.assertIn("Bonjour,", mail.outbox[0].body)
+
+    def test_emails_fall_back_to_english(self):
+        self.client = Client(
+            enforce_csrf_checks=True, headers={"Accept-Language": "de"}
+        )
+        self.sign_up()
+        self.assertEqual(
+            mail.outbox[0].subject, "[MarkeTech] Confirm your e-mail address"
+        )
+        self.assertIn("Hello,", mail.outbox[0].body)
