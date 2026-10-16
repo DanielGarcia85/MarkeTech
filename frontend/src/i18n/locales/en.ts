@@ -12,10 +12,29 @@ export default {
     notice: "This application is under construction.",
   },
 
-  // Header: session state
+  // Header: session state and links of the account
   header: {
+    signup: "Sign up",
     loggedInAs: "Signed in as {email}",
     logout: "Log out",
+  },
+
+  // Sign-up page
+  signup: {
+    title: "Create your account",
+    email: "E-mail address",
+    password: "Password",
+    role: "I am",
+    candidate: "A candidate (student or recent graduate)",
+    employer: "An employer",
+    submit: "Create my account",
+    sent: "We have sent an e-mail to {email}. Open it and follow its link to activate your account.",
+  },
+
+  // Messages shared by every form
+  form: {
+    failed: "Something went wrong. Please try again.",
+    unreachable: "The server cannot be reached. Please try again later.",
   },
 
   // Language selector

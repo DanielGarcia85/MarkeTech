@@ -28,6 +28,22 @@ export type ApiResponse<T> = {
   meta?: { is_authenticated?: boolean };
 };
 
+// Sorts the errors of a 400 answer by field, for a form to display each one
+// under its field: the key is the param, or "" for an error about the whole
+// request. Only the first message of each field is kept.
+export function errorsByParam(
+  errors: ApiError[] = [],
+): Record<string, string> {
+  const byParam: Record<string, string> = {};
+  for (const error of errors) {
+    const key = error.param ?? "";
+    if (!(key in byParam)) {
+      byParam[key] = error.message;
+    }
+  }
+  return byParam;
+}
+
 // Headers sent with every request
 function commonHeaders(): Record<string, string> {
   return {

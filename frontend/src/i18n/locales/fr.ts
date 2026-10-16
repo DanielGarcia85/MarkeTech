@@ -15,10 +15,29 @@ const fr: typeof en = {
     notice: "Cette application est en cours de construction.",
   },
 
-  // Header: session state
+  // Header: session state and links of the account
   header: {
+    signup: "S'inscrire",
     loggedInAs: "Connecté en tant que {email}",
     logout: "Se déconnecter",
+  },
+
+  // Sign-up page
+  signup: {
+    title: "Créer votre compte",
+    email: "Adresse e-mail",
+    password: "Mot de passe",
+    role: "Je suis",
+    candidate: "Candidat (étudiant ou jeune diplômé)",
+    employer: "Employeur",
+    submit: "Créer mon compte",
+    sent: "Nous avons envoyé un e-mail à {email}. Ouvrez-le et suivez son lien pour activer votre compte.",
+  },
+
+  // Messages shared by every form
+  form: {
+    failed: "Une erreur est survenue. Veuillez réessayer.",
+    unreachable: "Le serveur est injoignable. Veuillez réessayer plus tard.",
   },
 
   // Language selector
