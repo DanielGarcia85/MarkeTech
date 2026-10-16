@@ -18,11 +18,13 @@ export default defineConfig({
   // which is the case of the OneDrive folder where this project is stored.
   resolve: { preserveSymlinks: true },
 
-  // Development only: passes every request starting with /api on to the
-  // Django backend, so the browser keeps talking to a single address.
+  // Development only: passes every request starting with /api or /_allauth
+  // (authentication API) on to the Django backend, so the browser keeps
+  // talking to a single address.
   server: {
     proxy: {
       "/api": "http://localhost:8000",
+      "/_allauth": "http://localhost:8000",
     },
   },
 });
