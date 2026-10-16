@@ -45,6 +45,7 @@ const fr: typeof en = {
     unverified: "Votre adresse e-mail n'est pas encore vérifiée. Ouvrez l'e-mail que nous vous avons envoyé et suivez son lien, puis reconnectez-vous.",
     noAccount: "Pas encore de compte ?",
     signupLink: "S'inscrire",
+    forgotLink: "Mot de passe oublié ?",
   },
 
   // Address verification page, reached from the link in the e-mail
@@ -53,6 +54,26 @@ const fr: typeof en = {
     pending: "Vérification de votre lien…",
     confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
     invalid: "Ce lien n'est pas valable ou a expiré. Connectez-vous : si votre adresse n'est pas encore confirmée, vous recevrez un nouveau lien.",
+    loginLink: "Se connecter",
+  },
+
+  // Password reset: the page that asks for the link
+  passwordReset: {
+    title: "Réinitialiser votre mot de passe",
+    intro: "Indiquez votre adresse e-mail : nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+    email: "Adresse e-mail",
+    submit: "Envoyer le lien",
+    sent: "Nous avons envoyé un e-mail à {email}. Ouvrez-le et suivez son lien pour choisir un nouveau mot de passe.",
+  },
+
+  // Password reset: the page reached from the link in the e-mail
+  newPassword: {
+    title: "Choisir un nouveau mot de passe",
+    password: "Nouveau mot de passe",
+    submit: "Enregistrer le nouveau mot de passe",
+    done: "Votre mot de passe est changé. Vous pouvez maintenant vous connecter.",
+    invalid: "Ce lien n'est pas valable ou a expiré.",
+    requestLink: "Demander un nouveau lien",
     loginLink: "Se connecter",
   },
 
