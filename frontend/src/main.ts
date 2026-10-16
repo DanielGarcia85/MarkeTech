@@ -9,6 +9,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import { i18n } from "./i18n";
 import { router } from "./router";
+import "./style.css";
 
 // Build the application from the root component, plug in the translation
 // engine and the router, then attach it to the element whose id is "app"

@@ -6,9 +6,16 @@
 // The other languages must provide exactly the same keys.
 
 export default {
-  // Notice displayed under the name of the application
+    // Tagline and notice of the application
   app: {
+    tagline: "Tech jobs and student jobs for recent graduates and students.",
     notice: "This application is under construction.",
+  },
+
+  // Header: session state
+  header: {
+    loggedInAs: "Signed in as {email}",
+    logout: "Log out",
   },
 
   // Language selector

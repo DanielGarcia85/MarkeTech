@@ -1,0 +1,43 @@
+/*
+  frontend/src/style.css
+
+  Base stylesheet — colours, font and layout shared by every page
+  ───────────────────────────────────────────────────────────────────────────
+  Loaded once by main.ts. Components add their own scoped styles on top.
+*/
+
+:root {
+  /* Brand colour of MarkeTech: the blue of the logo, and a darker shade */
+  --mt-blue: #2d6f91;
+  --mt-blue-dark: #1f506a;
+
+  /* Text and surfaces */
+  --mt-text: #1e293b;
+  --mt-muted: #64748b;
+  --mt-border: #e2e8f0;
+  --mt-background: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  /* System font for now; Poppins comes with the font step */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--mt-text);
+  background: var(--mt-background);
+}
+
+a {
+  color: var(--mt-blue);
+}
+
+/* The current page, centred, with room on the sides of small screens */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}

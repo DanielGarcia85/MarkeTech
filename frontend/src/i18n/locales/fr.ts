@@ -8,9 +8,17 @@
 import type en from "./en";
 
 const fr: typeof en = {
-  // Notice displayed under the name of the application
+  // Tagline and notice of the application
   app: {
+    tagline:
+      "Emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.",
     notice: "Cette application est en cours de construction.",
+  },
+
+  // Header: session state
+  header: {
+    loggedInAs: "Connecté en tant que {email}",
+    logout: "Se déconnecter",
   },
 
   // Language selector
