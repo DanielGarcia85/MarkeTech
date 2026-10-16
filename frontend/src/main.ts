@@ -8,7 +8,9 @@ import { createApp } from "vue";
 
 import App from "./App.vue";
 import { i18n } from "./i18n";
+import { router } from "./router";
 
 // Build the application from the root component, plug in the translation
-// engine, then attach it to the element whose id is "app" in index.html
-createApp(App).use(i18n).mount("#app");
+// engine and the router, then attach it to the element whose id is "app"
+// in index.html
+createApp(App).use(i18n).use(router).mount("#app");
