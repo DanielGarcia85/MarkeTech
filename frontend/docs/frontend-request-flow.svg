@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2532" width="1200" height="2532" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2836" width="1200" height="2836" role="img" aria-labelledby="title desc">
 <title id="title">MarkeTech frontend: the path of a request</title>
-<desc id="desc">Panel A: in development, npm run dev:link starts Vite, which serves the source files and proxies /api and /_allauth to the Django runserver; in production the Docker image builds dist and Nginx serves it, answering index.html for every application address and passing /api, /_allauth, /admin and /static to the backend container. Panel B: the browser loads index.html, then main.ts creates the Vue application with the i18n and router plugins and mounts App.vue, whose RouterView displays the page matching the address, such as HomePage.vue and its components. Panel C: components reach the backend only through api/http.ts, whose fetch goes through the Vite proxy or Nginx to Django. Panel D: moving between pages does not ask the server again.</desc>
+<desc id="desc">Panel A: in development, npm run dev:link starts Vite, which serves the source files and proxies /api and /_allauth to the Django runserver; in production the Docker image builds dist and Nginx serves it, answering index.html for every application address and passing /api, /_allauth, /admin and /static to the backend container. Panel B: the browser loads index.html, then main.ts creates the Vue application with the i18n and router plugins and mounts App.vue, whose RouterView displays the page matching the address, such as HomePage.vue and its components. Panel C: the account pages call session.ts or api/account.ts, which go through api/http.ts, the only file that calls fetch; its requests reach Django through the Vite proxy or Nginx, and come back as an envelope with a status, data and errors. Panel D: moving between pages does not ask the server again.</desc>
 <defs><marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0.8 L9,5 L0,9.2 Z" fill="#475569"/></marker></defs>
-<rect width="1200" height="2532" fill="#F8FAFC"/>
+<rect width="1200" height="2836" fill="#F8FAFC"/>
 <text x="30" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" xml:space="preserve" font-weight="700">MarkeTech frontend: the path of a request</text>
 <text x="1170" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#64748B" xml:space="preserve" text-anchor="end">Vue 3 · Vite 8 · vue-router 5</text>
-<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">From the address typed by the user to the page on screen, and from the page to the backend. Follow the numbers 1 to 12.</text>
-<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository at the router step of the account slice (16.10.2026).</text>
+<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">From the address typed by the user to the page on screen, and from the page to the backend. Follow the numbers 1 to 14.</text>
+<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository at the end of the frontend step of the account slice (16.10.2026).</text>
 <rect x="30" y="124" width="1140" height="826" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
 <circle cx="66" cy="154" r="12" fill="#0F172A"/>
 <text x="66" y="158.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">A</text>
@@ -83,8 +83,8 @@
 <text x="870" y="485" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">No .ts, no .vue left.</text>
 <rect x="866" y="502" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#E11D48" stroke-opacity="0.35"/>
 <text x="874" y="517" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dist/index.html   (script rewritten)</text>
-<text x="874" y="537" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dist/assets/index-&lt;hash&gt;.js</text>
-<text x="874" y="557" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dist/favicon.svg, .ico, .png</text>
+<text x="874" y="537" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dist/assets/index-&lt;hash&gt;.js, .css</text>
+<text x="874" y="557" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dist/assets/poppins-*.woff2, logos</text>
 <text x="870" y="586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">public/ copied as is</text>
 <line x1="344" y1="486" x2="455" y2="486" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
 <text x="399.5" y="462" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">runs</text>
@@ -136,7 +136,7 @@
 <text x="68" y="874" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Same rule for both servers, so the code in the browser (panels B and C) never knows which one answers</text>
 <text x="68" y="890" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">A file that exists is sent as is. Any other address gets index.html: the application chooses the page.</text>
 <text x="68" y="906" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">/api and /_allauth are not files: they are passed to the backend. Each new prefix is added on both sides.</text>
-<rect x="30" y="980" width="1140" height="796" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="30" y="980" width="1140" height="836" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
 <circle cx="66" cy="1010" r="12" fill="#0F172A"/>
 <text x="66" y="1014.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">B</text>
 <text x="90" y="1015" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Page load</text>
@@ -162,17 +162,18 @@
 <text x="473" y="1159" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;div id="app"&gt;&lt;/div&gt;</text>
 <text x="473" y="1179" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;script src="/src/main.ts"&gt;</text>
 <text x="469" y="1208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">prod: the script becomes assets/index-&lt;hash&gt;.js</text>
-<rect x="856" y="1038" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<rect x="856" y="1038" width="290" height="204" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
 <path d="M856 1048 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
 <text x="870" y="1060" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/main.ts</text>
 <text x="1134" y="1060" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
-<text x="870" y="1090" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">First code that runs: builds the</text>
-<text x="870" y="1107" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">application with two plugins.</text>
-<rect x="866" y="1124" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
-<text x="874" y="1139" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">createApp(App)</text>
-<text x="874" y="1159" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  .use(i18n).use(router)</text>
-<text x="874" y="1179" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  .mount("#app")</text>
-<text x="870" y="1208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">renders App.vue inside &lt;div id="app"&gt;</text>
+<text x="870" y="1090" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">First code that runs: loads the font</text>
+<text x="870" y="1107" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">and the stylesheet, builds the app.</text>
+<rect x="866" y="1124" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="874" y="1139" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">import "@fontsource/poppins/latin-400.css"</text>
+<text x="874" y="1159" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">import "./style.css"</text>
+<text x="874" y="1179" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">createApp(App).use(i18n).use(router)</text>
+<text x="874" y="1199" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  .mount("#app")</text>
+<text x="870" y="1228" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">renders App.vue inside &lt;div id="app"&gt;</text>
 <line x1="344" y1="1108" x2="455" y2="1108" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
 <text x="399.5" y="1070" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">requests</text>
 <text x="399.5" y="1084" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">the page</text>
@@ -183,203 +184,248 @@
 <text x="800.5" y="1084" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">tag loads</text>
 <circle cx="800.5" cy="1124" r="10" fill="#0F172A"/>
 <text x="800.5" y="1128" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">4</text>
-<rect x="54" y="1292" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
-<path d="M54 1302 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
-<text x="68" y="1314" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/router.ts</text>
-<text x="332" y="1314" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
-<text x="68" y="1344" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Plugin 2: the table of pages, one</text>
-<text x="68" y="1361" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">line per address.</text>
-<rect x="64" y="1378" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
-<text x="72" y="1393" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">{ path: "/", name: "home",</text>
-<text x="72" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  component: HomePage }</text>
-<text x="72" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">history: createWebHistory()</text>
-<text x="68" y="1462" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">real addresses, no "#"</text>
-<rect x="455" y="1292" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
-<path d="M455 1302 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
-<text x="469" y="1314" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/i18n/index.ts</text>
-<text x="733" y="1314" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
-<text x="469" y="1344" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Plugin 1: picks the language and</text>
-<text x="469" y="1361" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">remembers the user's choice.</text>
-<rect x="465" y="1378" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
-<text x="473" y="1393" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">localStorage "marketech.locale"</text>
-<text x="473" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; navigator.language -&gt; "en"</text>
-<text x="473" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">messages: locales/en.ts, fr.ts</text>
-<text x="469" y="1462" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">setLocale() changes it without reload</text>
-<rect x="856" y="1292" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-<path d="M856 1302 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
-<text x="870" y="1314" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/App.vue</text>
-<text x="1134" y="1314" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
-<text x="870" y="1344" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Root component: the frame shared</text>
-<text x="870" y="1361" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">by every page.</text>
-<rect x="866" y="1378" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
-<text x="874" y="1393" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;main&gt;</text>
-<text x="874" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  &lt;RouterView /&gt;</text>
-<text x="874" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;/main&gt;</text>
-<text x="870" y="1462" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">RouterView: where the page appears</text>
-<path d="M891.0 1222 V1244 H600.0 V1292" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="744" y="1238" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">use(i18n)</text>
-<circle cx="760" cy="1244" r="10" fill="#0F172A"/>
-<text x="760" y="1248" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">5</text>
-<path d="M861.0 1222 V1268 H199.0 V1292" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="384" y="1262" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">use(router)</text>
-<circle cx="400" cy="1268" r="10" fill="#0F172A"/>
-<text x="400" y="1272" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">6</text>
-<line x1="1041.0" y1="1222" x2="1041.0" y2="1292" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="1031.0" y="1248" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">mount("#app")</text>
-<circle cx="1041.0" cy="1268" r="10" fill="#0F172A"/>
-<text x="1041.0" y="1272" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">7</text>
-<rect x="856" y="1536" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-<path d="M856 1546 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
-<text x="870" y="1558" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/pages/HomePage.vue</text>
-<text x="1134" y="1558" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
-<text x="870" y="1588" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The page for "/": a component like</text>
-<text x="870" y="1605" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">any other, chosen by the router.</text>
-<rect x="866" y="1622" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
-<text x="874" y="1637" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;h1&gt;MarkeTech&lt;/h1&gt;</text>
-<text x="874" y="1657" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;p&gt;{{ t("app.notice") }}&lt;/p&gt;</text>
-<text x="874" y="1677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;LanguageSwitcher /&gt; &lt;ApiStatus /&gt;</text>
-<text x="870" y="1706" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">t() reads locales/en.ts or fr.ts</text>
-<rect x="455" y="1536" width="290" height="164" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-<path d="M455 1546 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
-<text x="469" y="1558" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">LanguageSwitcher.vue</text>
-<text x="733" y="1558" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
-<text x="469" y="1588" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A &lt;select&gt; of the languages;</text>
-<text x="469" y="1605" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">on change: setLocale(code).</text>
-<rect x="465" y="1622" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
-<text x="473" y="1637" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">LOCALES  -&gt;  &lt;option&gt;</text>
-<text x="473" y="1657" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">setLocale(select.value)</text>
-<text x="469" y="1686" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">every t() re-renders, no reload</text>
-<rect x="54" y="1536" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-<path d="M54 1546 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
-<text x="68" y="1558" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">ApiStatus.vue</text>
-<text x="332" y="1558" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
-<text x="68" y="1588" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Asks the backend once, when it</text>
-<text x="68" y="1605" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">appears, then shows the answer.</text>
-<rect x="64" y="1622" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
-<text x="72" y="1637" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">onMounted(async () =&gt;</text>
-<text x="72" y="1657" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  getJson("/api/health/"))</text>
-<text x="72" y="1677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">status: checking | online | offline</text>
-<text x="68" y="1706" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">the component that leaves the frontend</text>
-<line x1="1001.0" y1="1476" x2="1001.0" y2="1536" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="1017.0" y="1497.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">RouterView shows</text>
-<text x="1017.0" y="1511.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">the matching page</text>
-<circle cx="1001.0" cy="1514" r="10" fill="#0F172A"/>
-<text x="1001.0" y="1518" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">8</text>
-<line x1="856" y1="1606" x2="745" y2="1606" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="800.5" y="1582" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">displays</text>
-<circle cx="800.5" cy="1622" r="10" fill="#0F172A"/>
-<text x="800.5" y="1626" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">9</text>
-<line x1="455" y1="1606" x2="344" y2="1606" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="399.5" y="1582" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">displays</text>
-<rect x="30" y="1812" width="1140" height="266" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="7 5"/>
-<circle cx="66" cy="1842" r="12" fill="#0F172A"/>
-<text x="66" y="1846.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">C</text>
-<text x="90" y="1847" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Link with the backend</text>
-<text x="1146" y="1847" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">in the browser, once a component needs data</text>
-<rect x="54" y="1870" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
-<path d="M54 1880 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
-<text x="68" y="1892" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/api/http.ts</text>
-<text x="332" y="1892" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
-<text x="68" y="1922" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The only file allowed to call the</text>
-<text x="68" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">backend. Components use its functions.</text>
-<rect x="64" y="1956" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
-<text x="72" y="1971" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">getJson(path)</text>
-<text x="72" y="1991" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  fetch(path, { Accept: json })</text>
-<text x="72" y="2011" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  -&gt; response.json()</text>
-<text x="68" y="2040" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">next: X-CSRFToken, Accept-Language</text>
-<rect x="455" y="1870" width="290" height="164" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
-<path d="M455 1880 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#334155"/>
-<text x="469" y="1892" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">vite.config.ts / nginx.conf</text>
-<text x="733" y="1892" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">relay</text>
-<text x="469" y="1922" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Same origin as the page: the browser</text>
-<text x="469" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">sends the session cookie itself.</text>
-<rect x="465" y="1956" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#475569" stroke-opacity="0.35"/>
-<text x="473" y="1971" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev:  server.proxy -&gt; localhost:8000</text>
-<text x="473" y="1991" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod: proxy_pass   -&gt; backend:8000</text>
-<text x="469" y="2020" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">panel A, same rule</text>
-<rect x="856" y="1870" width="290" height="184" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
-<path d="M856 1880 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#A21CAF"/>
-<text x="870" y="1892" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend/config/urls.py</text>
-<text x="1134" y="1892" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Django</text>
-<text x="870" y="1922" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Separate program, in its own</text>
-<text x="870" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">container. Entry point only here.</text>
-<rect x="866" y="1956" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#C026D3" stroke-opacity="0.35"/>
-<text x="874" y="1971" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">path("api/health/", health)</text>
-<text x="874" y="1991" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; config/views.py  health()</text>
-<text x="874" y="2011" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; {"status": "ok"}</text>
-<text x="870" y="2040" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">/_allauth/... for the account pages</text>
-<line x1="199.0" y1="1720" x2="199.0" y2="1812" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="215.0" y="1742" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">next: getJson("/api/health/") leaves the frontend</text>
-<circle cx="199.0" cy="1760" r="10" fill="#0F172A"/>
-<text x="199.0" y="1764" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">10</text>
-<line x1="344" y1="1932" x2="455" y2="1932" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="399.5" y="1908" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">sends</text>
-<circle cx="399.5" cy="1948" r="10" fill="#0F172A"/>
-<text x="399.5" y="1952" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">11</text>
-<line x1="455" y1="1974" x2="344" y2="1974" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="399.5" y="1990" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">JSON back</text>
-<line x1="745" y1="1932" x2="856" y2="1932" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="800.5" y="1908" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">forwards</text>
-<circle cx="800.5" cy="1948" r="10" fill="#0F172A"/>
-<text x="800.5" y="1952" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">12</text>
-<line x1="856" y1="1974" x2="745" y2="1974" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="800.5" y="1990" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">answers</text>
-<rect x="30" y="2108" width="1140" height="246" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-<circle cx="66" cy="2138" r="12" fill="#0F172A"/>
-<text x="66" y="2142.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">D</text>
-<text x="90" y="2143" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Afterwards: moving between pages</text>
-<text x="1146" y="2143" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">the server is not asked again</text>
-<rect x="54" y="2166" width="290" height="144" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
-<path d="M54 2176 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
-<text x="68" y="2188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">vue-router: &lt;RouterLink&gt;</text>
-<text x="332" y="2188" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">library</text>
-<text x="68" y="2218" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A link inside the application; our</text>
-<text x="68" y="2235" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">pages will use it instead of &lt;a&gt;.</text>
-<rect x="64" y="2252" width="270" height="28" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
-<text x="72" y="2267" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;RouterLink :to="{ name: ... }"&gt;</text>
-<text x="68" y="2296" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">or router.push() from code</text>
-<rect x="455" y="2166" width="290" height="164" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
-<path d="M455 2176 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
-<text x="469" y="2188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/router.ts</text>
-<text x="733" y="2188" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
-<text x="469" y="2218" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Changes the address in the bar and</text>
-<text x="469" y="2235" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">swaps the component in RouterView.</text>
-<rect x="465" y="2252" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
-<text x="473" y="2267" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">history.pushState(...)</text>
-<text x="473" y="2287" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">RouterView -&gt; new page</text>
-<text x="469" y="2316" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">no request, no reload</text>
-<rect x="856" y="2166" width="290" height="106" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
-<text x="870" y="2188" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Back to panel A only when</text>
-<text x="870" y="2204" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">the user types an address, refreshes</text>
-<text x="870" y="2220" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">the page, or follows a link received</text>
-<text x="870" y="2236" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">by e-mail: the server answers</text>
-<text x="870" y="2252" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">index.html again, then B starts over.</text>
-<line x1="344" y1="2226" x2="455" y2="2226" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="399.5" y="2202" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">click</text>
-<rect x="30" y="2384" width="1140" height="118" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
-<text x="54" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
-<rect x="130" y="2404" width="14" height="14" rx="3" fill="#0F172A"/>
-<text x="152" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">command you type</text>
-<rect x="330" y="2404" width="14" height="14" rx="3" fill="#6D28D9"/>
-<text x="352" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">configuration file</text>
-<rect x="530" y="2404" width="14" height="14" rx="3" fill="#C2410C"/>
-<text x="552" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">HTML page</text>
-<rect x="730" y="2404" width="14" height="14" rx="3" fill="#1D4ED8"/>
-<text x="752" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">TypeScript code</text>
-<rect x="930" y="2404" width="14" height="14" rx="3" fill="#15803D"/>
-<text x="952" y="2416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Vue component</text>
-<rect x="130" y="2434" width="14" height="14" rx="3" fill="#334155"/>
-<text x="152" y="2446" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">tool / server</text>
-<rect x="330" y="2434" width="14" height="14" rx="3" fill="#0F766E"/>
-<text x="352" y="2446" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">browser</text>
-<rect x="530" y="2434" width="14" height="14" rx="3" fill="#A21CAF"/>
-<text x="552" y="2446" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">backend</text>
-<rect x="730" y="2434" width="14" height="14" rx="3" fill="#9F1239"/>
-<text x="752" y="2446" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">generated files</text>
-<line x1="130" y1="2476" x2="170" y2="2476" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
-<text x="180" y="2480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">calls, loads or sends</text>
-<rect x="370" y="2466" width="40" height="20" rx="5" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="7 5"/>
-<text x="420" y="2480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">exchange with the backend</text>
-<rect x="610" y="2466" width="40" height="20" rx="5" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
-<text x="660" y="2480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">note</text>
+<rect x="54" y="1312" width="290" height="204" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M54 1322 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="68" y="1334" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/router.ts</text>
+<text x="332" y="1334" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="68" y="1364" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Plugin 2: the table of pages, one</text>
+<text x="68" y="1381" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">line per address, seven today.</text>
+<rect x="64" y="1398" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="72" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">{ path: "/", name: "home", ... }</text>
+<text x="72" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">{ path: "/account/signup", ... }</text>
+<text x="72" y="1453" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">{ path: "/account/login", ... }</text>
+<text x="72" y="1473" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">/account/verify-email/:key, ...</text>
+<text x="68" y="1502" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">real addresses, no "#"; :key = a parameter</text>
+<rect x="455" y="1312" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M455 1322 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="469" y="1334" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/i18n/index.ts</text>
+<text x="733" y="1334" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="469" y="1364" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Plugin 1: picks the language and</text>
+<text x="469" y="1381" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">remembers the user's choice.</text>
+<rect x="465" y="1398" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="473" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">localStorage "marketech.locale"</text>
+<text x="473" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; navigator.language -&gt; "en"</text>
+<text x="473" y="1453" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">messages: locales/en.ts, fr.ts</text>
+<text x="469" y="1482" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">setLocale() changes it without reload</text>
+<rect x="856" y="1312" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M856 1322 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="870" y="1334" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/App.vue</text>
+<text x="1134" y="1334" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
+<text x="870" y="1364" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Root component: asks who is logged</text>
+<text x="870" y="1381" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">in, then the frame of every page.</text>
+<rect x="866" y="1398" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
+<text x="874" y="1413" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">loadSession()        (session.ts)</text>
+<text x="874" y="1433" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;AppHeader /&gt;</text>
+<text x="874" y="1453" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;main&gt; &lt;RouterView /&gt; &lt;/main&gt;</text>
+<text x="870" y="1482" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">RouterView: where the page appears</text>
+<path d="M891.0 1242 V1264 H600.0 V1312" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="744" y="1258" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">use(i18n)</text>
+<circle cx="760" cy="1264" r="10" fill="#0F172A"/>
+<text x="760" y="1268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">5</text>
+<path d="M861.0 1242 V1288 H199.0 V1312" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="384" y="1282" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">use(router)</text>
+<circle cx="400" cy="1288" r="10" fill="#0F172A"/>
+<text x="400" y="1292" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">6</text>
+<line x1="1041.0" y1="1242" x2="1041.0" y2="1312" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="1031.0" y="1268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">mount("#app")</text>
+<circle cx="1041.0" cy="1288" r="10" fill="#0F172A"/>
+<text x="1041.0" y="1292" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">7</text>
+<rect x="856" y="1576" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M856 1586 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="870" y="1598" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/pages/HomePage.vue</text>
+<text x="1134" y="1598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
+<text x="870" y="1628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The page for "/": the logo, the</text>
+<text x="870" y="1645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">tagline, the notice, the API status.</text>
+<rect x="866" y="1662" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
+<text x="874" y="1677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;img :src="logoUrl"&gt;</text>
+<text x="874" y="1697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;h1&gt;{{ t("app.tagline") }}&lt;/h1&gt;</text>
+<text x="874" y="1717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;ApiStatus /&gt;   (getJson, panel C)</text>
+<text x="870" y="1746" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">t() reads locales/en.ts or fr.ts</text>
+<rect x="54" y="1576" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M54 1586 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="68" y="1598" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">AppHeader.vue</text>
+<text x="332" y="1598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Vue component</text>
+<text x="68" y="1628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Above every page: the logo, who is</text>
+<text x="68" y="1645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">logged in, the links, the language.</text>
+<rect x="64" y="1662" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
+<text x="72" y="1677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">session.user ? e-mail + Log out</text>
+<text x="72" y="1697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">            : Sign up, Log in</text>
+<text x="72" y="1717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;LanguageSwitcher /&gt;</text>
+<text x="68" y="1746" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">reads useSession() of session.ts</text>
+<rect x="455" y="1576" width="290" height="184" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M455 1586 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="469" y="1598" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/pages/ (account)</text>
+<text x="733" y="1598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">5 Vue components</text>
+<text x="469" y="1628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">One page per address of the account:</text>
+<text x="469" y="1645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">a form, or a key read from the address.</text>
+<rect x="465" y="1662" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
+<text x="473" y="1677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">SignupPage, LoginPage</text>
+<text x="473" y="1697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">VerifyEmailPage (:key)</text>
+<text x="473" y="1717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">PasswordResetPage, NewPasswordPage</text>
+<text x="469" y="1746" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">shown by RouterView instead of HomePage</text>
+<line x1="1001.0" y1="1516" x2="1001.0" y2="1576" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="1017.0" y="1537.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">RouterView shows</text>
+<text x="1017.0" y="1551.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">the matching page</text>
+<circle cx="1001.0" cy="1554" r="10" fill="#0F172A"/>
+<text x="1001.0" y="1558" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">8</text>
+<path d="M886 1516 V1542 H199.0 V1576" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="544" y="1536" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">displays, on every page</text>
+<circle cx="560" cy="1542" r="10" fill="#0F172A"/>
+<text x="560" y="1546" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">9</text>
+<line x1="856" y1="1646" x2="745" y2="1646" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="1608" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">or one of these,</text>
+<text x="800.5" y="1622" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">for /account/...</text>
+<rect x="30" y="1852" width="1140" height="530" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="7 5"/>
+<circle cx="66" cy="1882" r="12" fill="#0F172A"/>
+<text x="66" y="1886.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">C</text>
+<text x="90" y="1887" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Link with the backend</text>
+<text x="1146" y="1887" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">in the browser, when a page submits a form or needs data</text>
+<rect x="54" y="1910" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M54 1920 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="68" y="1932" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/session.ts</text>
+<text x="332" y="1932" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="68" y="1962" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Who is logged in, shared by every</text>
+<text x="68" y="1979" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">component. Only this file changes it.</text>
+<rect x="64" y="1996" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="72" y="2011" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">session = reactive({ user, loaded })</text>
+<text x="72" y="2031" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">useSession() -&gt; read-only view</text>
+<text x="72" y="2051" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">loadSession(), login(), logout()</text>
+<text x="68" y="2080" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">the header reacts when user changes</text>
+<rect x="455" y="1910" width="290" height="184" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M455 1920 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="469" y="1932" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/api/account.ts</text>
+<text x="733" y="1932" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="469" y="1962" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">One function per call of the</text>
+<text x="469" y="1979" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">authentication API, typed.</text>
+<rect x="465" y="1996" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="473" y="2011" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">signUp, logIn, logOut, getSession</text>
+<text x="473" y="2031" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">verifyEmail, requestPasswordReset,</text>
+<text x="473" y="2051" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">resetPassword  -&gt;  api("POST", ...)</text>
+<text x="469" y="2080" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">names each endpoint once</text>
+<rect x="856" y="1910" width="290" height="204" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M856 1920 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="870" y="1932" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/api/http.ts</text>
+<text x="1134" y="1932" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="870" y="1962" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The only file that calls fetch.</text>
+<text x="870" y="1979" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Two kinds of calls.</text>
+<rect x="866" y="1996" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="874" y="2011" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">getJson(path)        our own API</text>
+<text x="874" y="2031" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">api(method, path, body)   allauth:</text>
+<text x="874" y="2051" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  {status, data, errors, meta}</text>
+<text x="874" y="2071" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">errorsByParam(errors) -&gt; by field</text>
+<text x="870" y="2100" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">headers: Accept-Language, X-CSRFToken</text>
+<line x1="199.0" y1="1760" x2="199.0" y2="1852" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="215.0" y="1782" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700">the header and the pages call session.ts (login, logout) or account.ts directly (signUp, verifyEmail...)</text>
+<circle cx="199.0" cy="1800" r="10" fill="#0F172A"/>
+<text x="199.0" y="1804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">10</text>
+<line x1="344" y1="1972" x2="455" y2="1972" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="1948" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">calls</text>
+<circle cx="399.5" cy="1988" r="10" fill="#0F172A"/>
+<text x="399.5" y="1992" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">11</text>
+<line x1="455" y1="2014" x2="344" y2="2014" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="2030" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">answer</text>
+<line x1="745" y1="1972" x2="856" y2="1972" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="1948" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">api(...)</text>
+<circle cx="800.5" cy="1988" r="10" fill="#0F172A"/>
+<text x="800.5" y="1992" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">12</text>
+<line x1="856" y1="2014" x2="745" y2="2014" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="2030" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">envelope</text>
+<rect x="54" y="2174" width="290" height="122" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="68" y="2196" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">How a page reads the envelope</text>
+<text x="68" y="2212" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">200: data.user, the session is open</text>
+<text x="68" y="2228" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">400: errors[] by param, under the fields</text>
+<text x="68" y="2244" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">401: nobody logged in (after sign-up,</text>
+<text x="68" y="2260" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">      after verifying, after a reset)</text>
+<text x="68" y="2276" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">429: too many requests from this IP</text>
+<rect x="455" y="2174" width="290" height="164" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M455 2184 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#334155"/>
+<text x="469" y="2196" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">vite.config.ts / nginx.conf</text>
+<text x="733" y="2196" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">relay</text>
+<text x="469" y="2226" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Same origin as the page: the browser</text>
+<text x="469" y="2243" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">sends the session cookie itself.</text>
+<rect x="465" y="2260" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#475569" stroke-opacity="0.35"/>
+<text x="473" y="2275" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev:  server.proxy -&gt; localhost:8000</text>
+<text x="473" y="2295" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod: proxy_pass   -&gt; backend:8000</text>
+<text x="469" y="2324" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">panel A, same rule</text>
+<rect x="856" y="2174" width="290" height="184" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
+<path d="M856 2184 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#A21CAF"/>
+<text x="870" y="2196" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend/config/urls.py</text>
+<text x="1134" y="2196" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Django</text>
+<text x="870" y="2226" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Separate program, in its own</text>
+<text x="870" y="2243" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">container. Entry point only here.</text>
+<rect x="866" y="2260" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#C026D3" stroke-opacity="0.35"/>
+<text x="874" y="2275" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">path("api/health/", health)</text>
+<text x="874" y="2295" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">path("_allauth/", headless.urls)</text>
+<text x="874" y="2315" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; allauth: sign-up, login, e-mails</text>
+<text x="870" y="2344" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">answers in the language of the request</text>
+<path d="M1061.0 2114 V2140 H600.0 V2174" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="644.0" y="2134" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">fetch("/_allauth/browser/v1/...")</text>
+<circle cx="660.0" cy="2140" r="10" fill="#0F172A"/>
+<text x="660.0" y="2144" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">13</text>
+<line x1="745" y1="2236" x2="856" y2="2236" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="2212" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">forwards</text>
+<circle cx="800.5" cy="2252" r="10" fill="#0F172A"/>
+<text x="800.5" y="2256" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">14</text>
+<line x1="856" y1="2278" x2="745" y2="2278" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="2294" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">answers</text>
+<rect x="30" y="2412" width="1140" height="246" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="2442" r="12" fill="#0F172A"/>
+<text x="66" y="2446.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">D</text>
+<text x="90" y="2447" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Afterwards: moving between pages</text>
+<text x="1146" y="2447" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">the server is not asked again</text>
+<rect x="54" y="2470" width="290" height="164" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M54 2480 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="68" y="2492" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">vue-router: &lt;RouterLink&gt;</text>
+<text x="332" y="2492" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">library</text>
+<text x="68" y="2522" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A link inside the application; the</text>
+<text x="68" y="2539" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">header and the pages use it, not &lt;a&gt;.</text>
+<rect x="64" y="2556" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-opacity="0.35"/>
+<text x="72" y="2571" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">&lt;RouterLink :to="{ name: 'login' }"&gt;</text>
+<text x="72" y="2591" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">router.replace({ name: "home" })</text>
+<text x="68" y="2620" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">the second one: from code, after a login</text>
+<rect x="455" y="2470" width="290" height="164" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M455 2480 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="469" y="2492" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">src/router.ts</text>
+<text x="733" y="2492" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">TypeScript</text>
+<text x="469" y="2522" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Changes the address in the bar and</text>
+<text x="469" y="2539" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">swaps the component in RouterView.</text>
+<rect x="465" y="2556" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-opacity="0.35"/>
+<text x="473" y="2571" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">history.pushState(...)</text>
+<text x="473" y="2591" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">RouterView -&gt; new page</text>
+<text x="469" y="2620" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">no request, no reload</text>
+<rect x="856" y="2470" width="290" height="122" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="870" y="2492" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Back to panel A only when</text>
+<text x="870" y="2508" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">the user types an address, refreshes</text>
+<text x="870" y="2524" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">the page, or follows a link received</text>
+<text x="870" y="2540" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">by e-mail (verify-email/:key, ...):</text>
+<text x="870" y="2556" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">the server answers index.html again,</text>
+<text x="870" y="2572" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">then B starts over.</text>
+<line x1="344" y1="2530" x2="455" y2="2530" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="2506" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">click</text>
+<rect x="30" y="2688" width="1140" height="118" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="54" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
+<rect x="130" y="2708" width="14" height="14" rx="3" fill="#0F172A"/>
+<text x="152" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">command you type</text>
+<rect x="330" y="2708" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="352" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">configuration file</text>
+<rect x="530" y="2708" width="14" height="14" rx="3" fill="#C2410C"/>
+<text x="552" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">HTML page</text>
+<rect x="730" y="2708" width="14" height="14" rx="3" fill="#1D4ED8"/>
+<text x="752" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">TypeScript code</text>
+<rect x="930" y="2708" width="14" height="14" rx="3" fill="#15803D"/>
+<text x="952" y="2720" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Vue component</text>
+<rect x="130" y="2738" width="14" height="14" rx="3" fill="#334155"/>
+<text x="152" y="2750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">tool / server</text>
+<rect x="330" y="2738" width="14" height="14" rx="3" fill="#0F766E"/>
+<text x="352" y="2750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">browser</text>
+<rect x="530" y="2738" width="14" height="14" rx="3" fill="#A21CAF"/>
+<text x="552" y="2750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">backend</text>
+<rect x="730" y="2738" width="14" height="14" rx="3" fill="#9F1239"/>
+<text x="752" y="2750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">generated files</text>
+<line x1="130" y1="2780" x2="170" y2="2780" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="180" y="2784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">calls, loads or sends</text>
+<rect x="370" y="2770" width="40" height="20" rx="5" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="420" y="2784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">exchange with the backend</text>
+<rect x="610" y="2770" width="40" height="20" rx="5" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="660" y="2784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">note</text>
 </svg>
