@@ -6,6 +6,12 @@
 
 import { createApp } from "vue";
 
+// Poppins, the font of the interface, served from our own files: the Latin
+// characters (enough for English and French) in two weights, regular for
+// the text and semi-bold for titles and buttons
+import "@fontsource/poppins/latin-400.css";
+import "@fontsource/poppins/latin-600.css";
+
 import App from "./App.vue";
 import { i18n } from "./i18n";
 import { router } from "./router";

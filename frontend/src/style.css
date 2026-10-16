@@ -25,8 +25,8 @@
 
 body {
   margin: 0;
-  /* System font for now; Poppins comes with the font step */
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    /* Poppins is loaded by main.ts; the system font shows until it arrives */
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
   color: var(--mt-text);
   background: var(--mt-background);
