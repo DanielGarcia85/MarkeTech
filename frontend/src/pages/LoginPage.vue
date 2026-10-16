@@ -101,6 +101,9 @@ async function submit(): Promise<void> {
   </form>
 
   <p>
+    <RouterLink :to="{ name: 'passwordReset' }">{{ t("login.forgotLink") }}</RouterLink>
+  </p>
+  <p>
     {{ t("login.noAccount") }}
     <RouterLink :to="{ name: 'signup' }">{{ t("login.signupLink") }}</RouterLink>
   </p>
