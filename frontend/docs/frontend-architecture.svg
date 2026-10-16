@@ -5,7 +5,7 @@
 <rect width="1200" height="2284" fill="#F8FAFC"/>
 <text x="30.0" y="46.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" font-weight="700" xml:space="preserve">MarkeTech frontend</text>
 <text x="30.0" y="74.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#334155" xml:space="preserve">How the skeleton starts and renders: which file calls which, and in what order. Follow the numbers 1 to 7.</text>
-<text x="30.0" y="96.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#334155" xml:space="preserve">Minimal version of each file: the real files grow with the application.</text>
+<text x="30.0" y="96.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#334155" xml:space="preserve">Skeleton of 07.10.2026, minimal version of each file as it was then. The files as they are today: frontend-request-flow.svg, in this folder.</text>
 <text x="1170.0" y="46.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#64748B" font-weight="600" text-anchor="end" xml:space="preserve">Vue 3 · Vite 8 · TypeScript 6</text>
 <rect x="30" y="124" width="1140" height="526" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
 <circle cx="67" cy="154" r="13" fill="#0F172A"/>
