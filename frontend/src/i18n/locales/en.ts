@@ -45,6 +45,15 @@ export default {
     signupLink: "Sign up",
   },
 
+  // Address verification page, reached from the link in the e-mail
+  verify: {
+    title: "E-mail address verification",
+    pending: "Checking your link…",
+    confirmed: "Your e-mail address is confirmed. You can now log in.",
+    invalid: "This link is invalid or has expired. Log in: if your address is still unconfirmed, you will receive a new link.",
+    loginLink: "Log in",
+  },
+
   // Messages shared by every form
   form: {
     failed: "Something went wrong. Please try again.",

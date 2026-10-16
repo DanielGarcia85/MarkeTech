@@ -47,6 +47,15 @@ const fr: typeof en = {
     signupLink: "S'inscrire",
   },
 
+  // Address verification page, reached from the link in the e-mail
+  verify: {
+    title: "Vérification de l'adresse e-mail",
+    pending: "Vérification de votre lien…",
+    confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
+    invalid: "Ce lien n'est pas valable ou a expiré. Connectez-vous : si votre adresse n'est pas encore confirmée, vous recevrez un nouveau lien.",
+    loginLink: "Se connecter",
+  },
+
   // Messages shared by every form
   form: {
     failed: "Une erreur est survenue. Veuillez réessayer.",
