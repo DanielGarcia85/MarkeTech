@@ -1,13 +1,14 @@
 # .github/workflows/publish-images.yml
 #
-# GitHub Actions — builds the application images and publishes them
+# GitHub Actions — tests the backend, builds the images and publishes them
 # ─────────────────────────────────────────────────────────────────────────────
-# Runs on GitHub's own machines at every push. On "develop", the two images
-# are only built, which checks that they still build. On "main", they are
-# also published to the GitHub container registry (ghcr.io), where the
-# production server fetches them.
+# Runs on GitHub's own machines at every push. First the backend tests: if one
+# fails, nothing else runs. Then, on "develop", the two images are only built,
+# which checks that they still build. On "main", they are also published to
+# the GitHub container registry (ghcr.io), where the production server
+# fetches them.
 
-name: Publish images
+name: Test and publish images
 
 # Branches whose pushes start this workflow
 on:
@@ -23,7 +24,48 @@ permissions:
   packages: write
 
 jobs:
+  test:
+    # Virtual machine provided by GitHub, created for this run and then
+    # destroyed
+    runs-on: ubuntu-latest
+
+    # What the tests need: the development settings (SQLite, nothing to
+    # install) and a key that only lives for this run, not a secret
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DJANGO_SECRET_KEY: test-only-key-for-this-run
+
+    # Every "run" step starts in the backend folder
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Same Python as the image and the workstations. pip's download cache
+      # is kept from one run to the next, as long as requirements.txt does
+      # not change.
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install the dependencies
+        run: pip install --requirement requirements.txt
+
+      # Django's system checks, then every test of every application. One
+      # failure fails this step, this job, and so the whole workflow.
+      - name: Run the tests
+        run: python manage.py test --verbosity 2
+
   build:
+    # Only once the tests have passed
+    needs: test
+
     # Virtual machine provided by GitHub, created for this run and then
     # destroyed
     runs-on: ubuntu-latest

@@ -26,7 +26,7 @@ References
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
 from .views import health
 
@@ -36,4 +36,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Health check of the backend
     path("api/health/", health, name="health"),
+    # Authentication API of allauth (sign-up, login, e-mail verification...)
+    path("_allauth/", include("allauth.headless.urls")),
 ]

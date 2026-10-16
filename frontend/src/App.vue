@@ -3,27 +3,22 @@
 
   Root component — top of the component tree
   ───────────────────────────────────────────────────────────────────────────
-  Mounted by main.ts. Every other component is displayed inside this one.
+  Mounted by main.ts. Asks the backend who is logged in, then displays the
+  header and the page that matches the current address; every page is
+  declared in router.ts.
 -->
 
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
+import AppHeader from "./components/AppHeader.vue";
+import { loadSession } from "./session";
 
-import ApiStatus from "./components/ApiStatus.vue";
-import LanguageSwitcher from "./components/LanguageSwitcher.vue";
-
-// Name of the application, displayed as the page heading
-const appName: string = "MarkeTech";
-
-// t translates a key into the language currently displayed
-const { t } = useI18n();
+// Runs once, when the application starts
+loadSession();
 </script>
 
 <template>
+  <AppHeader />
   <main>
-    <h1>{{ appName }}</h1>
-    <p>{{ t("app.notice") }}</p>
-    <LanguageSwitcher />
-    <ApiStatus />
+    <RouterView />
   </main>
 </template>

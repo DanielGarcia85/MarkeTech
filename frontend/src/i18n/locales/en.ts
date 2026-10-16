@@ -6,9 +6,83 @@
 // The other languages must provide exactly the same keys.
 
 export default {
-  // Notice displayed under the name of the application
+    // Tagline and notice of the application
   app: {
+    tagline: "Tech jobs and student jobs for recent graduates and students.",
     notice: "This application is under construction.",
+  },
+
+  // Header: session state and links of the account
+  header: {
+    signup: "Sign up",
+    login: "Log in",
+    loggedInAs: "Signed in as {email}",
+    logout: "Log out",
+  },
+
+  // Sign-up page
+  signup: {
+    title: "Create your account",
+    email: "E-mail address",
+    password: "Password",
+    passwordConfirm: "Confirm the password",
+    role: "I am",
+    candidate: "A candidate",
+    employer: "An employer",
+    submit: "Create my account",
+    sent: "We have sent an e-mail to {email}. Open it and follow its link to activate your account.",
+    haveAccount: "Already have an account?",
+    loginLink: "Log in",
+  },
+
+  // Login page
+  login: {
+    title: "Log in",
+    email: "E-mail address",
+    password: "Password",
+    submit: "Log in",
+    unverified: "Your e-mail address is not verified yet. Open the e-mail we sent you and follow its link, then log in again.",
+    noAccount: "No account yet?",
+    signupLink: "Sign up",
+    forgotLink: "Forgot your password?",
+  },
+
+  // Address verification page, reached from the link in the e-mail
+  verify: {
+    title: "E-mail address verification",
+    pending: "Checking your link…",
+    confirmed: "Your e-mail address is confirmed. You can now log in.",
+    invalid: "This link is invalid or has expired. Log in: if your address is still unconfirmed, you will receive a new link.",
+    loginLink: "Log in",
+  },
+
+  // Password reset: the page that asks for the link
+  passwordReset: {
+    title: "Reset your password",
+    intro: "Enter your e-mail address: we will send you a link to choose a new password.",
+    email: "E-mail address",
+    submit: "Send the link",
+    sent: "We have sent an e-mail to {email}. Open it and follow its link to choose a new password.",
+  },
+
+  // Password reset: the page reached from the link in the e-mail
+  newPassword: {
+    title: "Choose a new password",
+    password: "New password",
+    passwordConfirm: "Confirm the new password",
+    submit: "Save the new password",
+    done: "Your password is changed. You can now log in.",
+    invalid: "This link is invalid or has expired.",
+    requestLink: "Request a new link",
+    loginLink: "Log in",
+  },
+
+  // Messages shared by every form
+  form: {
+    failed: "Something went wrong. Please try again.",
+    unreachable: "The server cannot be reached. Please try again later.",
+    tooMany: "Too many attempts. Please wait a moment and try again.",
+    passwordMismatch: "The two passwords do not match.",
   },
 
   // Language selector

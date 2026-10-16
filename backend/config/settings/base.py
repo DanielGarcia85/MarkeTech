@@ -7,10 +7,10 @@ Base settings — configuration shared by every environment
 Responsibility
 ──────────────
 Declare the settings common to every environment: installed applications,
-middleware chain, templates, password rules, internationalisation, static
-files and email. Contains no secret and nothing specific to one environment:
-debug mode, allowed hosts and the database are set in the environment files,
-such as dev.py.
+middleware chain, authentication, templates, password rules,
+internationalisation, static files and email. Contains no secret and nothing
+specific to one environment: debug mode, allowed hosts and the database are
+set in the environment files, such as dev.py.
 
 References
 ──────────
@@ -57,6 +57,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third-party applications
     "rest_framework",
+    # Accounts: sign-up, login, e-mail verification, password reset
+    "allauth",
+    "allauth.account",
+    # Same features exposed as a JSON API for the Vue frontend
+    "allauth.headless",
     # Project applications
     "accounts",
 ]
@@ -76,6 +81,8 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     # Loads the session identified by the cookie
     "django.contrib.sessions.middleware.SessionMiddleware",
+    # Picks the language of the request (Accept-Language header)
+    "django.middleware.locale.LocaleMiddleware",
     # Normalises URLs, for example by appending a missing trailing slash
     "django.middleware.common.CommonMiddleware",
     # CSRF protection
@@ -86,18 +93,62 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     # Forbids displaying the site inside a frame on another site
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Required by allauth: gives it access to the current request
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
+# ── Authentication ────────────────────────────────────────────────────
+
+# Both backends check the password: Django's one serves the admin site,
+# allauth's one serves the sign-up and login API
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# https://docs.allauth.org/en/latest/account/configuration.html
+# The user model has no username: the e-mail address is the only identifier
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_LOGIN_METHODS = {"email"}
+# Fields of the sign-up form; the star marks a required field. The API
+# receives the password under the name "password"; asking for it twice is
+# the frontend's job. The role is added by ACCOUNT_SIGNUP_FORM_CLASS below.
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
+ACCOUNT_SIGNUP_FORM_CLASS = "accounts.forms.SignupForm"
+# A new account cannot log in before its address is verified by the link
+# sent by e-mail
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# Start of the subject of every e-mail sent by allauth
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MarkeTech] "
+
+# https://docs.allauth.org/en/latest/headless/configuration.html
+# No HTML page from allauth: the Vue frontend renders everything
+HEADLESS_ONLY = True
+# The frontend runs in the browser, on the same domain, with the session
+# cookie: no token-based client
+HEADLESS_CLIENTS = ("browser",)
+# Adds the role to the user data returned by the API
+HEADLESS_ADAPTER = "accounts.adapter.HeadlessAdapter"
+# Pages of the frontend that the e-mails sent by allauth point to. The
+# {key} placeholder is replaced by the one-time key of the link.
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": "/account/verify-email/{key}",
+    "account_reset_password": "/account/password/reset",
+    "account_reset_password_from_key": "/account/password/reset/{key}",
+    "account_signup": "/account/signup",
+}
 
 # ── Routing, templates and entry point ────────────────────────────────
 
 # Module that holds the root URL table
 ROOT_URLCONF = "config.urls"
 
-# HTML template engine, used by the administration interface
+# Template engine, used by the administration interface and the e-mails
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # Searched before the applications: our files replace those of allauth
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -139,7 +190,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # ── Internationalisation ──────────────────────────────────────────────
 
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
-LANGUAGE_CODE = "en-us"
+# Languages offered by the application; English is the fallback
+LANGUAGES = [
+    ("en", "English"),
+    ("fr", "Français"),
+]
+LANGUAGE_CODE = "en"
 
 TIME_ZONE = "UTC"
 

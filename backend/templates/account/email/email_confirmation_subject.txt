@@ -1,0 +1,2 @@
+{# backend/templates/account/email/email_confirmation_subject.txt — subject of the address confirmation e-mail #}
+{% load i18n %}{% get_current_language as lang %}{% if lang == "fr" %}Confirmez votre adresse e-mail{% else %}Confirm your e-mail address{% endif %}

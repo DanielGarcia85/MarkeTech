@@ -32,3 +32,7 @@ __pycache__/
 # ── Node ──────────────────────────────────────────────────────────────
 # Packages installed by npm
 node_modules/
+
+# ── Personal notes ────────────────────────────────────────────────────
+# Learning diagrams and working notes, not a project deliverable
+/notes/

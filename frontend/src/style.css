@@ -1,0 +1,115 @@
+/*
+  frontend/src/style.css
+
+  Base stylesheet — colours, font and layout shared by every page
+  ───────────────────────────────────────────────────────────────────────────
+  Loaded once by main.ts. Components add their own scoped styles on top.
+*/
+
+:root {
+  /* Brand colour of MarkeTech: the blue of the logo, and a darker shade */
+  --mt-blue: #2d6f91;
+  --mt-blue-dark: #1f506a;
+
+  /* Text and surfaces */
+  --mt-text: #1e293b;
+  --mt-muted: #64748b;
+  --mt-border: #e2e8f0;
+  --mt-background: #ffffff;
+  --mt-error: #b91c1c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+    /* Poppins is loaded by main.ts; the system font shows until it arrives */
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--mt-text);
+  background: var(--mt-background);
+}
+
+a {
+  color: var(--mt-blue);
+}
+
+/* The current page, centred, with room on the sides of small screens */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+/* Forms: one field per line, the label above its input */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="text"] {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px;
+  border: 1px solid var(--mt-border);
+  border-radius: 4px;
+  font: inherit;
+}
+
+/* Choice between a few options: the options side by side, plain labels */
+.choices {
+  padding: 0;
+  border: none;
+}
+
+.choices legend {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.choices label {
+  display: inline;
+  margin-right: 16px;
+  font-weight: normal;
+}
+
+/* The main button of a form, in the brand colour */
+.primary {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: var(--mt-blue);
+  color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primary:hover {
+  background: var(--mt-blue-dark);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Messages under a field or at the top of a form */
+.error {
+  margin: 4px 0 0;
+  color: var(--mt-error);
+}
+
+.notice {
+  padding: 12px 16px;
+  border: 1px solid var(--mt-blue);
+  border-radius: 4px;
+}

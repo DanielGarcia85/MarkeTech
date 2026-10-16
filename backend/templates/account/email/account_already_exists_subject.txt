@@ -1,0 +1,2 @@
+{# backend/templates/account/email/account_already_exists_subject.txt — subject of the e-mail sent when a sign-up uses a taken address #}
+{% load i18n %}{% get_current_language as lang %}{% if lang == "fr" %}Un compte existe déjà pour cette adresse{% else %}An account already exists for this address{% endif %}
