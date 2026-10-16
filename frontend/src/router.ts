@@ -11,6 +11,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import HomePage from "./pages/HomePage.vue";
 import SignupPage from "./pages/SignupPage.vue";
+import LoginPage from "./pages/LoginPage.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -19,5 +20,6 @@ export const router = createRouter({
     // raw address, so that an address can change in one place only
     { path: "/", name: "home", component: HomePage },
     { path: "/account/signup", name: "signup", component: SignupPage },
+    { path: "/account/login", name: "login", component: LoginPage },
   ],
 });

@@ -108,4 +108,9 @@ async function submit(): Promise<void> {
       {{ t("signup.submit") }}
     </button>
   </form>
+
+  <p v-if="!sent">
+    {{ t("signup.haveAccount") }}
+    <RouterLink :to="{ name: 'login' }">{{ t("signup.loginLink") }}</RouterLink>
+  </p>
 </template>

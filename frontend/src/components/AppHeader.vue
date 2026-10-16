@@ -4,7 +4,7 @@
   Header — logo, session state and language selector, on every page
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page. Shows who is logged in and
-  lets them log out, or offers to sign up.
+  lets them log out, or offers to sign up and to log in.
 -->
 
 <script setup lang="ts">
@@ -32,9 +32,10 @@ const session = useSession();
         </span>
         <button type="button" @click="logout">{{ t("header.logout") }}</button>
       </template>
-      <RouterLink v-else :to="{ name: 'signup' }">
-        {{ t("header.signup") }}
-      </RouterLink>
+      <template v-else>
+        <RouterLink :to="{ name: 'signup' }">{{ t("header.signup") }}</RouterLink>
+        <RouterLink :to="{ name: 'login' }">{{ t("header.login") }}</RouterLink>
+      </template>
       <LanguageSwitcher />
     </nav>
   </header>
