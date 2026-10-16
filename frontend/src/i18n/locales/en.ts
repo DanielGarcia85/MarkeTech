@@ -15,6 +15,7 @@ export default {
   // Header: session state and links of the account
   header: {
     signup: "Sign up",
+    login: "Log in",
     loggedInAs: "Signed in as {email}",
     logout: "Log out",
   },
@@ -29,12 +30,26 @@ export default {
     employer: "An employer",
     submit: "Create my account",
     sent: "We have sent an e-mail to {email}. Open it and follow its link to activate your account.",
+    haveAccount: "Already have an account?",
+    loginLink: "Log in",
+  },
+
+  // Login page
+  login: {
+    title: "Log in",
+    email: "E-mail address",
+    password: "Password",
+    submit: "Log in",
+    unverified: "Your e-mail address is not verified yet. Open the e-mail we sent you and follow its link, then log in again.",
+    noAccount: "No account yet?",
+    signupLink: "Sign up",
   },
 
   // Messages shared by every form
   form: {
     failed: "Something went wrong. Please try again.",
     unreachable: "The server cannot be reached. Please try again later.",
+    tooMany: "Too many attempts. Please wait a moment and try again.",
   },
 
   // Language selector

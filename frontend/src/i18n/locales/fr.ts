@@ -10,14 +10,14 @@ import type en from "./en";
 const fr: typeof en = {
   // Tagline and notice of the application
   app: {
-    tagline:
-      "Emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.",
+    tagline: "Emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.",
     notice: "Cette application est en cours de construction.",
   },
 
   // Header: session state and links of the account
   header: {
     signup: "S'inscrire",
+    login: "Se connecter",
     loggedInAs: "Connecté en tant que {email}",
     logout: "Se déconnecter",
   },
@@ -32,12 +32,26 @@ const fr: typeof en = {
     employer: "Employeur",
     submit: "Créer mon compte",
     sent: "Nous avons envoyé un e-mail à {email}. Ouvrez-le et suivez son lien pour activer votre compte.",
+    haveAccount: "Déjà un compte ?",
+    loginLink: "Se connecter",
+  },
+
+  // Login page
+  login: {
+    title: "Se connecter",
+    email: "Adresse e-mail",
+    password: "Mot de passe",
+    submit: "Se connecter",
+    unverified: "Votre adresse e-mail n'est pas encore vérifiée. Ouvrez l'e-mail que nous vous avons envoyé et suivez son lien, puis reconnectez-vous.",
+    noAccount: "Pas encore de compte ?",
+    signupLink: "S'inscrire",
   },
 
   // Messages shared by every form
   form: {
     failed: "Une erreur est survenue. Veuillez réessayer.",
     unreachable: "Le serveur est injoignable. Veuillez réessayer plus tard.",
+    tooMany: "Trop de tentatives. Patientez un instant avant de réessayer.",
   },
 
   // Language selector
