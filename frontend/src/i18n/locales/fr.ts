@@ -27,8 +27,9 @@ const fr: typeof en = {
     title: "Créer votre compte",
     email: "Adresse e-mail",
     password: "Mot de passe",
+    passwordConfirm: "Confirmez le mot de passe",
     role: "Je suis",
-    candidate: "Candidat (étudiant ou jeune diplômé)",
+    candidate: "Candidat",
     employer: "Employeur",
     submit: "Créer mon compte",
     sent: "Nous avons envoyé un e-mail à {email}. Ouvrez-le et suivez son lien pour activer votre compte.",
@@ -70,6 +71,7 @@ const fr: typeof en = {
   newPassword: {
     title: "Choisir un nouveau mot de passe",
     password: "Nouveau mot de passe",
+    passwordConfirm: "Confirmez le nouveau mot de passe",
     submit: "Enregistrer le nouveau mot de passe",
     done: "Votre mot de passe est changé. Vous pouvez maintenant vous connecter.",
     invalid: "Ce lien n'est pas valable ou a expiré.",
@@ -82,6 +84,7 @@ const fr: typeof en = {
     failed: "Une erreur est survenue. Veuillez réessayer.",
     unreachable: "Le serveur est injoignable. Veuillez réessayer plus tard.",
     tooMany: "Trop de tentatives. Patientez un instant avant de réessayer.",
+    passwordMismatch: "Les deux mots de passe ne correspondent pas.",
   },
 
   // Language selector

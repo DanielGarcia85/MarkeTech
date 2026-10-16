@@ -25,8 +25,9 @@ export default {
     title: "Create your account",
     email: "E-mail address",
     password: "Password",
+    passwordConfirm: "Confirm the password",
     role: "I am",
-    candidate: "A candidate (student or recent graduate)",
+    candidate: "A candidate",
     employer: "An employer",
     submit: "Create my account",
     sent: "We have sent an e-mail to {email}. Open it and follow its link to activate your account.",
@@ -68,6 +69,7 @@ export default {
   newPassword: {
     title: "Choose a new password",
     password: "New password",
+    passwordConfirm: "Confirm the new password",
     submit: "Save the new password",
     done: "Your password is changed. You can now log in.",
     invalid: "This link is invalid or has expired.",
@@ -80,6 +82,7 @@ export default {
     failed: "Something went wrong. Please try again.",
     unreachable: "The server cannot be reached. Please try again later.",
     tooMany: "Too many attempts. Please wait a moment and try again.",
+    passwordMismatch: "The two passwords do not match.",
   },
 
   // Language selector

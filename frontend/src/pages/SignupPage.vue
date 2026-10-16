@@ -26,6 +26,7 @@ const session = useSession();
 // What the visitor types; candidate is preselected, the most common case
 const email = ref("");
 const password = ref("");
+const passwordConfirm = ref("");
 const role = ref<Role>("candidate");
 
 // What the page shows: the errors by field, a request in flight, the e-mail
@@ -44,8 +45,13 @@ watch(
 );
 
 async function submit(): Promise<void> {
-  sending.value = true;
   errors.value = {};
+  // The only check made here: the API receives the password once
+  if (password.value !== passwordConfirm.value) {
+    errors.value = { passwordConfirm: t("form.passwordMismatch") };
+    return;
+  }
+  sending.value = true;
   try {
     const answer = await signUp(email.value, password.value, role.value);
     if (answer.status === 401) {
@@ -89,6 +95,19 @@ async function submit(): Promise<void> {
         autocomplete="new-password"
       />
       <p v-if="errors.password" class="error">{{ errors.password }}</p>
+    </div>
+
+    <div class="field">
+      <label for="password-confirm">{{ t("signup.passwordConfirm") }}</label>
+      <input
+        id="password-confirm"
+        v-model="passwordConfirm"
+        type="password"
+        autocomplete="new-password"
+      />
+      <p v-if="errors.passwordConfirm" class="error">
+        {{ errors.passwordConfirm }}
+      </p>
     </div>
 
     <fieldset class="field choices">
