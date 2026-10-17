@@ -5,11 +5,13 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue under the current page. One band across the whole
   width: a sentence on the left, the links on two rows in the centre, the
-  copyright on the right.
+  privacy link above the copyright on the right.
 -->
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+
+import { CONTACT } from "../site";
 
 const { t } = useI18n();
 
@@ -20,9 +22,6 @@ const LINKS = [
   { key: "linkedin", who: "Daniel Garcia", href: "https://www.linkedin.com/in/danielgarcia85/" },
   { key: "portfolio", who: "danielgarcia.it", href: "https://danielgarcia.it" },
 ] as const;
-
-// The address that receives the messages about the site
-const CONTACT = "info@marketech.ch";
 
 // Year of the copyright line, taken from the clock of the browser
 const year = new Date().getFullYear();
@@ -45,15 +44,18 @@ const year = new Date().getFullYear();
         </a>
       </li>
     </ul>
-    <p class="copyright">{{ t("footer.copyright", { year }) }}</p>
+    <p class="legal">
+      <RouterLink :to="{ name: 'privacy' }">{{ t("footer.privacy") }}</RouterLink>
+      <span>{{ t("footer.copyright", { year }) }}</span>
+    </p>
   </footer>
 </template>
 
 <style scoped>
 /* One band across the whole width, in three columns: the sentence on the
-   left, the links centred on the page, the copyright on the right. The two
-   outer columns share the room left by the links, so the links stay centred
-   whatever the length of the sentence. */
+   left, the links centred on the page, the privacy link and the copyright on
+   the right. The two outer columns share the room left by the links, so the
+   links stay centred whatever the length of the sentence. */
 .footer {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -63,18 +65,6 @@ const year = new Date().getFullYear();
   border-top: 1px solid var(--mt-border);
   background: var(--mt-surface);
   font-size: 0.85rem;
-}
-
-/* One column after the other on a narrow screen, everything on the left */
-@media (max-width: 900px) {
-  .footer {
-    grid-template-columns: 1fr;
-  }
-
-  .links,
-  .copyright {
-    justify-self: start;
-  }
 }
 
 /* The sentence breaks where its text says so (the "\n" of the translation) */
@@ -112,11 +102,33 @@ const year = new Date().getFullYear();
   color: var(--mt-muted);
 }
 
-.copyright {
+/* The link above the copyright, both against the right edge */
+.legal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   justify-self: end;
+  gap: 2px;
   margin: 0;
   white-space: nowrap;
   font-size: 0.78rem;
   color: var(--mt-muted);
+}
+
+/* One column after the other on a narrow screen, everything on the left.
+   Last, so that it wins over the rules above, which have the same weight */
+@media (max-width: 900px) {
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .links,
+  .legal {
+    justify-self: start;
+  }
+
+  .legal {
+    align-items: flex-start;
+  }
 }
 </style>
