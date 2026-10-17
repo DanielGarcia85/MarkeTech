@@ -98,6 +98,18 @@ main {
   background: var(--mt-blue-dark);
 }
 
+/* A button that looks like a link: an action that sits among links, such
+   as logging out next to the links of the account */
+.as-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--mt-blue);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .primary:disabled {
   opacity: 0.6;
   cursor: default;

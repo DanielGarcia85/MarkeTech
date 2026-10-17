@@ -30,7 +30,9 @@ const session = useSession();
         <span class="user">
           {{ t("header.loggedInAs", { email: session.user.email }) }}
         </span>
-        <button type="button" @click="logout">{{ t("header.logout") }}</button>
+        <button type="button" class="as-link" @click="logout">
+          {{ t("header.logout") }}
+        </button>
       </template>
       <template v-else>
         <RouterLink :to="{ name: 'signup' }">{{ t("header.signup") }}</RouterLink>
@@ -42,11 +44,14 @@ const session = useSession();
 </template>
 
 <style scoped>
+/* The logo on the left, the links on the right. When the width runs out,
+   the links go under the logo rather than past the edge of the window */
 .header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px 16px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--mt-border);
 }
@@ -56,10 +61,15 @@ const session = useSession();
   height: 40px;
 }
 
+/* Kept on the right, on its own line too; its own items wrap if needed,
+   and stay on the right as well */
 .nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  justify-content: flex-end;
+  gap: 8px 16px;
+  margin-left: auto;
 }
 
 .user {
