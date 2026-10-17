@@ -11,6 +11,7 @@
 -->
 
 <script setup lang="ts">
+import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
 import { loadSession } from "./session";
 
@@ -27,7 +28,7 @@ loadSession();
         <RouterView />
       </main>
     </div>
-    <!-- The footer goes here, after the body -->
+     <AppFooter />
   </div>
 </template>
 

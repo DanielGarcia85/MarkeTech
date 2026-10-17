@@ -22,6 +22,16 @@ const fr: typeof en = {
     logout: "Se déconnecter",
   },
 
+    // Footer: who is behind the site, where to find more, how to get in touch
+  footer: {
+    about: "MarkeTech est un projet de démonstration, sans activité commerciale,\nréécrit par Daniel Garcia à partir d'un projet d'équipe de la HEG Genève.",
+    github: "GitHub",
+    linkedin: "LinkedIn",
+    portfolio: "Portfolio",
+    contact: "Contact",
+    copyright: "© {year} Daniel Garcia",
+  },
+
   // Sign-up page
   signup: {
     title: "Créer votre compte",
