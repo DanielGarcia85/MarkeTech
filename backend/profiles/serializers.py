@@ -13,11 +13,12 @@ one is stored. Contains no view: views.py decides who may do what.
 
 What the JSON looks like
 ────────────────────────
-Every text field of the model, as it is. A file field is the URL of the file
-(MEDIA_URL plus its path, relative to the site), or null. The documents of a
-candidate are a list inside the profile, read only: they are added and
-removed by their own routes. The account itself (names, address, role) is
-not here: the session API of allauth gives it.
+Every text field of the model, as it is, plus the names and the address of
+the account: the names can be changed here, the address is read only (it
+changes through allauth, with a confirmation e-mail). A file field is the
+URL of the file (MEDIA_URL plus its path, relative to the site), or null.
+The documents of a candidate are a list inside the profile, read only: they
+are added and removed by their own routes.
 """
 
 import os
@@ -50,9 +51,9 @@ class ImageUrlField(RelativeUrlMixin, serializers.ImageField):
 # ── Serializers ───────────────────────────────────────────────────────
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    """What the two profile serializers share: the URL of the files, and the
-    removal of an old file when a new one replaces it."""
+class FileSerializer(serializers.ModelSerializer):
+    """What every serializer of this file shares: the URL of the files, and
+    the removal of an old file when a new one replaces it."""
 
     # Which serializer field represents which model field: the two file
     # types get the relative-URL variants, the rest keeps DRF's defaults
@@ -77,7 +78,32 @@ class ProfileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class CandidateDocumentSerializer(ProfileSerializer):
+class ProfileSerializer(FileSerializer):
+    """What the two profiles share: the names and the address of the
+    account, shown with the profile and, for the names, changed with it."""
+
+    # Read from the user behind the profile, and written back to it. Same
+    # rules as at sign-up: required, 150 characters at most
+    first_name = serializers.CharField(source="user.first_name", max_length=150)
+    last_name = serializers.CharField(source="user.last_name", max_length=150)
+    email = serializers.EmailField(source="user.email", read_only=True)
+
+    # Fields of the account, listed by the two subclasses before their own
+    ACCOUNT_FIELDS = ("first_name", "last_name", "email")
+
+    def update(self, instance, validated_data):
+        """Save the profile, and the names on the account when they are sent
+        (DRF puts the fields with a "user." source under one "user" key)."""
+        user_data = validated_data.pop("user", None)
+        instance = super().update(instance, validated_data)
+        if user_data:
+            for name, value in user_data.items():
+                setattr(instance.user, name, value)
+            instance.user.save(update_fields=list(user_data))
+        return instance
+
+
+class CandidateDocumentSerializer(FileSerializer):
     """One further document of a candidate."""
 
     file_fields = ("file",)
@@ -103,7 +129,7 @@ class CandidateProfileSerializer(ProfileSerializer):
 
     class Meta:
         model = CandidateProfile
-        fields = (
+        fields = ProfileSerializer.ACCOUNT_FIELDS + (
             "phone",
             "address",
             "postal_code",
@@ -124,7 +150,7 @@ class EmployerProfileSerializer(ProfileSerializer):
 
     class Meta:
         model = EmployerProfile
-        fields = (
+        fields = ProfileSerializer.ACCOUNT_FIELDS + (
             "phone",
             "address",
             "postal_code",

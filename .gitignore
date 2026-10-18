@@ -25,6 +25,9 @@ __pycache__/
 # Local development database
 *.sqlite3
 
+# Files uploaded by the users in development (a Docker volume elsewhere)
+backend/media/
+
 # ── Environment files ─────────────────────────────────────────────────
 # Local secrets and settings, never versioned
 .env

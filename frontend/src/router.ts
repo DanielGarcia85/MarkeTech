@@ -16,6 +16,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage.vue";
 import NewPasswordPage from "./pages/NewPasswordPage.vue";
 import PasswordResetPage from "./pages/PasswordResetPage.vue";
 import PrivacyPage from "./pages/PrivacyPage.vue";
+import ProfilePage from "./pages/ProfilePage.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -29,5 +30,6 @@ export const router = createRouter({
     { path: "/account/password/reset", name: "passwordReset", component: PasswordResetPage },
     { path: "/account/password/reset/:key", name: "newPassword", component: NewPasswordPage },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
+    { path: "/account/profile", name: "profile", component: ProfilePage },
   ],
 });

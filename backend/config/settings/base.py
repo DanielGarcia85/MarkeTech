@@ -125,6 +125,10 @@ ACCOUNT_SIGNUP_FORM_CLASS = "accounts.forms.SignupForm"
 # A new account cannot log in before its address is verified by the link
 # sent by e-mail
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# One address per account. To change it, the user gives the new one, which
+# receives a confirmation link; the current address stays in force until the
+# link is opened, then the new one replaces it
+ACCOUNT_CHANGE_EMAIL = True
 # Start of the subject of every e-mail sent by allauth
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MarkeTech] "
 

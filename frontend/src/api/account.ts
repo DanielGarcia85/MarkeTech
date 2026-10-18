@@ -83,3 +83,48 @@ export function resetPassword(
 ): Promise<ApiResponse<SessionData>> {
   return api("POST", "auth/password/reset", { key, password });
 }
+
+// ── Changes made by a logged-in user, from the profile page ───────────
+
+// One address of the account, as the authentication API lists them: the
+// current one (verified, primary) and, while a change is pending, the new
+// one, not verified yet
+export type EmailAddressInfo = {
+  email: string;
+  verified: boolean;
+  primary: boolean;
+};
+
+// The addresses of the account: 200 with the list
+export function listEmails(): Promise<ApiResponse<EmailAddressInfo[]>> {
+  return api("GET", "account/email");
+}
+
+// Asks to use a new address. A confirmation e-mail goes to it, and the
+// current address stays in force until the link is opened. 200 with the
+// list, the new address in it unverified; 400 with the errors of the field
+// (invalid, or already the address of the account)
+export function changeEmail(
+  email: string,
+): Promise<ApiResponse<EmailAddressInfo[]>> {
+  return api("POST", "account/email", { email });
+}
+
+// Drops the new address before it is confirmed: 200 with the list
+export function cancelEmailChange(
+  email: string,
+): Promise<ApiResponse<EmailAddressInfo[]>> {
+  return api("DELETE", "account/email", { email });
+}
+
+// Replaces the password, the current one proving who asks. 200 with the
+// user, the session kept open; 400 with the errors of either field
+export function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<ApiResponse<SessionData>> {
+  return api("POST", "account/password/change", {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
+}

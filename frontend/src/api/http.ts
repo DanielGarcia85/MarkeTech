@@ -6,10 +6,12 @@
 // through the functions of this file, so that the way requests are sent can
 // change here without touching the rest of the application.
 //
-// Two kinds of calls. getJson talks to our own API, which answers plain JSON.
-// api talks to the authentication API of allauth, which always answers an
-// envelope { status, data, errors, meta }, even with a 400 or 401 status:
-// there, those are ordinary answers (a field is invalid, nobody is logged in).
+// Three kinds of calls. getJson reads our own API, which answers plain JSON.
+// send writes to it: JSON or a form with files, and the answer comes back
+// with its status, because a 400 carries the errors of the fields. api talks
+// to the authentication API of allauth, which always answers an envelope
+// { status, data, errors, meta }, even with a 400 or 401 status: there, those
+// are ordinary answers (a field is invalid, nobody is logged in).
 
 import { i18n } from "../i18n";
 
@@ -76,6 +78,51 @@ export async function getJson<T>(path: string): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+// Answer of a call that writes to our API: the status, and the JSON body
+// when there is one (null after a 204). With a 400, the body is the errors
+// of DRF: { "field": ["message", ...] }
+export type Answer<T> = { status: number; data: T | null };
+
+// Errors of a 400 answer of our API, one message per field: the first one
+// of each list. The key "" is kept for an error about the whole request.
+export function firstErrors(
+  data: Record<string, string[]> | null,
+): Record<string, string> {
+  const errors: Record<string, string> = {};
+  for (const [field, messages] of Object.entries(data ?? {})) {
+    const key = field === "non_field_errors" || field === "detail" ? "" : field;
+    const message = Array.isArray(messages) ? messages[0] : String(messages);
+    if (message !== undefined && !(key in errors)) {
+      errors[key] = message;
+    }
+  }
+  return errors;
+}
+
+// Writes to our API and returns the answer, whatever the status. A FormData
+// body is sent as a form with files (the browser sets its content type); any
+// other body is sent as JSON.
+export async function send<T>(
+  method: "PATCH" | "POST" | "DELETE",
+  path: string,
+  body?: FormData | object,
+): Promise<Answer<T>> {
+  const headers = commonHeaders();
+  headers["X-CSRFToken"] = csrfToken();
+  let payload: BodyInit | undefined;
+  if (body instanceof FormData) {
+    payload = body;
+  } else if (body !== undefined) {
+    headers["Content-Type"] = "application/json";
+    payload = JSON.stringify(body);
+  }
+
+  const response = await fetch(path, { method, headers, body: payload });
+  const data =
+    response.status === 204 ? null : ((await response.json()) as T);
+  return { status: response.status, data };
 }
 
 // Calls the authentication API and returns its envelope, whatever the status.

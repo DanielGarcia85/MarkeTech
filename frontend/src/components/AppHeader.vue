@@ -30,6 +30,7 @@ const session = useSession();
         <span class="user">
           {{ t("header.loggedInAs", { name: session.user.display }) }}
         </span>
+        <RouterLink :to="{ name: 'profile' }">{{ t("header.profile") }}</RouterLink>
         <button type="button" class="as-link" @click="logout">
           {{ t("header.logout") }}
         </button>

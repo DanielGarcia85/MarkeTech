@@ -135,6 +135,18 @@ class ProfileApiTests(TestCase):
         self.assertEqual(response.json()["documents"], [])
         self.assertTrue(CandidateProfile.objects.filter(user=self.candidate).exists())
 
+    def test_the_names_of_the_account_are_changed_with_the_profile(self):
+        client = self.login(self.candidate)
+        response = self.patch_json(client, {"first_name": "Léa", "last_name": "Doe"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["first_name"], "Léa")
+        self.candidate.refresh_from_db()
+        self.assertEqual((self.candidate.first_name, self.candidate.last_name), ("Léa", "Doe"))
+        # Never blank, and the address is read only here
+        self.assertEqual(self.patch_json(client, {"last_name": ""}).status_code, 400)
+        response = self.patch_json(client, {"email": "other@example.com"})
+        self.assertEqual(response.json()["email"], "cand@example.com")
+
     def test_patch_changes_the_fields_sent_only(self):
         client = self.login(self.employer)
         self.patch_json(client, {"company_name": "Acme SA", "city": "Geneva"})

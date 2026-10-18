@@ -18,6 +18,8 @@
   --mt-background: #ffffff;
   --mt-surface: #f8fafc;
   --mt-error: #b91c1c;
+  --mt-success: #166534;
+  --mt-success-surface: #dcfce7;
 }
 
 * {
