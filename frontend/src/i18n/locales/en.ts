@@ -16,13 +16,26 @@ export default {
   header: {
     signup: "Sign up",
     login: "Log in",
-    loggedInAs: "Signed in as {email}",
+    loggedInAs: "Signed in as {name}",
     logout: "Log out",
+  },
+
+  // Footer: who is behind the site, where to find more, how to get in touch
+  footer: {
+    about: "MarkeTech is a demonstration project, without commercial activity,\nrewritten by Daniel Garcia from a team project of HEG Genève.",
+    github: "GitHub",
+    linkedin: "LinkedIn",
+    portfolio: "Portfolio",
+    contact: "Contact",
+    privacy: "Privacy",
+    copyright: "© {year} Daniel Garcia",
   },
 
   // Sign-up page
   signup: {
     title: "Create your account",
+    firstName: "First name",
+    lastName: "Last name",
     email: "E-mail address",
     password: "Password",
     passwordConfirm: "Confirm the password",
@@ -75,6 +88,85 @@ export default {
     invalid: "This link is invalid or has expired.",
     requestLink: "Request a new link",
     loginLink: "Log in",
+  },
+
+  // Privacy page: what the site does with the data of its users, section by
+  // section. Each section has a title and opening paragraphs; some add a list
+  // of terms with their text, and closing paragraphs.
+  privacy: {
+    title: "Privacy policy",
+    updated: "Last updated: 17 October 2026",
+    sections: {
+      controller: {
+        title: "Who is responsible",
+        intro: [
+          "MarkeTech is a demonstration project, without commercial activity: a job board for students and young graduates in computer science, built by Daniel Garcia to show his work. It works like a real platform, but nobody gets hired through it.",
+          "The person responsible for the processing of your data is Daniel Garcia, Geneva, Switzerland. For any question about this page or about your data, write to {contact}.",
+          "The site is there to be tried out. You do not need real documents to do so, and nothing you enter is used for anything else than running the site.",
+        ],
+      },
+      data: {
+        title: "Data processed",
+        intro: ["The site only stores what its features need. Depending on what you do, that is:"],
+        items: [
+          { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
+          { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
+          { term: "Employer profile", text: "Postal address, phone number, and the company: name, address, phone number, logo." },
+          { term: "Job offers", text: "Title, description, location, salary range, years of experience required, company name and logo, date of publication. Offers are visible to every visitor of the site." },
+          { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
+          { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
+          { term: "Favourites", text: "The offers a candidate has set aside." },
+          { term: "Appointments", text: "Proposed by an employer about an application: date and time, description, the candidate's answer and the message that goes with it." },
+          { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name and last name, visible to every visitor." },
+          { term: "Technical data", text: "The server logs the requests it receives: IP address, page requested, date, browser. These logs serve for security and troubleshooting only, and are erased automatically as newer ones replace them." },
+        ],
+        outro: [
+          "The administrator of the site sees all this data in its administration interface, to run the site and to answer your requests. Nothing else is collected: no profiling, no advertising, no audience measurement.",
+        ],
+      },
+      cookies: {
+        title: "Cookies and local storage",
+        intro: ["The site sets no third-party cookie and uses no tracker. It only keeps in your browser what it needs to work:"],
+        items: [
+          { term: "sessionid", text: "A cookie that keeps you logged in; it lasts two weeks at most and is deleted when you log out." },
+          { term: "csrftoken", text: "A cookie that protects the forms against requests forged by another site; it lasts one year." },
+          { term: "marketech.locale", text: "The language you chose, kept in the local storage of your browser until you clear it." },
+        ],
+      },
+      emails: {
+        title: "E-mails",
+        intro: ["The site writes to you about your account only: to verify your address when you sign up, and to send you a link when you forget your password. No newsletter, no advertising. The e-mails leave through the mail service of Infomaniak."],
+      },
+      hosting: {
+        title: "Hosting and sharing",
+        intro: [
+          "The site runs on a server rented from Infomaniak, in Switzerland, and its data stays in Switzerland. Infomaniak hosts the server, keeps its backup copies and sends its e-mails; it is the only company that handles data on behalf of the site.",
+          "The source code of the site is public on GitHub and contains no personal data. No data is sold, rented or passed on to anyone else. Within the site, your data is only shown to the people its features imply: an employer sees the applications to its offers, a candidate sees the company behind an offer, and reviews are public.",
+        ],
+      },
+      retention: {
+        title: "How long data is kept",
+        intro: [
+          "Your data is kept as long as your account exists. What you delete yourself, an offer, a favourite, a document, disappears at once. When your account is deleted, everything attached to it goes with it: profile, offers, applications, messages, appointments, favourites and review.",
+          "To have your account deleted, write to {contact} from the address of the account. The server logs are erased automatically, as said above.",
+        ],
+      },
+      security: {
+        title: "Security",
+        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly. Access to the server itself is reserved to its administrator."],
+      },
+      rights: {
+        title: "Your rights",
+        intro: [
+          "Under the Swiss Federal Act on Data Protection (FADP), you can ask what data the site holds about you, have it corrected or deleted, and object to its processing. A message to {contact} is enough: the answer is free of charge and comes, as a rule, within 30 days. You can also change most of your data yourself, from your account.",
+          "If you think your rights are not respected, you can turn to the Federal Data Protection and Information Commissioner (FDPIC).",
+        ],
+      },
+      changes: {
+        title: "Changes to this page",
+        intro: ["This page describes the site as it is. It changes when the site changes, and the date at the top says when it was last updated."],
+      },
+    },
   },
 
   // Messages shared by every form

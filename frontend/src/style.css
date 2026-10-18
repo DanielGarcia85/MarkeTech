@@ -16,6 +16,7 @@
   --mt-muted: #64748b;
   --mt-border: #e2e8f0;
   --mt-background: #ffffff;
+  --mt-surface: #f8fafc;
   --mt-error: #b91c1c;
 }
 
@@ -95,6 +96,18 @@ main {
 
 .primary:hover {
   background: var(--mt-blue-dark);
+}
+
+/* A button that looks like a link: an action that sits among links, such
+   as logging out next to the links of the account */
+.as-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--mt-blue);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .primary:disabled {

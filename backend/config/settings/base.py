@@ -110,9 +110,13 @@ AUTHENTICATION_BACKENDS = [
 # The user model has no username: the e-mail address is the only identifier
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_LOGIN_METHODS = {"email"}
+# Name shown for a user, in the API and in the e-mails: first and last name,
+# or the address while they are unknown
+ACCOUNT_USER_DISPLAY = "accounts.adapter.display_name"
 # Fields of the sign-up form; the star marks a required field. The API
 # receives the password under the name "password"; asking for it twice is
-# the frontend's job. The role is added by ACCOUNT_SIGNUP_FORM_CLASS below.
+# the frontend's job. The names and the role are added by
+# ACCOUNT_SIGNUP_FORM_CLASS below.
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*"]
 ACCOUNT_SIGNUP_FORM_CLASS = "accounts.forms.SignupForm"
 # A new account cannot log in before its address is verified by the link

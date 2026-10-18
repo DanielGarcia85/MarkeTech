@@ -1,14 +1,17 @@
 <!--
   frontend/src/App.vue
 
-  Root component — top of the component tree
+  Root component — top of the component tree, and the page shell
   ───────────────────────────────────────────────────────────────────────────
-  Mounted by main.ts. Asks the backend who is logged in, then displays the
-  header and the page that matches the current address; every page is
-  declared in router.ts.
+  Mounted by main.ts. Asks the backend who is logged in, then lays out the
+  three bands of every page: the header, the body (the current page, with
+  room for the side bar of a later slice) and the footer. The body stretches
+  so that the footer stays at the bottom of the window, even on a short page.
+  Every page is declared in router.ts.
 -->
 
 <script setup lang="ts">
+import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
 import { loadSession } from "./session";
 
@@ -17,8 +20,35 @@ loadSession();
 </script>
 
 <template>
-  <AppHeader />
-  <main>
-    <RouterView />
-  </main>
+  <div class="shell">
+    <AppHeader />
+    <div class="body">
+      <!-- The side bar of the navigation goes here, before the page -->
+      <main class="page">
+        <RouterView />
+      </main>
+    </div>
+     <AppFooter />
+  </div>
 </template>
+
+<style scoped>
+/* The whole window, as a column: header, body, footer */
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* The body takes all the height left by the header and the footer */
+.body {
+  display: flex;
+  flex: 1;
+}
+
+/* The page takes all the width left by the side bar */
+.page {
+  flex: 1;
+  min-width: 0;
+}
+</style>

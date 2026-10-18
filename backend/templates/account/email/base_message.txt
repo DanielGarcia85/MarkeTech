@@ -1,5 +1,6 @@
 {# backend/templates/account/email/base_message.txt — frame of every e-mail: greeting, content, signature #}
-{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Bonjour,{% else %}Hello,{% endif %}
+{# The greeting names the user when the e-mail has one with a first name (confirmation, password reset); the others know only an address #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Bonjour{% else %}Hello{% endif %}{% if user.first_name %} {{ user.first_name }}{% endif %},
 
 {% block content %}{% endblock content %}
 
