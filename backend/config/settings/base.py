@@ -64,6 +64,9 @@ INSTALLED_APPS = [
     "allauth.headless",
     # Project applications
     "accounts",
+    # Profiles: what a candidate or an employer says about themselves, with
+    # their files
+    "profiles",
 ]
 
 # Model used for every user account, instead of Django's default one. Must be
@@ -218,6 +221,21 @@ STATIC_URL = "static/"
 # Folder where the collectstatic command gathers every static file, so that
 # they can be served outside development
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# ── User files ────────────────────────────────────────────────────────
+
+# https://docs.djangoproject.com/en/6.1/topics/files/
+# Folder where the files sent by the users are stored (photos, CVs, logos,
+# documents): a folder of the backend, never versioned, in development; a
+# Docker volume in production. Nothing serves this folder as such: every
+# file goes through a view of the profiles application, which checks who
+# may read it.
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Prefix of the URLs Django builds for these files (the .url of a field).
+# It is the address of that view, so that the links of the admin site and
+# of the API open the file after the check, never directly.
+MEDIA_URL = "/api/files/"
 
 # ── REST API ──────────────────────────────────────────────────────────
 

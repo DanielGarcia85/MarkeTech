@@ -24,3 +24,8 @@ psycopg[binary]==3.3.6
 
 # ── Authentication ────────────────────────────────────────────────────
 django-allauth==65.19.7
+
+# ── Images ────────────────────────────────────────────────────────────
+# Required by ImageField (profile photos and company logos): opens the
+# uploaded file to check that it is an image
+Pillow==13.0.0
