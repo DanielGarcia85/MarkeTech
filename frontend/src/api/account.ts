@@ -28,13 +28,26 @@ export function getSession(): Promise<ApiResponse<SessionData>> {
   return api("GET", "auth/session");
 }
 
-// Creates the account; 401 afterwards, because the address must be verified
-export function signUp(
-  email: string,
-  password: string,
-  role: Role,
-): Promise<ApiResponse<SessionData>> {
-  return api("POST", "auth/signup", { email, password, role });
+// What the sign-up form collects. Named fields rather than a list of
+// strings: the first and last name could not be told apart otherwise
+export type SignupData = {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: Role;
+};
+
+// Creates the account; 401 afterwards, because the address must be verified.
+// The API names the fields as the backend does, with underscores.
+export function signUp(data: SignupData): Promise<ApiResponse<SessionData>> {
+  return api("POST", "auth/signup", {
+    email: data.email,
+    password: data.password,
+    first_name: data.firstName,
+    last_name: data.lastName,
+    role: data.role,
+  });
 }
 
 // Opens the session: 200 with the user, 400 with errors, 401 if the address

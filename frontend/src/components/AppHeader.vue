@@ -28,7 +28,7 @@ const session = useSession();
     <nav class="nav">
       <template v-if="session.user">
         <span class="user">
-          {{ t("header.loggedInAs", { email: session.user.email }) }}
+          {{ t("header.loggedInAs", { name: session.user.display }) }}
         </span>
         <button type="button" class="as-link" @click="logout">
           {{ t("header.logout") }}

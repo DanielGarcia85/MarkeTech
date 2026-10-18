@@ -16,7 +16,7 @@ export default {
   header: {
     signup: "Sign up",
     login: "Log in",
-    loggedInAs: "Signed in as {email}",
+    loggedInAs: "Signed in as {name}",
     logout: "Log out",
   },
 
@@ -34,6 +34,8 @@ export default {
   // Sign-up page
   signup: {
     title: "Create your account",
+    firstName: "First name",
+    lastName: "Last name",
     email: "E-mail address",
     password: "Password",
     passwordConfirm: "Confirm the password",

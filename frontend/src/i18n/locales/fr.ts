@@ -18,7 +18,7 @@ const fr: typeof en = {
   header: {
     signup: "S'inscrire",
     login: "Se connecter",
-    loggedInAs: "Connecté en tant que {email}",
+    loggedInAs: "Connecté en tant que {name}",
     logout: "Se déconnecter",
   },
 
@@ -36,6 +36,8 @@ const fr: typeof en = {
   // Sign-up page
   signup: {
     title: "Créer votre compte",
+    firstName: "Prénom",
+    lastName: "Nom",
     email: "Adresse e-mail",
     password: "Mot de passe",
     passwordConfirm: "Confirmez le mot de passe",

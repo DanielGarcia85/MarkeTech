@@ -6,11 +6,19 @@ Account adapter — what the authentication API says about a user
 
 Responsibility
 ──────────────
-Adjust django-allauth to this project: add the role to the user data that the
-headless API returns to the frontend. Nothing else is customised here.
+Adjust django-allauth to this project: the name shown for a user, and the
+role added to the user data that the headless API returns to the frontend.
+Nothing else is customised here.
 """
 
 from allauth.headless.adapter import DefaultHeadlessAdapter
+
+
+def display_name(user):
+    """Return the name shown for a user, in the API and in the e-mails."""
+    # Accounts created before the names were asked at sign-up have none:
+    # their address stands in until an administrator fills them in
+    return user.get_full_name() or user.email
 
 
 class HeadlessAdapter(DefaultHeadlessAdapter):

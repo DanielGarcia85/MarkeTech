@@ -3,11 +3,12 @@
 
   Sign-up page — creates an account, then asks to confirm the address
   ───────────────────────────────────────────────────────────────────────────
-  Displayed for "/account/signup". Sends the address, the password and the
-  role to the authentication API. A 400 shows its errors under the fields; a
-  401 means the account is there and the confirmation e-mail is on its way,
-  whether the account is new or already existed (the API never tells which).
-  A logged-in user has nothing to do here and is sent to the home page.
+  Displayed for "/account/signup". Sends the names, the address, the
+  password and the role to the authentication API. A 400 shows its errors
+  under the fields; a 401 means the account is there and the confirmation
+  e-mail is on its way, whether the account is new or already existed (the
+  API never tells which). A logged-in user has nothing to do here and is
+  sent to the home page.
 -->
 
 <script setup lang="ts">
@@ -24,6 +25,8 @@ const router = useRouter();
 const session = useSession();
 
 // What the visitor types; candidate is preselected, the most common case
+const firstName = ref("");
+const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
@@ -53,7 +56,13 @@ async function submit(): Promise<void> {
   }
   sending.value = true;
   try {
-    const answer = await signUp(email.value, password.value, role.value);
+    const answer = await signUp({
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      role: role.value,
+    });
     if (answer.status === 401) {
       sent.value = true;
     } else {
@@ -79,6 +88,29 @@ async function submit(): Promise<void> {
        of the interface, so the browser's own messages are not wanted -->
   <form v-else novalidate @submit.prevent="submit">
     <p v-if="errors['']" class="error">{{ errors[""] }}</p>
+
+    <!-- The errors come back under the names the backend uses -->
+    <div class="field">
+      <label for="first-name">{{ t("signup.firstName") }}</label>
+      <input
+        id="first-name"
+        v-model="firstName"
+        type="text"
+        autocomplete="given-name"
+      />
+      <p v-if="errors.first_name" class="error">{{ errors.first_name }}</p>
+    </div>
+
+    <div class="field">
+      <label for="last-name">{{ t("signup.lastName") }}</label>
+      <input
+        id="last-name"
+        v-model="lastName"
+        type="text"
+        autocomplete="family-name"
+      />
+      <p v-if="errors.last_name" class="error">{{ errors.last_name }}</p>
+    </div>
 
     <div class="field">
       <label for="email">{{ t("signup.email") }}</label>
