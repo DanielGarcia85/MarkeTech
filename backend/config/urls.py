@@ -38,4 +38,6 @@ urlpatterns = [
     path("api/health/", health, name="health"),
     # Authentication API of allauth (sign-up, login, e-mail verification...)
     path("_allauth/", include("allauth.headless.urls")),
+    # Profiles API: the profile of the user, their documents, the files
+    path("api/", include("profiles.urls")),
 ]
