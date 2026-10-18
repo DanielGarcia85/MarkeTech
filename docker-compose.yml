@@ -50,6 +50,11 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
       POSTGRES_HOST: db
+    # Files sent by the users (photos, CVs, logos, documents), kept outside
+    # the container: the image is replaced at every update, the files stay.
+    # The path is MEDIA_ROOT, created in the image with the right owner.
+    volumes:
+      - media:/app/media
     # Wait for the database to be ready before starting
     depends_on:
       db:
@@ -97,3 +102,4 @@ networks:
 # Storage managed by Docker, kept between restarts
 volumes:
   db_data:
+  media:

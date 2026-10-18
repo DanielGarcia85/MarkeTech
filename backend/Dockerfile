@@ -26,9 +26,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Unprivileged user: the application never runs as root. It owns /app
-# because the start-up script writes the collected static files there.
+# because the start-up script writes the collected static files there, and
+# media/, created here, receives the files of the users: Compose mounts a
+# volume on it, which takes the owner of the folder the first time
 RUN useradd --system --user-group --no-create-home app \
     && chmod +x entrypoint.sh \
+    && mkdir -p media \
     && chown -R app:app /app
 USER app
 

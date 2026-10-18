@@ -14,6 +14,9 @@ __pycache__/
 # Static files collected locally: the container collects its own
 staticfiles/
 
+# Files sent by the users on a development machine: never in the image
+media/
+
 # Docker files themselves
 Dockerfile
 .dockerignore
