@@ -48,5 +48,5 @@ def candidate_document_deleted(sender, instance, **kwargs):
 
 @receiver(post_delete, sender=EmployerProfile)
 def employer_profile_deleted(sender, instance, **kwargs):
-    """An employer profile is gone: so is the logo."""
-    remove_files(instance, "logo")
+    """An employer profile is gone: so are the photo and the logo."""
+    remove_files(instance, "photo", "logo")

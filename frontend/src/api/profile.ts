@@ -44,6 +44,7 @@ export type CandidateProfile = Contact & {
 };
 
 export type EmployerProfile = Contact & {
+  photo: string | null;
   company_name: string;
   company_address: string;
   company_postal_code: string;
@@ -59,7 +60,7 @@ export type Profile = CandidateProfile | EmployerProfile;
 // and the dates
 export type ProfileFields = Partial<
   Omit<CandidateProfile, "email" | "photo" | "cv" | "documents" | "updated_at"> &
-    Omit<EmployerProfile, "email" | "logo" | "updated_at">
+    Omit<EmployerProfile, "email" | "photo" | "logo" | "updated_at">
 >;
 
 // The file fields of the profile, by their name in the API

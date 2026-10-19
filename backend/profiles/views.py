@@ -15,7 +15,8 @@ validators.py.
 Routes (profiles/urls.py, under /api/)
 ──────────────────────────────────────
   GET, PATCH  profile/                  the profile of the user, by role
-  DELETE      profile/photo/, cv/       candidate: remove that file
+  DELETE      profile/photo/            remove the photo (either role)
+  DELETE      profile/cv/               candidate: remove the CV
   DELETE      profile/logo/             employer: remove the logo
   POST        profile/documents/        candidate: add a document
   DELETE      profile/documents/<id>/   candidate: remove one of theirs
@@ -59,7 +60,7 @@ MAX_DOCUMENTS = 10
 # What each role has: its model, its serializer, the names of its file fields
 ROLES = {
     User.Role.CANDIDATE: (CandidateProfile, CandidateProfileSerializer, ("photo", "cv")),
-    User.Role.EMPLOYER: (EmployerProfile, EmployerProfileSerializer, ("logo",)),
+    User.Role.EMPLOYER: (EmployerProfile, EmployerProfileSerializer, ("photo", "logo")),
 }
 
 
@@ -172,16 +173,16 @@ class FileView(APIView):
 
     @staticmethod
     def may_read(user, path):
-        """employers/<id>/...: anyone. candidates/<id>/...: that account, or
-        an administrator. Anything else, including a path that climbs out of
-        its folder: no."""
+        """logos/<id>/...: anyone. candidates/<id>/... and employers/<id>/...:
+        that account, or an administrator. Anything else, including a path
+        that climbs out of its folder: no."""
         parts = path.split("/")
         if len(parts) < 3 or "" in parts or ".." in parts or not parts[1].isdigit():
             return False
         folder, owner = parts[0], int(parts[1])
-        if folder == "employers":
+        if folder == "logos":
             return True
-        if folder == "candidates":
+        if folder in ("candidates", "employers"):
             return user.is_authenticated and (user.is_staff or user.pk == owner)
         return False
 

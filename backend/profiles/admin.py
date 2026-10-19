@@ -76,6 +76,7 @@ class EmployerProfileAdmin(ProfileAdmin):
     fieldsets = (
         (None, {"fields": ("user",)}),
         CONTACT_FIELDSET,
+        ("Files", {"fields": ("photo",)}),
         (
             "Company",
             {

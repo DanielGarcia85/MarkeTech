@@ -106,7 +106,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 17 October 2026",
+    updated: "Last updated: 19 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -122,7 +122,7 @@ export default {
         items: [
           { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
-          { term: "Employer profile", text: "Postal address, phone number, and the company: name, address, phone number, logo." },
+          { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
           { term: "Job offers", text: "Title, description, location, salary range, years of experience required, company name and logo, date of publication. Offers are visible to every visitor of the site." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
@@ -164,7 +164,7 @@ export default {
       },
       security: {
         title: "Security",
-        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly. Access to the server itself is reserved to its administrator."],
+        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The photos and the documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly; only the logo of the company is public, since it goes with the job offers. Access to the server itself is reserved to its administrator."],
       },
       rights: {
         title: "Your rights",
@@ -216,7 +216,7 @@ export default {
     sending: "Sending…",
     fileSaved: "File saved.",
     fileRemoved: "File removed.",
-    rules: "Accepted: {types}, up to {size} MB.",
+    rules: "{types} · up to {size} MB",
     limit: "You have reached the limit of {max} documents.",
     confirmRemove: "Remove this file?",
     addedOn: "added on {date}",

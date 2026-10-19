@@ -4,15 +4,15 @@
   Profile page — the names, contact details, company, files and account
   ───────────────────────────────────────────────────────────────────────────
   Displayed for "/account/profile", for a logged-in user only: the router
-  sends a visitor to the login page. The page depends on the role: a
-  candidate has a photo, a CV and further documents; an employer has a
-  company and a logo. Laid out in sections separated by a rule, the fields
-  on two columns on a wide window, one on a narrow one. The text fields,
-  names included, are saved together by the Save button; a file is sent as
-  soon as it is chosen, and removed after a confirmation. The account comes
-  last: a new e-mail address, confirmed by a link sent to it, and a new
-  password, given with the current one. Every action done shows a short
-  confirmation next to where it happened.
+  sends a visitor to the login page. Both roles have a photo, a drawn
+  silhouette until then; a candidate also has a CV and further documents,
+  an employer a company and a logo. Laid out in sections separated by a
+  rule, the fields on two columns on a wide window, one on a narrow one.
+  The text fields, names included, are saved together by the Save button;
+  a file is sent as soon as it is chosen, and removed after a confirmation.
+  The account comes last: a new e-mail address, confirmed by a link sent to
+  it, and a new password, given with the current one. Every action done
+  shows a short confirmation next to where it happened.
 -->
 
 <script setup lang="ts">
@@ -46,6 +46,7 @@ import {
   type ProfileFields,
   type ProfileFileField,
 } from "../api/profile";
+import silhouetteUrl from "../assets/silhouette.svg";
 import { loadSession, useSession } from "../session";
 
 const { t, locale } = useI18n();
@@ -95,15 +96,6 @@ const employer = computed(() =>
 
 // The text fields being edited, filled from the profile once loaded
 const fields = reactive<ProfileFields>({});
-
-// The letters shown in place of a missing photo: the initials of the name
-// as the header shows them
-const initials = computed(() => {
-  const words = (session.user?.display ?? "").split(/\s+/).filter((word) => word.length > 0);
-  const first = words[0] ?? "";
-  const last = words.length > 1 ? (words[words.length - 1] ?? "") : "";
-  return (last ? first.charAt(0) + last.charAt(0) : first.slice(0, 2)).toUpperCase();
-});
 
 // One entry per field of the form: its name in the API, its label, the
 // hint the browser uses to fill it in, whether it takes a whole row, and
@@ -440,16 +432,15 @@ async function submitPassword(): Promise<void> {
     <form novalidate @submit.prevent="save">
       <p v-if="errors['']" class="error">{{ errors[""] }}</p>
 
-      <!-- Identity: the photo of a candidate on the left, the names on the right -->
+      <!-- Identity: the photo on the left, the names on the right -->
       <section class="section">
         <h2>{{ t("profile.identity") }}</h2>
-        <div class="identity" :class="{ 'with-picture': candidate }">
-          <div v-if="candidate" class="portrait">
-            <img v-if="candidate.photo" :src="candidate.photo" alt="" class="photo" />
-            <span v-else class="photo placeholder" aria-hidden="true">{{ initials }}</span>
+        <div class="identity">
+          <div class="portrait">
+            <img :src="profile.photo ?? silhouetteUrl" alt="" class="photo" />
             <p class="file-actions">
               <label class="primary">
-                {{ candidate.photo ? t("profile.replace") : t("profile.choose") }}
+                {{ profile.photo ? t("profile.replace") : t("profile.choose") }}
                 <input
                   type="file"
                   :accept="ACCEPTED.photo.join(',')"
@@ -459,7 +450,7 @@ async function submitPassword(): Promise<void> {
                 />
               </label>
               <button
-                v-if="candidate.photo"
+                v-if="profile.photo"
                 type="button"
                 class="secondary"
                 :disabled="sending === 'photo'"
@@ -524,10 +515,17 @@ async function submitPassword(): Promise<void> {
       <!-- Company of an employer: the logo on the left, the fields on the right -->
       <section v-if="employer" class="section">
         <h2>{{ t("profile.company") }}</h2>
-        <div class="identity with-picture">
+        <div class="identity">
           <div class="portrait">
             <img v-if="employer.logo" :src="employer.logo" alt="" class="logo" />
-            <span v-else class="logo placeholder muted">{{ t("profile.noFile") }}</span>
+            <span v-else class="logo logo-empty" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <circle cx="9" cy="10" r="2" />
+                <path d="M21 16l-5-5-8 8" />
+              </svg>
+              {{ t("profile.logo") }}
+            </span>
             <p class="file-actions">
               <label class="primary">
                 {{ employer.logo ? t("profile.replace") : t("profile.choose") }}
@@ -753,9 +751,12 @@ async function submitPassword(): Promise<void> {
   border-top: 1px solid var(--mt-border);
 }
 
+/* The title of a section: the only text in the brand colour, so that the
+   eye finds the sections first */
 h2 {
-  margin: 8px 0 12px;
-  font-size: 1.15rem;
+  margin: 10px 0 16px;
+  color: var(--mt-blue);
+  font-size: 1.35rem;
 }
 
 h3 {
@@ -789,17 +790,13 @@ h3 {
   max-width: none;
 }
 
-/* The fields of a section, with a picture on their left when there is
-   one (the photo of a candidate, the logo of a company) */
+/* A picture on the left (the photo, the logo of a company), the fields on
+   the right */
 .identity {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: 240px minmax(0, 1fr);
   gap: 8px 32px;
   align-items: start;
-}
-
-.identity.with-picture {
-  grid-template-columns: 240px minmax(0, 1fr);
 }
 
 /* Two blocks side by side, each with its own title */
@@ -810,11 +807,9 @@ h3 {
   align-items: start;
 }
 
-/* The photo of a candidate: a round; without one, the initials */
+/* The photo: a round; the silhouette takes its place until there is one */
 .photo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 140px;
   height: 140px;
   border: 1px solid var(--mt-border);
@@ -822,26 +817,30 @@ h3 {
   object-fit: cover;
 }
 
-/* The logo of an employer: a square, the picture kept whole inside */
+/* The logo of an employer: a square, the picture kept whole inside with
+   some air around it, as job boards show logos */
 .logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 140px;
   height: 140px;
   padding: 8px;
   border: 1px solid var(--mt-border);
   border-radius: 8px;
+  background: var(--mt-background);
   object-fit: contain;
-  font-size: 0.85rem;
-  text-align: center;
 }
 
-.placeholder {
+/* Without a logo: a dashed square with a small picture icon and the word */
+.logo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed var(--mt-border);
   background: var(--mt-surface);
   color: var(--mt-muted);
-  font-size: 2rem;
-  font-weight: 600;
+  font-size: 0.8rem;
 }
 
 /* A button and its confirmation, side by side */
@@ -920,7 +919,7 @@ h3 {
 
 .rules {
   margin: 4px 0 0;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 /* One document per line: its name, its date, the way to remove it */
@@ -950,7 +949,7 @@ h3 {
 /* Narrow window: one column everywhere */
 @media (max-width: 720px) {
   .fields,
-  .identity.with-picture,
+  .identity,
   .columns {
     grid-template-columns: minmax(0, 1fr);
   }

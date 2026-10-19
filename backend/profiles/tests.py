@@ -285,10 +285,29 @@ class ProfileApiTests(TestCase):
         self.assertEqual(employer.get(cv_url).status_code, 404)
         self.assertEqual(Client().get(cv_url).status_code, 404)
 
-        # A logo: everyone, logged in or not
+        # A logo, in its own public folder: everyone, logged in or not
+        self.assertTrue(logo_url.startswith("/api/files/logos/"))
         response = Client().get(logo_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "image/png")
+
+    def test_the_photo_of_an_employer_is_private_too(self):
+        employer = self.login(self.employer)
+        photo_url = self.patch_files(employer, {"photo": self.file("me.png", png())}).json()["photo"]
+        self.assertTrue(photo_url.startswith("/api/files/employers/%d/" % self.employer.pk))
+        self.assertEqual(employer.get(photo_url).status_code, 200)
+        self.assertEqual(self.login(self.admin).get(photo_url).status_code, 200)
+        self.assertEqual(self.login(self.candidate).get(photo_url).status_code, 404)
+        self.assertEqual(Client().get(photo_url).status_code, 404)
+        # Removed by its route, like a candidate's; gone from the disk
+        response = employer.delete("/api/profile/photo/")
+        self.assertEqual((response.status_code, response.json()["photo"]), (200, None))
+        self.assertFalse(self.on_disk(photo_url))
+        # The whole account: photo and logo leave with it
+        photo_url = self.patch_files(employer, {"photo": self.file("me.png", png())}).json()["photo"]
+        logo_url = self.patch_files(employer, {"logo": self.file("logo.png", png())}).json()["logo"]
+        self.employer.delete()
+        self.assertFalse(self.on_disk(photo_url) or self.on_disk(logo_url))
 
     def test_bad_paths_are_not_found(self):
         client = self.login(self.candidate)
@@ -298,6 +317,7 @@ class ProfileApiTests(TestCase):
             "candidates/abc/cv.pdf",
             "candidates/%d/" % self.candidate.pk,
             "elsewhere/1/file.pdf",
+            "logos/abc/logo.png",
             "cv.pdf",
         ):
             self.assertEqual(client.get("/api/files/" + path).status_code, 404, path)

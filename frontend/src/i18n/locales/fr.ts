@@ -108,7 +108,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 17 octobre 2026",
+    updated: "Dernière mise à jour : 19 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -124,7 +124,7 @@ const fr: typeof en = {
         items: [
           { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion." },
           { term: "Profil candidat", text: "Adresse postale, numéro de téléphone, photo, CV et tout autre document que vous joignez." },
-          { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, et l'entreprise : nom, adresse, téléphone, logo." },
+          { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
           { term: "Offres d'emploi", text: "Titre, description, lieu, fourchette de salaire, années d'expérience demandées, nom et logo de l'entreprise, date de publication. Les offres sont visibles par tous les visiteurs du site." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, la date, le statut (reçue, en cours, acceptée, refusée) et son historique. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre." },
           { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
@@ -166,7 +166,7 @@ const fr: typeof en = {
       },
       security: {
         title: "Sécurité",
-        intro: ["Tout le site est servi en HTTPS. Les mots de passe sont conservés hachés, jamais en clair. Les documents que vous déposez (CV, lettres, autres documents) sont privés : le site vérifie qui les demande avant de les remettre, et aucune adresse n'y mène directement. L'accès au serveur lui-même est réservé à son administrateur."],
+        intro: ["Tout le site est servi en HTTPS. Les mots de passe sont conservés hachés, jamais en clair. Les photos et les documents que vous déposez (CV, lettres, autres documents) sont privés : le site vérifie qui les demande avant de les remettre, et aucune adresse n'y mène directement ; seul le logo de l'entreprise est public, puisqu'il accompagne les offres. L'accès au serveur lui-même est réservé à son administrateur."],
       },
       rights: {
         title: "Vos droits",
@@ -194,8 +194,8 @@ const fr: typeof en = {
     address: "Adresse",
     postalCode: "Code postal",
     city: "Ville",
-    noCountry: "Non renseigné",
     country: "Pays",
+    noCountry: "Non renseigné",
     company: "Entreprise",
     companyName: "Nom de l'entreprise",
     companyAddress: "Adresse",
@@ -218,7 +218,7 @@ const fr: typeof en = {
     sending: "Envoi…",
     fileSaved: "Fichier enregistré.",
     fileRemoved: "Fichier retiré.",
-    rules: "Formats acceptés : {types}, {size} Mo au plus.",
+    rules: "{types} · {size} Mo au plus",
     limit: "Vous avez atteint la limite de {max} documents.",
     confirmRemove: "Retirer ce fichier ?",
     addedOn: "ajouté le {date}",

@@ -153,7 +153,7 @@ class CandidateProfileSerializer(ProfileSerializer):
 class EmployerProfileSerializer(ProfileSerializer):
     """Profile of an employer, company included."""
 
-    file_fields = ("logo",)
+    file_fields = ("photo", "logo")
 
     class Meta:
         model = EmployerProfile
@@ -169,6 +169,7 @@ class EmployerProfileSerializer(ProfileSerializer):
             "company_city",
             "company_country",
             "company_phone",
+            "photo",
             "logo",
             "updated_at",
         )

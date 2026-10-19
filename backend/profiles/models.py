@@ -8,8 +8,9 @@ Responsibility
 ──────────────
 Define the profile of each role, one record per user, and the files that go
 with it: contact details, photo and CV for a candidate, plus any further
-document; contact details, company and logo for an employer. The account
-itself (address, password, names, role) stays in the accounts application.
+document; contact details, photo, company and logo for an employer. The
+account itself (address, password, names, role) stays in the accounts
+application.
 
 Why two models and not one
 ──────────────────────────
@@ -37,10 +38,12 @@ from .validators import (
 )
 
 # ── Storage paths ─────────────────────────────────────────────────────
-# Where each kind of file goes, under MEDIA_ROOT. The first folder names the
-# role and the second the user: the view that serves the files reads the
-# rights from there (candidates/ private, employers/ public). Django cleans
-# the file name and adds a suffix when the name already exists.
+# Where each kind of file goes, under MEDIA_ROOT. The first folder says who
+# may read the file and the second names the user: the view that serves
+# the files reads the rights from there. candidates/ and employers/ are for
+# the account itself (photos, CV, documents); logos/ is public, a logo
+# being shown with the job offers. Django cleans the file name and adds a
+# suffix when the name already exists.
 
 
 def candidate_file_path(profile, filename):
@@ -54,8 +57,13 @@ def candidate_document_path(document, filename):
 
 
 def employer_file_path(profile, filename):
-    """Files of an employer: employers/<user id>/<file name>."""
+    """Private files of an employer: employers/<user id>/<file name>."""
     return f"employers/{profile.user_id}/{filename}"
+
+
+def employer_logo_path(profile, filename):
+    """Logo of the company, public: logos/<user id>/<file name>."""
+    return f"logos/{profile.user_id}/{filename}"
 
 
 # ── Models ────────────────────────────────────────────────────────────
@@ -129,12 +137,19 @@ class CandidateDocument(models.Model):
 
 
 class EmployerProfile(ContactDetails):
-    """Profile of an employer: contact details and company."""
+    """Profile of an employer: contact details, photo and company."""
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="employer_profile",
+    )
+    # The photo of the person, private like a candidate's (decision of
+    # 19.10.2026): shown to the other side of a conversation one day
+    photo = models.ImageField(
+        upload_to=employer_file_path,
+        blank=True,
+        validators=[validate_image_extension, validate_file_size],
     )
 
     # The company is part of the profile: one employer, one company. Empty
@@ -146,7 +161,7 @@ class EmployerProfile(ContactDetails):
     company_country = CountryField(blank=True)
     company_phone = models.CharField(max_length=30, blank=True)
     logo = models.ImageField(
-        upload_to=employer_file_path,
+        upload_to=employer_logo_path,
         blank=True,
         validators=[validate_image_extension, validate_file_size],
     )
