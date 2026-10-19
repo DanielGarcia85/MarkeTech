@@ -27,4 +27,6 @@ urlpatterns = [
     path("profile/documents/<int:pk>/", views.DocumentView.as_view(), name="profile-document"),
     # The files of the users, by their path under MEDIA_ROOT
     path("files/<path:path>", views.FileView.as_view(), name="file"),
+    # The countries, for the drop-downs of the profile
+    path("countries/", views.CountriesView.as_view(), name="countries"),
 ]

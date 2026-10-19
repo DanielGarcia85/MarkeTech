@@ -150,17 +150,47 @@ class ProfileApiTests(TestCase):
     def test_patch_changes_the_fields_sent_only(self):
         client = self.login(self.employer)
         self.patch_json(client, {"company_name": "Acme SA", "city": "Geneva"})
-        response = self.patch_json(client, {"country": "Switzerland"})
+        response = self.patch_json(client, {"country": "CH"})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(
             (data["company_name"], data["city"], data["country"]),
-            ("Acme SA", "Geneva", "Switzerland"),
+            ("Acme SA", "Geneva", "CH"),
         )
         # Read-only and unknown fields are ignored, not refused
         response = self.patch_json(client, {"updated_at": "2000-01-01", "role": "admin"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()["updated_at"].startswith("20"))
+
+    def test_a_country_is_a_code_of_the_list(self):
+        client = self.login(self.employer)
+        response = self.patch_json(client, {"country": "FR", "company_country": "CH"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual((response.json()["country"], response.json()["company_country"]), ("FR", "CH"))
+        # A name of the list is accepted and stored as its code; anything
+        # else is refused, field by field
+        response = self.patch_json(client, {"country": "Switzerland"})
+        self.assertEqual((response.status_code, response.json()["country"]), (200, "CH"))
+        response = self.patch_json(client, {"country": "Nowhere"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("country", response.json())
+        self.assertEqual(self.patch_json(client, {"company_country": "XX"}).status_code, 400)
+        # Empty means none
+        response = self.patch_json(client, {"country": ""})
+        self.assertEqual((response.status_code, response.json()["country"]), (200, ""))
+
+    def test_the_countries_are_listed_in_the_language_of_the_request(self):
+        # Public: a visitor gets the list too
+        response = Client().get("/api/countries/", HTTP_ACCEPT_LANGUAGE="fr-CH")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        # Switzerland and France first, then the alphabet, the two repeated
+        self.assertEqual(data[:2], [{"code": "CH", "name": "Suisse"}, {"code": "FR", "name": "France"}])
+        self.assertEqual(data[2], {"code": "AF", "name": "Afghanistan"})
+        self.assertEqual(len({item["code"] for item in data}), len(data) - 2)
+        self.assertIn({"code": "DE", "name": "Allemagne"}, data)
+        response = Client().get("/api/countries/", HTTP_ACCEPT_LANGUAGE="en")
+        self.assertIn({"code": "DE", "name": "Germany"}, response.json())
 
     # ── The files of the profile ──────────────────────────────────────
 

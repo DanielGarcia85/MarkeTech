@@ -16,7 +16,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -33,12 +33,14 @@ import {
   MAX_FILE_SIZE,
   addDocument,
   fileProblem,
+  getCountries,
   getProfile,
   removeDocument,
   removeFile,
   updateProfile,
   uploadFile,
   type CandidateProfile,
+  type Country,
   type EmployerProfile,
   type Profile,
   type ProfileFields,
@@ -104,12 +106,14 @@ const initials = computed(() => {
 });
 
 // One entry per field of the form: its name in the API, its label, the
-// hint the browser uses to fill it in, and whether it takes a whole row
+// hint the browser uses to fill it in, whether it takes a whole row, and
+// whether it is a country, chosen in a list rather than typed
 type FieldDefinition = {
   key: keyof ProfileFields;
   label: string;
   autocomplete: string;
   wide?: boolean;
+  country?: boolean;
 };
 const IDENTITY_FIELDS: FieldDefinition[] = [
   { key: "first_name", label: "profile.firstName", autocomplete: "given-name" },
@@ -120,20 +124,34 @@ const CONTACT_FIELDS: FieldDefinition[] = [
   { key: "address", label: "profile.address", autocomplete: "street-address", wide: true },
   { key: "postal_code", label: "profile.postalCode", autocomplete: "postal-code" },
   { key: "city", label: "profile.city", autocomplete: "address-level2" },
-  { key: "country", label: "profile.country", autocomplete: "country-name" },
+  { key: "country", label: "profile.country", autocomplete: "country", country: true },
 ];
 const COMPANY_FIELDS: FieldDefinition[] = [
   { key: "company_name", label: "profile.companyName", autocomplete: "organization" },
   { key: "company_address", label: "profile.companyAddress", autocomplete: "off", wide: true },
   { key: "company_postal_code", label: "profile.companyPostalCode", autocomplete: "off" },
   { key: "company_city", label: "profile.companyCity", autocomplete: "off" },
-  { key: "company_country", label: "profile.companyCountry", autocomplete: "off" },
+  { key: "company_country", label: "profile.companyCountry", autocomplete: "off", country: true },
   { key: "company_phone", label: "profile.companyPhone", autocomplete: "off" },
 ];
 
 // What the page shows about the form: errors by field, a save in flight
 const errors = ref<Record<string, string>>({});
 const saving = ref(false);
+
+// The countries offered by the lists, in the language of the interface:
+// read with the profile, and again when the language changes
+const countries = ref<Country[]>([]);
+
+async function loadCountries(): Promise<void> {
+  try {
+    countries.value = await getCountries();
+  } catch {
+    // The lists stay empty; the chosen code is kept and saved as it is
+  }
+}
+
+watch(locale, loadCountries);
 
 async function load(): Promise<void> {
   try {
@@ -147,6 +165,7 @@ async function load(): Promise<void> {
     loadFailed.value = true;
     return;
   }
+  loadCountries();
   loadEmails();
 }
 
@@ -479,7 +498,19 @@ async function submitPassword(): Promise<void> {
             :class="{ wide: field.wide }"
           >
             <label :for="field.key">{{ t(field.label) }}</label>
+            <select
+              v-if="field.country"
+              :id="field.key"
+              v-model="fields[field.key]"
+              :autocomplete="field.autocomplete"
+            >
+              <option value="">{{ t("profile.noCountry") }}</option>
+              <option v-for="(item, i) in countries" :key="i" :value="item.code">
+                {{ item.name }}
+              </option>
+            </select>
             <input
+              v-else
               :id="field.key"
               v-model="fields[field.key]"
               type="text"
@@ -531,7 +562,19 @@ async function submitPassword(): Promise<void> {
               :class="{ wide: field.wide }"
             >
               <label :for="field.key">{{ t(field.label) }}</label>
+              <select
+                v-if="field.country"
+                :id="field.key"
+                v-model="fields[field.key]"
+                :autocomplete="field.autocomplete"
+              >
+                <option value="">{{ t("profile.noCountry") }}</option>
+                <option v-for="(item, i) in countries" :key="i" :value="item.code">
+                  {{ item.name }}
+                </option>
+              </select>
               <input
+                v-else
                 :id="field.key"
                 v-model="fields[field.key]"
                 type="text"
@@ -741,7 +784,8 @@ h3 {
   max-width: 520px;
 }
 
-.fields .field input {
+.fields .field input,
+.fields .field select {
   max-width: none;
 }
 

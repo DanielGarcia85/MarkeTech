@@ -27,6 +27,7 @@ the profile is created empty at sign-up and completed later.
 
 from django.conf import settings
 from django.db import models
+from django_countries.fields import CountryField
 
 from .validators import (
     validate_attachment_extension,
@@ -67,7 +68,10 @@ class ContactDetails(models.Model):
     address = models.CharField(max_length=200, blank=True)
     postal_code = models.CharField(max_length=10, blank=True)
     city = models.CharField(max_length=100, blank=True)
-    country = models.CharField(max_length=100, blank=True)
+    # The two-letter ISO 3166-1 code of the country (CH, FR, ...), checked
+    # against the list of django-countries; the name comes from that list,
+    # in the language of the request
+    country = CountryField(blank=True)
 
     # Set by Django at every save
     updated_at = models.DateTimeField(auto_now=True)
@@ -139,7 +143,7 @@ class EmployerProfile(ContactDetails):
     company_address = models.CharField(max_length=200, blank=True)
     company_postal_code = models.CharField(max_length=10, blank=True)
     company_city = models.CharField(max_length=100, blank=True)
-    company_country = models.CharField(max_length=100, blank=True)
+    company_country = CountryField(blank=True)
     company_phone = models.CharField(max_length=30, blank=True)
     logo = models.ImageField(
         upload_to=employer_file_path,

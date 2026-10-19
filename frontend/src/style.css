@@ -59,12 +59,15 @@ main {
 
 .field input[type="email"],
 .field input[type="password"],
-.field input[type="text"] {
+.field input[type="text"],
+.field select {
   width: 100%;
   max-width: 420px;
   padding: 8px;
   border: 1px solid var(--mt-border);
   border-radius: 4px;
+  background: var(--mt-background);
+  color: var(--mt-text);
   font: inherit;
 }
 

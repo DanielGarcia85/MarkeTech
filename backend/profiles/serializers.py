@@ -15,8 +15,10 @@ What the JSON looks like
 ────────────────────────
 Every text field of the model, as it is, plus the names and the address of
 the account: the names can be changed here, the address is read only (it
-changes through allauth, with a confirmation e-mail). A file field is the
-URL of the file (MEDIA_URL plus its path, relative to the site), or null.
+changes through allauth, with a confirmation e-mail). A country is its
+two-letter code (CH), or "" for none; the names are served by the
+countries route. A file field is the URL of the file (MEDIA_URL plus its
+path, relative to the site), or null.
 The documents of a candidate are a list inside the profile, read only: they
 are added and removed by their own routes.
 """
@@ -24,6 +26,7 @@ are added and removed by their own routes.
 import os
 
 from django.db import models
+from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
 
 from .models import CandidateDocument, CandidateProfile, EmployerProfile
@@ -78,9 +81,13 @@ class FileSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-class ProfileSerializer(FileSerializer):
+class ProfileSerializer(CountryFieldMixin, FileSerializer):
     """What the two profiles share: the names and the address of the
-    account, shown with the profile and, for the names, changed with it."""
+    account, shown with the profile and, for the names, changed with it.
+    The mixin of django-countries represents a country field by its code
+    (CH); on the way in it accepts a code or a name of the list (in the
+    language of the request, or in English), stores the code, and refuses
+    anything else."""
 
     # Read from the user behind the profile, and written back to it. Same
     # rules as at sign-up: required, 150 characters at most

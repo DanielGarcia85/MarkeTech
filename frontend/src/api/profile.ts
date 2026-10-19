@@ -14,8 +14,10 @@ import { getJson, send, type Answer } from "./http";
 
 // Fields shared by the two profiles. The first three are those of the
 // account behind the profile: the names are changed with it, the address
-// only through its own confirmation (see api/account.ts). A file field
-// holds the URL of the file (/api/files/...), or null when there is none.
+// only through its own confirmation (see api/account.ts). A country is its
+// two-letter code (CH), or "" for none: the names come from getCountries.
+// A file field holds the URL of the file (/api/files/...), or null when
+// there is none.
 type Contact = {
   first_name: string;
   last_name: string;
@@ -62,6 +64,12 @@ export type ProfileFields = Partial<
 
 // The file fields of the profile, by their name in the API
 export type ProfileFileField = "photo" | "cv" | "logo";
+
+// One country of the list: its code, and its name in the language asked
+export type Country = {
+  code: string;
+  name: string;
+};
 
 // ── Rules of the files ────────────────────────────────────────────────
 
@@ -141,4 +149,10 @@ export function addDocument(file: File): Promise<Answer<ProfileDocument>> {
 // Removes one document of the candidate; 204
 export function removeDocument(id: number): Promise<Answer<null>> {
   return send<null>("DELETE", `${PROFILE}documents/${id}/`);
+}
+
+// The countries a profile may name, in the language of the interface
+// (sent as Accept-Language by every call), Switzerland and France first
+export function getCountries(): Promise<Country[]> {
+  return getJson<Country[]>("/api/countries/");
 }

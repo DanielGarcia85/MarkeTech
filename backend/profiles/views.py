@@ -20,13 +20,16 @@ Routes (profiles/urls.py, under /api/)
   POST        profile/documents/        candidate: add a document
   DELETE      profile/documents/<id>/   candidate: remove one of theirs
   GET         files/<path>              a file, when the user may read it
+  GET         countries/                the countries, code and name, in
+                                        the language of the request
 
 Who may do what
 ───────────────
 Every route needs a logged-in user (the default of the project), except the
-files: a logo is public, so the check is made on the path instead. A user
-without a role (an administrator) has no profile: 404. Anything a user may
-not see answers 404, never 403: the API does not say what exists.
+files, a logo being public (the check is made on the path instead), and the
+countries, a public list with nothing to protect. A user without a role (an
+administrator) has no profile: 404. Anything a user may not see answers 404,
+never 403: the API does not say what exists.
 """
 
 import os
@@ -34,6 +37,7 @@ import os
 from django.core.files.storage import default_storage
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
+from django_countries import countries
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
@@ -180,3 +184,18 @@ class FileView(APIView):
         if folder == "candidates":
             return user.is_authenticated and (user.is_staff or user.pk == owner)
         return False
+
+
+# ── The countries ─────────────────────────────────────────────────────
+
+
+class CountriesView(APIView):
+    """The countries a profile may name: code and name, in the language of
+    the request, Switzerland and France first (settings)."""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        # Iterating django-countries gives (code, name) pairs, the names
+        # already translated and sorted for the current language
+        return Response([{"code": code, "name": name} for code, name in countries])

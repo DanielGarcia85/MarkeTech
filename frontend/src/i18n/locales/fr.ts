@@ -194,6 +194,7 @@ const fr: typeof en = {
     address: "Adresse",
     postalCode: "Code postal",
     city: "Ville",
+    noCountry: "Non renseigné",
     country: "Pays",
     company: "Entreprise",
     companyName: "Nom de l'entreprise",

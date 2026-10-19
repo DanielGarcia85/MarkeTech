@@ -62,10 +62,11 @@ INSTALLED_APPS = [
     "allauth.account",
     # Same features exposed as a JSON API for the Vue frontend
     "allauth.headless",
+    # Countries: ISO 3166-1 codes with their names in every language
+    "django_countries",
     # Project applications
     "accounts",
-    # Profiles: what a candidate or an employer says about themselves, with
-    # their files
+    # Profiles: what a candidate or an employer says about themselves
     "profiles",
 ]
 
@@ -215,6 +216,14 @@ USE_I18N = True
 
 # Stores dates and times in UTC, with time zone information
 USE_TZ = True
+
+# ── Countries ─────────────────────────────────────────────────────────
+# The list of django-countries, served by /api/countries/ and offered by
+# the drop-downs of the profile: Switzerland and France first (the public
+# of the site), then every country in the alphabetical order of the
+# language of the request; the two also keep their alphabetical place
+COUNTRIES_FIRST = ["CH", "FR"]
+COUNTRIES_FIRST_REPEAT = True
 
 # ── Static files ──────────────────────────────────────────────────────
 

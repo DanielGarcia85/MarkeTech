@@ -193,6 +193,7 @@ export default {
     postalCode: "Postal code",
     city: "City",
     country: "Country",
+    noCountry: "Not specified",
     company: "Company",
     companyName: "Company name",
     companyAddress: "Address",
