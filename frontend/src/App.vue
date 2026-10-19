@@ -5,8 +5,9 @@
   ───────────────────────────────────────────────────────────────────────────
   Mounted by main.ts. Asks the backend who is logged in, then lays out the
   three bands of every page: the header, the body (the side bar of a
-  logged-in user, then the current page) and the footer. The body stretches
-  so that the footer stays at the bottom of the window, even on a short page.
+  logged-in user, then the current page) and the footer, plus the
+  confirmation dialog that any page may open. The body stretches so that
+  the footer stays at the bottom of the window, even on a short page.
   Every page is declared in router.ts.
 -->
 
@@ -14,6 +15,7 @@
 import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppSidebar from "./components/AppSidebar.vue";
+import ConfirmDialog from "./components/ConfirmDialog.vue";
 import { loadSession, useSession } from "./session";
 
 const session = useSession();
@@ -33,6 +35,8 @@ loadSession();
       </main>
     </div>
     <AppFooter />
+    <!-- Invisible until a page asks a question -->
+    <ConfirmDialog />
   </div>
 </template>
 

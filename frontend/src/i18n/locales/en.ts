@@ -246,6 +246,11 @@ export default {
     homeLink: "Back to the home page",
   },
 
+  // Confirmation dialog, the question being given by the page
+  dialog: {
+    cancel: "Cancel",
+  },
+
   // Messages shared by every form
   form: {
     failed: "Something went wrong. Please try again.",

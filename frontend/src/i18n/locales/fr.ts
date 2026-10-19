@@ -248,6 +248,11 @@ const fr: typeof en = {
     homeLink: "Retour à l'accueil",
   },
 
+  // Confirmation dialog, the question being given by the page
+  dialog: {
+    cancel: "Annuler",
+  },
+
   // Messages shared by every form
   form: {
     failed: "Une erreur est survenue. Veuillez réessayer.",

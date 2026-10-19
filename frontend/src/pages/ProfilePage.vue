@@ -9,10 +9,11 @@
   an employer a company and a logo. Laid out in sections separated by a
   rule, the fields on two columns on a wide window, one on a narrow one.
   The text fields, names included, are saved together by the Save button;
-  a file is sent as soon as it is chosen, and removed after a confirmation.
-  The account comes last: a new e-mail address, confirmed by a link sent to
-  it, and a new password, given with the current one. Every action done
-  shows a short confirmation next to where it happened.
+  a file is sent as soon as it is chosen, and removed after a confirmation
+  (the dialog of confirm.ts). The account comes last: a new e-mail
+  address, confirmed by a link sent to it, and a new password, given with
+  the current one. Every action done shows a short confirmation next to
+  where it happened.
 -->
 
 <script setup lang="ts">
@@ -47,6 +48,7 @@ import {
   type ProfileFileField,
 } from "../api/profile";
 import silhouetteUrl from "../assets/silhouette.svg";
+import { confirm } from "../confirm";
 import { loadSession, useSession } from "../session";
 
 const { t, locale } = useI18n();
@@ -252,7 +254,7 @@ async function sendFile(event: Event, kind: ProfileFileField): Promise<void> {
 
 // Removes a file of the profile, after a confirmation
 async function dropFile(kind: ProfileFileField): Promise<void> {
-  if (!window.confirm(t("profile.confirmRemove"))) return;
+  if (!(await confirm(t("profile.confirmRemove"), t("profile.remove")))) return;
   fileErrors.value[kind] = undefined;
   sending.value = kind;
   try {
@@ -293,7 +295,7 @@ async function sendDocument(event: Event): Promise<void> {
 
 // Removes a document, after a confirmation
 async function dropDocument(id: number): Promise<void> {
-  if (!window.confirm(t("profile.confirmRemove")) || !candidate.value) return;
+  if (!(await confirm(t("profile.confirmRemove"), t("profile.remove"))) || !candidate.value) return;
   fileErrors.value.document = undefined;
   sending.value = "document";
   try {
