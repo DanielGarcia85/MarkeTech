@@ -18,12 +18,19 @@ const fr: typeof en = {
   header: {
     signup: "S'inscrire",
     login: "Se connecter",
-    loggedInAs: "Connecté en tant que {name}",
     profile: "Mon profil",
+    account: "Menu du compte",
     logout: "Se déconnecter",
   },
 
-    // Footer: who is behind the site, where to find more, how to get in touch
+  // Side bar: the navigation of a logged-in user, one group per area
+  nav: {
+    label: "Navigation principale",
+    account: "Mon compte",
+    profile: "Profil",
+  },
+
+  // Footer: who is behind the site, where to find more, how to get in touch
   footer: {
     about: "MarkeTech est un projet de démonstration, sans activité commerciale,\nréécrit par Daniel Garcia à partir d'un projet d'équipe de la HEG Genève.",
     github: "GitHub",
@@ -199,6 +206,7 @@ const fr: typeof en = {
     saved: "Enregistré.",
     photo: "Photo",
     logo: "Logo",
+    files: "Documents",
     cv: "CV",
     documents: "Autres documents",
     noFile: "Aucun fichier pour l'instant.",
@@ -230,6 +238,13 @@ const fr: typeof en = {
     newPasswordConfirm: "Confirmez le nouveau mot de passe",
     changePassword: "Changer de mot de passe",
     passwordChanged: "Mot de passe changé.",
+  },
+
+  // Not-found page, for any address the router does not know
+  notFound: {
+    title: "Page introuvable",
+    text: "Il n'y a rien à cette adresse. Elle a peut-être été mal saisie, ou la page a changé de place.",
+    homeLink: "Retour à l'accueil",
   },
 
   // Messages shared by every form

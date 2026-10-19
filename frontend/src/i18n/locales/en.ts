@@ -16,9 +16,16 @@ export default {
   header: {
     signup: "Sign up",
     login: "Log in",
-    loggedInAs: "Signed in as {name}",
     profile: "My profile",
+    account: "Account menu",
     logout: "Log out",
+  },
+
+  // Side bar: the navigation of a logged-in user, one group per area
+  nav: {
+    label: "Main navigation",
+    account: "My account",
+    profile: "Profile",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -197,6 +204,7 @@ export default {
     saved: "Saved.",
     photo: "Photo",
     logo: "Logo",
+    files: "Documents",
     cv: "CV",
     documents: "Other documents",
     noFile: "No file yet.",
@@ -228,6 +236,13 @@ export default {
     newPasswordConfirm: "Confirm the new password",
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
+  },
+
+  // Not-found page, for any address the router does not know
+  notFound: {
+    title: "Page not found",
+    text: "There is nothing at this address. It may have been mistyped, or the page may have moved.",
+    homeLink: "Back to the home page",
   },
 
   // Messages shared by every form

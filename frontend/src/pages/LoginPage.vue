@@ -7,21 +7,20 @@
   authentication API through the session module, which keeps the user on
   success. A 400 shows its errors under the fields, a 401 means the address
   has not been verified yet, a 429 that the attempts come too fast. Once
-  logged in, by this page or already before, the visitor goes to the home
-  page.
+  logged in, the visitor goes to the home page (a user already logged in
+  never reaches this page: the router sends them home).
 -->
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 
 import { errorsByParam } from "../api/http";
-import { login, useSession } from "../session";
+import { login } from "../session";
 
 const { t } = useI18n();
 const router = useRouter();
-const session = useSession();
 
 // What the visitor types
 const email = ref("");
@@ -33,28 +32,20 @@ const errors = ref<Record<string, string>>({});
 const sending = ref(false);
 const unverified = ref(false);
 
-// Leaves as soon as someone is logged in: now, when the session loads, or
-// right after a successful login
-watch(
-  () => session.user,
-  (user) => {
-    if (user) router.replace({ name: "home" });
-  },
-  { immediate: true },
-);
-
 async function submit(): Promise<void> {
   sending.value = true;
   errors.value = {};
   unverified.value = false;
   try {
     const answer = await login(email.value, password.value);
-    if (answer.status === 401) {
+    if (answer.status === 200) {
+      router.replace({ name: "home" });
+    } else if (answer.status === 401) {
       // The only step the API can still ask for here: verify the address
       unverified.value = true;
     } else if (answer.status === 429) {
       errors.value = { "": t("form.tooMany") };
-    } else if (answer.status !== 200) {
+    } else {
       // 400: the errors of the fields; anything else: a general message
       errors.value = answer.errors
         ? errorsByParam(answer.errors)
