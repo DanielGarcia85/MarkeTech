@@ -24,3 +24,14 @@ psycopg[binary]==3.3.6
 
 # ── Authentication ────────────────────────────────────────────────────
 django-allauth==65.19.7
+
+# ── Images ────────────────────────────────────────────────────────────
+# Required by ImageField (profile photos and company logos): opens the
+# uploaded file to check that it is an image
+Pillow==13.0.0
+
+# ── Countries ─────────────────────────────────────────────────────────
+# ISO 3166-1 codes with their names in every language, for the country
+# fields of the profiles: a model field that validates the code, and the
+# list that fills the drop-down of the frontend
+django-countries==9.1.0

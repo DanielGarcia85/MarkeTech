@@ -8,14 +8,16 @@ Responsibility
 ──────────────
 Check the authentication API as the frontend will use it: JSON requests to
 the browser client of allauth, CSRF protection enforced, e-mails read from
-the test outbox, in the language of the request. Does not test allauth
-itself, only our configuration of it.
+the test outbox, in the language of the request; then the changes a
+logged-in user makes to their account (address, password). Does not test
+allauth itself, only our configuration of it.
 """
 
 import json
 import re
 from urllib.parse import unquote
 
+from allauth.account.models import EmailAddress
 from django.core import mail
 from django.core.cache import cache
 from django.test import Client, TestCase
@@ -176,6 +178,67 @@ class AuthenticationApiTests(TestCase):
             mail.outbox[0].subject, "[MarkeTech] Confirm your e-mail address"
         )
         self.assertIn("Hello Léa,", mail.outbox[0].body)
+
+
+class AccountChangesTests(TestCase):
+    """A logged-in user changes the address or the password of the account."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user(
+            email="lea.doe@example.com", password=PASSWORD, role="candidate", **NAMES
+        )
+        EmailAddress.objects.create(
+            user=self.user, email=self.user.email, verified=True, primary=True
+        )
+        self.client = Client(enforce_csrf_checks=True)
+        self.client.force_login(self.user)
+        # The session route sets the CSRF cookie; every call then sends it
+        self.client.get(API + "auth/session")
+        self.client.defaults["HTTP_X_CSRFTOKEN"] = self.client.cookies["csrftoken"].value
+
+    def post(self, path, data):
+        return self.client.post(
+            API + path, data=json.dumps(data), content_type="application/json"
+        )
+
+    def test_the_address_changes_once_the_new_one_is_confirmed(self):
+        response = self.post("account/email", {"email": "New.Address@Example.com"})
+        self.assertEqual(response.status_code, 200)
+        # The e-mail goes to the new address, with the words of a change, not
+        # those of a sign-up; the current address is untouched meanwhile
+        self.assertEqual(mail.outbox[-1].to, ["new.address@example.com"])
+        self.assertEqual(mail.outbox[-1].subject, "[MarkeTech] Confirm your new e-mail address")
+        self.assertIn("stays in force", mail.outbox[-1].body)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "lea.doe@example.com")
+
+        key = unquote(re.search(r"verify-email/(\S+)", mail.outbox[-1].body).group(1))
+        response = self.post("auth/email/verify", {"key": key})
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, "new.address@example.com")
+        # One address only: the old one is gone
+        self.assertEqual(
+            list(EmailAddress.objects.filter(user=self.user).values_list("email", flat=True)),
+            ["new.address@example.com"],
+        )
+
+    def test_the_password_changes_with_the_current_one(self):
+        response = self.post(
+            "account/password/change",
+            {"current_password": "wrong", "new_password": "New-horse-10"},
+        )
+        self.assertEqual(response.status_code, 400)
+        response = self.post(
+            "account/password/change",
+            {"current_password": PASSWORD, "new_password": "New-horse-10"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("New-horse-10"))
+        # Still logged in afterwards
+        self.assertEqual(self.client.get(API + "auth/session").status_code, 200)
 
 
 class DisplayNameTests(TestCase):

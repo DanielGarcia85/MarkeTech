@@ -62,8 +62,12 @@ INSTALLED_APPS = [
     "allauth.account",
     # Same features exposed as a JSON API for the Vue frontend
     "allauth.headless",
+    # Countries: ISO 3166-1 codes with their names in every language
+    "django_countries",
     # Project applications
     "accounts",
+    # Profiles: what a candidate or an employer says about themselves
+    "profiles",
 ]
 
 # Model used for every user account, instead of Django's default one. Must be
@@ -122,6 +126,10 @@ ACCOUNT_SIGNUP_FORM_CLASS = "accounts.forms.SignupForm"
 # A new account cannot log in before its address is verified by the link
 # sent by e-mail
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# One address per account. To change it, the user gives the new one, which
+# receives a confirmation link; the current address stays in force until the
+# link is opened, then the new one replaces it
+ACCOUNT_CHANGE_EMAIL = True
 # Start of the subject of every e-mail sent by allauth
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MarkeTech] "
 
@@ -209,6 +217,14 @@ USE_I18N = True
 # Stores dates and times in UTC, with time zone information
 USE_TZ = True
 
+# ── Countries ─────────────────────────────────────────────────────────
+# The list of django-countries, served by /api/countries/ and offered by
+# the drop-downs of the profile: Switzerland and France first (the public
+# of the site), then every country in the alphabetical order of the
+# language of the request; the two also keep their alphabetical place
+COUNTRIES_FIRST = ["CH", "FR"]
+COUNTRIES_FIRST_REPEAT = True
+
 # ── Static files ──────────────────────────────────────────────────────
 
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
@@ -218,6 +234,21 @@ STATIC_URL = "static/"
 # Folder where the collectstatic command gathers every static file, so that
 # they can be served outside development
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# ── User files ────────────────────────────────────────────────────────
+
+# https://docs.djangoproject.com/en/6.1/topics/files/
+# Folder where the files sent by the users are stored (photos, CVs, logos,
+# documents): a folder of the backend, never versioned, in development; a
+# Docker volume in production. Nothing serves this folder as such: every
+# file goes through a view of the profiles application, which checks who
+# may read it.
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Prefix of the URLs Django builds for these files (the .url of a field).
+# It is the address of that view, so that the links of the admin site and
+# of the API open the file after the check, never directly.
+MEDIA_URL = "/api/files/"
 
 # ── REST API ──────────────────────────────────────────────────────────
 

@@ -7,22 +7,18 @@
   password and the role to the authentication API. A 400 shows its errors
   under the fields; a 401 means the account is there and the confirmation
   e-mail is on its way, whether the account is new or already existed (the
-  API never tells which). A logged-in user has nothing to do here and is
-  sent to the home page.
+  API never tells which). A logged-in user has nothing to do here: the
+  router sends them home before the page is shown.
 -->
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
 
 import { signUp, type Role } from "../api/account";
 import { errorsByParam } from "../api/http";
-import { useSession } from "../session";
 
 const { t } = useI18n();
-const router = useRouter();
-const session = useSession();
 
 // What the visitor types; candidate is preselected, the most common case
 const firstName = ref("");
@@ -37,15 +33,6 @@ const role = ref<Role>("candidate");
 const errors = ref<Record<string, string>>({});
 const sending = ref(false);
 const sent = ref(false);
-
-// Leaves as soon as someone is logged in: now, or when the session loads
-watch(
-  () => session.user,
-  (user) => {
-    if (user) router.replace({ name: "home" });
-  },
-  { immediate: true },
-);
 
 async function submit(): Promise<void> {
   errors.value = {};

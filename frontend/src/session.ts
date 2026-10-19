@@ -6,7 +6,7 @@
 // module is first imported. Components read it through useSession(); only
 // the functions of this file change it, once the backend has answered.
 
-import { reactive, readonly } from "vue";
+import { reactive, readonly, watch } from "vue";
 
 import {
   getSession,
@@ -30,6 +30,25 @@ const session = reactive<Session>({ user: null, loaded: false });
 // Read-only view for the components: they cannot change it by accident
 export function useSession() {
   return readonly(session);
+}
+
+// Settles once the backend has answered who is logged in. The router waits
+// for it before showing a page meant for users, or for visitors only, so
+// that a reload on such a page does not bounce while the answer is on its
+// way. Settled already: answers at once.
+export function whenLoaded(): Promise<void> {
+  if (session.loaded) return Promise.resolve();
+  return new Promise((resolve) => {
+    const stop = watch(
+      () => session.loaded,
+      (loaded) => {
+        if (loaded) {
+          stop();
+          resolve();
+        }
+      },
+    );
+  });
 }
 
 // Asks the backend who is logged in. Called once, when the application

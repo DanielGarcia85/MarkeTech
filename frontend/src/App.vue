@@ -4,16 +4,21 @@
   Root component — top of the component tree, and the page shell
   ───────────────────────────────────────────────────────────────────────────
   Mounted by main.ts. Asks the backend who is logged in, then lays out the
-  three bands of every page: the header, the body (the current page, with
-  room for the side bar of a later slice) and the footer. The body stretches
-  so that the footer stays at the bottom of the window, even on a short page.
+  three bands of every page: the header, the body (the side bar of a
+  logged-in user, then the current page) and the footer, plus the
+  confirmation dialog that any page may open. The body stretches so that
+  the footer stays at the bottom of the window, even on a short page.
   Every page is declared in router.ts.
 -->
 
 <script setup lang="ts">
 import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
-import { loadSession } from "./session";
+import AppSidebar from "./components/AppSidebar.vue";
+import ConfirmDialog from "./components/ConfirmDialog.vue";
+import { loadSession, useSession } from "./session";
+
+const session = useSession();
 
 // Runs once, when the application starts
 loadSession();
@@ -23,12 +28,15 @@ loadSession();
   <div class="shell">
     <AppHeader />
     <div class="body">
-      <!-- The side bar of the navigation goes here, before the page -->
+      <!-- The navigation of a logged-in user, before the page -->
+      <AppSidebar v-if="session.user" />
       <main class="page">
         <RouterView />
       </main>
     </div>
-     <AppFooter />
+    <AppFooter />
+    <!-- Invisible until a page asks a question -->
+    <ConfirmDialog />
   </div>
 </template>
 
@@ -50,5 +58,12 @@ loadSession();
 .page {
   flex: 1;
   min-width: 0;
+}
+
+/* Narrow window: the side bar becomes a strip above the page */
+@media (max-width: 900px) {
+  .body {
+    flex-direction: column;
+  }
 }
 </style>

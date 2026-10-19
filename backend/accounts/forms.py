@@ -7,10 +7,13 @@ Account forms — extra fields of the sign-up form
 Responsibility
 ──────────────
 Add the names and the role to the sign-up form of django-allauth, which only
-knows the e-mail address and the password. Contains no other form.
+knows the e-mail address and the password, and create the empty profile of
+the chosen role. Contains no other form.
 """
 
 from django import forms
+
+from profiles.models import CandidateProfile, EmployerProfile
 
 from .models import User
 
@@ -26,9 +29,17 @@ class SignupForm(forms.Form):
     role = forms.ChoiceField(choices=User.Role.choices)
 
     def signup(self, request, user):
-        """Store the names and the role on the user allauth has just created."""
+        """Store the names and the role on the user allauth has just created,
+        then give the user the profile of that role."""
         # Called by allauth once the user is saved; the name is imposed
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         user.role = self.cleaned_data["role"]
         user.save(update_fields=["first_name", "last_name", "role"])
+
+        # The profile is created empty: the user completes it on the profile
+        # page, once the address is verified and the first login done
+        if user.role == User.Role.CANDIDATE:
+            CandidateProfile.objects.create(user=user)
+        else:
+            EmployerProfile.objects.create(user=user)

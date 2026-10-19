@@ -16,8 +16,16 @@ export default {
   header: {
     signup: "Sign up",
     login: "Log in",
-    loggedInAs: "Signed in as {name}",
+    profile: "My profile",
+    account: "Account menu",
     logout: "Log out",
+  },
+
+  // Side bar: the navigation of a logged-in user, one group per area
+  nav: {
+    label: "Main navigation",
+    account: "My account",
+    profile: "Profile",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -65,8 +73,11 @@ export default {
     title: "E-mail address verification",
     pending: "Checking your link…",
     confirmed: "Your e-mail address is confirmed. You can now log in.",
+    changed: "Your new e-mail address is now in force.",
     invalid: "This link is invalid or has expired. Log in: if your address is still unconfirmed, you will receive a new link.",
+    invalidLoggedIn: "This link is invalid or has expired. Your current address stays in force; you can ask again from your profile.",
     loginLink: "Log in",
+    profileLink: "Back to my profile",
   },
 
   // Password reset: the page that asks for the link
@@ -95,7 +106,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 17 October 2026",
+    updated: "Last updated: 19 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -111,7 +122,7 @@ export default {
         items: [
           { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
-          { term: "Employer profile", text: "Postal address, phone number, and the company: name, address, phone number, logo." },
+          { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
           { term: "Job offers", text: "Title, description, location, salary range, years of experience required, company name and logo, date of publication. Offers are visible to every visitor of the site." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
@@ -153,7 +164,7 @@ export default {
       },
       security: {
         title: "Security",
-        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly. Access to the server itself is reserved to its administrator."],
+        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The photos and the documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly; only the logo of the company is public, since it goes with the job offers. Access to the server itself is reserved to its administrator."],
       },
       rights: {
         title: "Your rights",
@@ -167,6 +178,77 @@ export default {
         intro: ["This page describes the site as it is. It changes when the site changes, and the date at the top says when it was last updated."],
       },
     },
+  },
+
+  // Profile page: names and contact details, company, files and documents,
+  // then the account: e-mail address and password
+  profile: {
+    title: "My profile",
+    identity: "Identity",
+    firstName: "First name",
+    lastName: "Last name",
+    contact: "Contact details",
+    phone: "Phone",
+    address: "Address",
+    postalCode: "Postal code",
+    city: "City",
+    country: "Country",
+    noCountry: "Not specified",
+    company: "Company",
+    companyName: "Company name",
+    companyAddress: "Address",
+    companyPostalCode: "Postal code",
+    companyCity: "City",
+    companyCountry: "Country",
+    companyPhone: "Phone",
+    save: "Save",
+    saved: "Saved.",
+    photo: "Photo",
+    logo: "Logo",
+    files: "Documents",
+    cv: "CV",
+    documents: "Other documents",
+    noFile: "No file yet.",
+    choose: "Choose a file",
+    replace: "Replace",
+    remove: "Remove",
+    add: "Add a document",
+    sending: "Sending…",
+    fileSaved: "File saved.",
+    fileRemoved: "File removed.",
+    rules: "{types} · up to {size} MB",
+    limit: "You have reached the limit of {max} documents.",
+    confirmRemove: "Remove this file?",
+    addedOn: "added on {date}",
+    loadFailed: "Your profile cannot be loaded. Please try again later.",
+    tooBig: "This file is bigger than {size} MB.",
+    wrongType: "This type of file is not accepted ({types}).",
+    account: "Account",
+    email: "E-mail address",
+    currentEmail: "Current address: {email}",
+    newEmail: "New e-mail address",
+    changeEmail: "Change the address",
+    emailSent: "E-mail sent. Open it and follow its link: your current address stays in force until then.",
+    emailPending: "Confirmation pending for {email}.",
+    cancel: "Cancel",
+    password: "Password",
+    currentPassword: "Current password",
+    newPassword: "New password",
+    newPasswordConfirm: "Confirm the new password",
+    changePassword: "Change the password",
+    passwordChanged: "Password changed.",
+  },
+
+  // Not-found page, for any address the router does not know
+  notFound: {
+    title: "Page not found",
+    text: "There is nothing at this address. It may have been mistyped, or the page may have moved.",
+    homeLink: "Back to the home page",
+  },
+
+  // Confirmation dialog, the question being given by the page
+  dialog: {
+    cancel: "Cancel",
   },
 
   // Messages shared by every form

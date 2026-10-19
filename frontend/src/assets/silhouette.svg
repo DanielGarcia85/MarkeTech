@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Placeholder of a profile photo: a plain silhouette on the surface colour of the site, shown until the user uploads a photo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="">
+  <rect width="140" height="140" fill="#f8fafc"/>
+  <circle cx="70" cy="54" r="25" fill="#94a3b8"/>
+  <path d="M 20 140 C 20 104 42 88 70 88 C 98 88 120 104 120 140 Z" fill="#94a3b8"/>
+</svg>

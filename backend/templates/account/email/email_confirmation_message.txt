@@ -1,13 +1,13 @@
-{# backend/templates/account/email/email_confirmation_message.txt — body of the address confirmation e-mail, sent at sign-up #}
+{# backend/templates/account/email/email_confirmation_message.txt — body of the confirmation e-mail of a new address, sent when a user changes theirs #}
 {% extends "account/email/base_message.txt" %}
 {% load i18n %}
 
-{% block content %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Vous avez créé un compte MarkeTech avec cette adresse e-mail. Pour l'activer, confirmez votre adresse en ouvrant ce lien :
+{% block content %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Vous avez demandé à utiliser cette adresse e-mail pour votre compte MarkeTech. Pour la confirmer, ouvrez ce lien :
 
 {{ activate_url }}
 
-Si vous n'êtes pas à l'origine de cette inscription, ignorez simplement cet e-mail : aucun compte ne sera activé.{% else %}You have created a MarkeTech account with this e-mail address. To activate it, confirm your address by opening this link:
+Votre adresse actuelle reste en vigueur tant que ce lien n'est pas ouvert. Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet e-mail : rien ne changera.{% else %}You have asked to use this e-mail address for your MarkeTech account. To confirm it, open this link:
 
 {{ activate_url }}
 
-If you did not sign up, simply ignore this e-mail: no account will be activated.{% endif %}{% endautoescape %}{% endblock content %}
+Your current address stays in force until this link is opened. If you did not make this request, simply ignore this e-mail: nothing will change.{% endif %}{% endautoescape %}{% endblock content %}
