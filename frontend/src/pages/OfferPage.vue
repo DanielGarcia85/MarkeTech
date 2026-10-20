@@ -61,7 +61,7 @@ onMounted(() => {
 
 <template>
   <p class="back">
-    <RouterLink :to="{ name: 'offers' }">← {{ t("offers.back") }}</RouterLink>
+    <RouterLink :to="{ name: 'home' }">← {{ t("offers.back") }}</RouterLink>
   </p>
 
   <p v-if="notFound" class="notice">{{ t("offers.notFound") }}</p>

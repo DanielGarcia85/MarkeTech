@@ -1,7 +1,7 @@
 <!--
   frontend/src/components/AppHeader.vue
 
-    Header — logo, offers link, account menu and language selector, on every page
+  Header — logo, account menu and language selector, on every page
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page, and kept at the top of the
   window while the page scrolls. A logged-in user is shown as a round with
@@ -80,8 +80,6 @@ async function leave(): Promise<void> {
       <img :src="logoUrl" alt="MarkeTech" class="logo" />
     </RouterLink>
     <nav class="nav">
-      <!-- The offers, for everyone -->
-      <RouterLink :to="{ name: 'offers' }">{{ t("header.offers") }}</RouterLink>
       <div v-if="session.user" ref="account" class="account">
         <!-- The round opens and closes the menu -->
         <button

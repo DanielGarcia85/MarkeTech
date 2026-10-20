@@ -20,7 +20,6 @@ export default {
 
   // Header: session state and links of the account
   header: {
-    offers: "Offers",
     signup: "Sign up",
     login: "Log in",
     profile: "My profile",
@@ -31,6 +30,8 @@ export default {
   // Side bar: the navigation of a logged-in user, one group per area
   nav: {
     label: "Main navigation",
+    offers: "Offers",
+    allOffers: "All the offers",
     account: "My account",
     profile: "Profile",
   },

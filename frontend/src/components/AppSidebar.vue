@@ -17,6 +17,8 @@ const { t } = useI18n();
 
 <template>
   <nav class="sidebar" :aria-label="t('nav.label')">
+    <p class="group">{{ t("nav.offers") }}</p>
+    <RouterLink :to="{ name: 'home' }">{{ t("nav.allOffers") }}</RouterLink>
     <p class="group">{{ t("nav.account") }}</p>
     <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
   </nav>
@@ -39,6 +41,11 @@ const { t } = useI18n();
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mt-muted);
+}
+
+/* A gap above every group but the first */
+.sidebar a + .group {
+  margin-top: 20px;
 }
 
 /* One link per line; the page being shown is marked by the router with

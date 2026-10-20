@@ -22,7 +22,6 @@ const fr: typeof en = {
 
   // Header: session state and links of the account
   header: {
-    offers: "Offres",
     signup: "S'inscrire",
     login: "Se connecter",
     profile: "Mon profil",
@@ -33,6 +32,8 @@ const fr: typeof en = {
   // Side bar: the navigation of a logged-in user, one group per area
   nav: {
     label: "Navigation principale",
+    offers: "Offres",
+    allOffers: "Toutes les offres",
     account: "Mon compte",
     profile: "Profil",
   },

@@ -1,12 +1,12 @@
 <!--
-  frontend/src/pages/OffersPage.vue
+  frontend/src/components/OfferList.vue
 
-  Offers page — the public list of the published job offers
+  Offer list — the public list of the published job offers
   ───────────────────────────────────────────────────────────────────────────
-  Displayed by the router for "/offers", to anyone. A form of filters above
-  a list of cards, newest first, ten by page, with the numbers of the pages.
-  The filters and the page live in the address (?title=...&page=2): a
-  search can be shared or reloaded, and the back button goes back to the
+  Displayed by the home page, to anyone. A form of filters above a list of
+  cards, newest first, ten by page, with the numbers of the pages. The
+  filters and the page live in the address of the page (?title=...&page=2):
+  a search can be shared or reloaded, and the back button goes back to the
   previous search. On a narrow screen the filters fold behind a button.
   Each card links to the page of its offer.
 -->
@@ -27,7 +27,7 @@ import {
   type OfferPage,
 } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
-import OfferCard from "../components/OfferCard.vue";
+import OfferCard from "./OfferCard.vue";
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -156,7 +156,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>{{ t("offers.title") }}</h1>
+  <h2 class="heading">{{ t("offers.title") }}</h2>
 
   <!-- Narrow screens only (CSS): unfolds the filters -->
   <button type="button" class="toggle" :aria-expanded="filtersOpen" @click="filtersOpen = !filtersOpen">
@@ -260,6 +260,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.heading {
+  margin: 0 0 12px;
+  color: var(--mt-blue);
+  font-size: 1.3rem;
+}
+
 /* The filters on a grid: as many fields per line as the width allows */
 .filters {
   display: grid;
