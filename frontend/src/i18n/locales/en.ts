@@ -138,8 +138,8 @@ export default {
           { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
           { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
-          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only." },
-          { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
+          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
+          { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
           { term: "Favourites", text: "The offers a candidate has set aside." },
           { term: "Appointments", text: "Proposed by an employer about an application: date and time, description, the candidate's answer and the message that goes with it." },
@@ -173,7 +173,7 @@ export default {
       retention: {
         title: "How long data is kept",
         intro: [
-          "Your data is kept as long as your account exists. What you delete yourself, an offer, a favourite, a document, disappears at once. When your account is deleted, everything attached to it goes with it: profile, offers, applications, messages, appointments, favourites and review.",
+          "Your data is kept as long as your account exists. What you delete yourself, an offer, a withdrawn application, a favourite, a document, disappears at once, files included. When your account is deleted, everything attached to it goes with it: profile, offers, applications, messages, appointments, favourites and review.",
           "To have your account deleted, write to {contact} from the address of the account. The server logs are erased automatically, as said above.",
         ],
       },

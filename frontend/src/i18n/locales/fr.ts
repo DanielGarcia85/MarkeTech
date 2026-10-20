@@ -140,8 +140,8 @@ const fr: typeof en = {
           { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion." },
           { term: "Profil candidat", text: "Adresse postale, numéro de téléphone, photo, CV et tout autre document que vous joignez." },
           { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
-          { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement." },
-          { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, la date, le statut (reçue, en cours, acceptée, refusée) et son historique. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre." },
+          { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement. Une offre qui a reçu des candidatures ne peut plus être supprimée, seulement clôturée : les candidats gardent la trace de leur candidature." },
+          { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, les documents de votre profil que vous y joignez (copiés au moment de l'envoi : modifier votre profil ensuite ne change pas ce que l'employeur a reçu), la date, le statut (reçue, en cours, acceptée, refusée) et l'historique de ses changements. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre ; celui-ci voit aussi vos prénom, nom, adresse e-mail, téléphone et ville, lus sur votre compte et votre profil. Vous pouvez la retirer tant que l'employeur n'a pas décidé : elle est alors supprimée avec ses fichiers." },
           { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté." },
           { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature : date et heure, description, réponse du candidat et message qui l'accompagne." },
@@ -175,7 +175,7 @@ const fr: typeof en = {
       retention: {
         title: "Durée de conservation",
         intro: [
-          "Vos données sont conservées tant que votre compte existe. Ce que vous supprimez vous-même, une offre, un favori, un document, disparaît aussitôt. Quand votre compte est supprimé, tout ce qui s'y rattache part avec lui : profil, offres, candidatures, messages, rendez-vous, favoris et avis.",
+          "Vos données sont conservées tant que votre compte existe. Ce que vous supprimez vous-même, une offre, une candidature retirée, un favori, un document, disparaît aussitôt, fichiers compris. Quand votre compte est supprimé, tout ce qui s'y rattache part avec lui : profil, offres, candidatures, messages, rendez-vous, favoris et avis.",
           "Pour faire supprimer votre compte, écrivez à {contact} depuis l'adresse du compte. Les journaux du serveur s'effacent automatiquement, comme dit plus haut.",
         ],
       },
