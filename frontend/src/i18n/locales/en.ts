@@ -6,7 +6,7 @@
 // The other languages must provide exactly the same keys.
 
 export default {
-    // Tagline and notice of the application
+  // Tagline and notice of the application
   app: {
     tagline: "Tech jobs and student jobs for recent graduates and students.",
     notice: "This application is under construction.",
@@ -30,6 +30,9 @@ export default {
   // Side bar: the navigation of a logged-in user, one group per area
   nav: {
     label: "Main navigation",
+    offers: "Offers",
+    allOffers: "All the offers",
+    myOffers: "My offers",
     account: "My account",
     profile: "Profile",
   },
@@ -112,7 +115,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 19 October 2026",
+    updated: "Last updated: 20 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -129,7 +132,7 @@ export default {
           { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
           { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
-          { term: "Job offers", text: "Title, description, location, salary range, years of experience required, company name and logo, date of publication. Offers are visible to every visitor of the site." },
+          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
           { term: "Favourites", text: "The offers a candidate has set aside." },
@@ -243,6 +246,112 @@ export default {
     newPasswordConfirm: "Confirm the new password",
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
+  },
+
+  // Job offers: the public list, its filters, and the detail of an offer
+  offers: {
+    title: "Job offers",
+    count: "No offer | {count} offer | {count} offers",
+    filters: "Filters",
+    search: "Search",
+    reset: "Reset",
+    keyword: "Keyword",
+    keywordHint: "In the title",
+    city: "City",
+    country: "Country",
+    anyCountry: "Any country",
+    contractLabel: "Contract",
+    anyContract: "Any contract",
+    remoteLabel: "Remote work",
+    anyRemote: "Any",
+    salaryMin: "Minimum salary",
+    publishedAfter: "Published since",
+    none: "No offer matches these criteria.",
+    loadFailed: "The offers could not be loaded.",
+    page: "Page {page} of {pages}",
+    previous: "Previous",
+    next: "Next",
+    publishedOn: "Published on {date}",
+    detailsLink: "View the offer",
+    back: "All offers",
+    notFound: "This offer does not exist, or is no longer published.",
+    description: "The position",
+    facts: "In short",
+    place: "Place",
+    salaryLabel: "Salary",
+    currencyLabel: "Currency",
+    periodLabel: "Period",
+    experienceLabel: "Experience",
+    contract: {
+      permanent: "Permanent",
+      fixed_term: "Fixed term",
+      internship: "Internship",
+      student: "Student job",
+    },
+    remote: {
+      on_site: "On site",
+      hybrid: "Hybrid",
+      remote: "Remote",
+    },
+    period: {
+      month: "per month",
+      year: "per year",
+    },
+    salary: {
+      range: "{currency} {range} {period}",
+      from: "From {currency} {amount} {period}",
+      upTo: "Up to {currency} {amount} {period}",
+    },
+    status: {
+      draft: "Draft",
+      published: "Published",
+      closed: "Closed",
+    },
+    experience: "{count} year of experience | {count} years of experience",
+  },
+
+  // The offers of an employer: the list with its moves
+  myOffers: {
+    title: "My offers",
+    new: "New offer",
+    none: "You have no offer yet. Create the first one: it stays a draft until you publish it.",
+    loadFailed: "Your offers could not be loaded.",
+    edit: "Edit",
+    publish: "Publish",
+    republish: "Publish again",
+    close: "Close",
+    delete: "Delete",
+    confirmDelete: "Delete the offer \"{title}\"? It cannot be recovered.",
+    needsCompany: "Give the name of your company in your profile before publishing.",
+    companyLink: "Complete my profile",
+  },
+
+  // The form of an offer, new or changed
+  offerForm: {
+    newTitle: "New offer",
+    editTitle: "Edit the offer",
+    back: "My offers",
+    notFound: "This offer does not exist, or is not yours.",
+    title: "Title",
+    description: "Description",
+    descriptionHint: "The job, the team, the profile sought. Line breaks are kept.",
+    city: "City",
+    country: "Country",
+    chooseCountry: "Choose a country",
+    contract: "Contract",
+    chooseContract: "Choose a contract",
+    remote: "Remote work",
+    workload: "Workload (%)",
+    workloadMax: "Maximum workload",
+    workloadHint: "From the first figure to the second; the same figure in both for a fixed workload.",
+    experience: "Years of experience asked",
+    salary: "Gross salary",
+    salaryMax: "Maximum salary",
+    salaryHint: "Minimum and maximum, or only one of them; leave both empty to say nothing.",
+    required: "This field is required.",
+    save: "Save",
+    saveAndPublish: "Save and publish",
+    saveAndRepublish: "Save and publish again",
   },
 
   // Not-found page, for any address the router does not know

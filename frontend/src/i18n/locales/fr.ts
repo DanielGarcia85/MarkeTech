@@ -14,7 +14,7 @@ const fr: typeof en = {
     notice: "Cette application est en cours de construction.",
   },
 
-   // The two roles, as shown to the logged-in user (header menu, profile)
+  // The two roles, as shown to the logged-in user (header menu, profile)
   roles: {
     candidate: "Candidat",
     employer: "Employeur",
@@ -32,6 +32,9 @@ const fr: typeof en = {
   // Side bar: the navigation of a logged-in user, one group per area
   nav: {
     label: "Navigation principale",
+    offers: "Offres",
+    allOffers: "Toutes les offres",
+    myOffers: "Mes offres",
     account: "Mon compte",
     profile: "Profil",
   },
@@ -77,7 +80,7 @@ const fr: typeof en = {
   },
 
   // Address verification page, reached from the link in the e-mail
-    verify: {
+  verify: {
     title: "Vérification de l'adresse e-mail",
     pending: "Vérification de votre lien…",
     confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
@@ -114,7 +117,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 19 octobre 2026",
+    updated: "Dernière mise à jour : 20 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -131,7 +134,7 @@ const fr: typeof en = {
           { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion." },
           { term: "Profil candidat", text: "Adresse postale, numéro de téléphone, photo, CV et tout autre document que vous joignez." },
           { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
-          { term: "Offres d'emploi", text: "Titre, description, lieu, fourchette de salaire, années d'expérience demandées, nom et logo de l'entreprise, date de publication. Les offres sont visibles par tous les visiteurs du site." },
+          { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, la date, le statut (reçue, en cours, acceptée, refusée) et son historique. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre." },
           { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté." },
@@ -245,6 +248,112 @@ const fr: typeof en = {
     newPasswordConfirm: "Confirmez le nouveau mot de passe",
     changePassword: "Changer de mot de passe",
     passwordChanged: "Mot de passe changé.",
+  },
+
+  // Job offers: the public list, its filters, and the detail of an offer
+  offers: {
+    title: "Offres d'emploi",
+    count: "Aucune offre | {count} offre | {count} offres",
+    filters: "Filtres",
+    search: "Rechercher",
+    reset: "Réinitialiser",
+    keyword: "Mot-clé",
+    keywordHint: "Dans le titre",
+    city: "Ville",
+    country: "Pays",
+    anyCountry: "Tous les pays",
+    contractLabel: "Contrat",
+    anyContract: "Tous les contrats",
+    remoteLabel: "Télétravail",
+    anyRemote: "Indifférent",
+    salaryMin: "Salaire minimum",
+    publishedAfter: "Publiée depuis le",
+    none: "Aucune offre ne correspond à ces critères.",
+    loadFailed: "Les offres n'ont pas pu être chargées.",
+    page: "Page {page} sur {pages}",
+    previous: "Précédent",
+    next: "Suivant",
+    publishedOn: "Publiée le {date}",
+    detailsLink: "Voir l'offre",
+    back: "Toutes les offres",
+    notFound: "Cette offre n'existe pas, ou n'est plus publiée.",
+    description: "Le poste",
+    facts: "En bref",
+    place: "Lieu",
+    salaryLabel: "Salaire",
+    currencyLabel: "Devise",
+    periodLabel: "Période",
+    experienceLabel: "Expérience",
+    contract: {
+      permanent: "CDI",
+      fixed_term: "CDD",
+      internship: "Stage",
+      student: "Job étudiant",
+    },
+    remote: {
+      on_site: "Sur site",
+      hybrid: "Hybride",
+      remote: "À distance",
+    },
+    period: {
+      month: "par mois",
+      year: "par an",
+    },
+    salary: {
+      range: "{currency} {range} {period}",
+      from: "Dès {currency} {amount} {period}",
+      upTo: "Jusqu'à {currency} {amount} {period}",
+    },
+    status: {
+      draft: "Brouillon",
+      published: "Publiée",
+      closed: "Clôturée",
+    },
+    experience: "{count} an d'expérience | {count} ans d'expérience",
+  },
+
+  // The offers of an employer: the list with its moves
+  myOffers: {
+    title: "Mes offres",
+    new: "Nouvelle offre",
+    none: "Vous n'avez pas encore d'offre. Créez la première : elle reste un brouillon tant que vous ne la publiez pas.",
+    loadFailed: "Vos offres n'ont pas pu être chargées.",
+    edit: "Modifier",
+    publish: "Publier",
+    republish: "Republier",
+    close: "Clôturer",
+    delete: "Supprimer",
+    confirmDelete: "Supprimer l'offre « {title} » ? Elle ne pourra pas être récupérée.",
+    needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
+    companyLink: "Compléter mon profil",
+  },
+
+  // The form of an offer, new or changed
+  offerForm: {
+    newTitle: "Nouvelle offre",
+    editTitle: "Modifier l'offre",
+    back: "Mes offres",
+    notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
+    title: "Titre",
+    description: "Description",
+    descriptionHint: "Le poste, l'équipe, le profil recherché. Les sauts de ligne sont conservés.",
+    city: "Ville",
+    country: "Pays",
+    chooseCountry: "Choisir un pays",
+    contract: "Contrat",
+    chooseContract: "Choisir un contrat",
+    remote: "Télétravail",
+    workload: "Taux d'activité (%)",
+    workloadMax: "Taux maximum",
+    workloadHint: "Du premier chiffre au second ; le même chiffre dans les deux pour un taux fixe.",
+    experience: "Années d'expérience demandées",
+    salary: "Salaire brut",
+    salaryMax: "Salaire maximum",
+    salaryHint: "Minimum et maximum, ou un seul des deux ; les deux vides pour ne rien dire.",
+    required: "Ce champ est obligatoire.",
+    save: "Enregistrer",
+    saveAndPublish: "Enregistrer et publier",
+    saveAndRepublish: "Enregistrer et republier",
   },
 
   // Not-found page, for any address the router does not know
