@@ -9,7 +9,9 @@
   company, the title, the facts in a list, then the description as it was
   typed, line breaks kept. Under the heading, the way to apply: a button
   for a candidate, an invitation to log in for a visitor, and, once
-  applied, the date and the state of the application sent.
+  applied, the date and the state of the application sent. For the
+  employer of the offer: its state, and the way to its form and to its
+  applications.
 -->
 
 <script setup lang="ts">
@@ -100,9 +102,26 @@ onMounted(() => {
       </div>
     </header>
 
+    <!-- The employer of the offer: its state, its form, its applications -->
+    <div v-if="offer.mine" class="apply mine">
+      <p>
+        {{ t("offers.yours") }}
+        <span class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+      </p>
+      <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }" class="secondary">
+        {{ t("offers.editLink") }}
+      </RouterLink>
+      <RouterLink
+        v-if="offer.status !== 'draft'"
+        :to="{ name: 'offerApplications', params: { id: offer.id } }"
+        class="secondary"
+      >
+        {{ t("myOffers.applications", offer.applications_count ?? 0) }}
+      </RouterLink>
+    </div>
     <!-- Applying: the application sent, or the button, or the invitation
          to log in; nothing for an employer, nor once the offer is closed -->
-    <div v-if="myApplication" class="apply applied">
+    <div v-else-if="myApplication" class="apply applied">
       <p>
         {{ t("offers.applied", { date: applicationText.date(myApplication.created_at) }) }}
         <span class="pill" :class="myApplication.status">{{ applicationText.status(myApplication.status) }}</span>
@@ -220,8 +239,10 @@ onMounted(() => {
   text-decoration: none;
 }
 
-/* The application sent: the date and the state, a link to the list */
-.applied {
+/* The application sent, or the employer's own offer: a line and links in
+   a box */
+.applied,
+.mine {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -232,11 +253,25 @@ onMounted(() => {
   background: var(--mt-surface);
 }
 
-.applied p {
+.applied p,
+.mine p {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 0;
+}
+
+.secondary {
+  padding: 8px 16px;
+  border: 1px solid var(--mt-border);
+  border-radius: 4px;
+  background: var(--mt-background);
+  color: var(--mt-text);
+  text-decoration: none;
+}
+
+.secondary:hover {
+  background: var(--mt-border);
 }
 
 .pill {
@@ -256,6 +291,7 @@ onMounted(() => {
   color: var(--mt-blue);
 }
 
+.pill.published,
 .pill.accepted {
   border-color: var(--mt-success-surface);
   background: var(--mt-success-surface);
@@ -265,6 +301,11 @@ onMounted(() => {
 .pill.rejected {
   border-color: var(--mt-error);
   color: var(--mt-error);
+}
+
+.pill.closed {
+  background: var(--mt-border);
+  color: var(--mt-text);
 }
 
 /* The sections, separated by a rule, as on the profile page */

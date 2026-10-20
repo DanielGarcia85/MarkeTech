@@ -53,8 +53,11 @@ onMounted(load);
 </script>
 
 <template>
+  <!-- Two ways back: the list of the offers, the list of all the applications -->
   <p class="back">
     <RouterLink :to="{ name: 'myOffers' }">← {{ t("offerApplications.back") }}</RouterLink>
+    ·
+    <RouterLink :to="{ name: 'receivedApplications' }">← {{ t("offerApplications.backToReceived") }}</RouterLink>
   </p>
 
   <p v-if="notFound" class="notice">{{ t("offerApplications.notFound") }}</p>
@@ -65,6 +68,7 @@ onMounted(load);
       <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
       · {{ offer.city }}
       <span class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+      <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }">{{ t("offers.editLink") }}</RouterLink>
     </p>
 
     <p v-if="loadFailed" class="error">{{ t("offerApplications.loadFailed") }}</p>
@@ -86,8 +90,10 @@ onMounted(load);
 </template>
 
 <style scoped>
+/* The two ways back, separated by a dot in the muted colour */
 .back {
   margin: 0 0 16px;
+  color: var(--mt-muted);
 }
 
 .back a {

@@ -351,6 +351,9 @@ const fr: typeof en = {
     loginLink: "Connectez-vous",
     applied: "Vous avez postulé le {date}",
     myApplicationsLink: "Mes candidatures",
+    // The employer of the offer, under its heading
+    yours: "Cette offre est la vôtre",
+    editLink: "Modifier l'offre",
     description: "Le poste",
     facts: "En bref",
     place: "Lieu",
@@ -486,6 +489,7 @@ const fr: typeof en = {
   offerApplications: {
     title: "Candidatures",
     back: "Mes offres",
+    backToReceived: "Candidatures reçues",
     notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
     count: "Aucune candidature pour l'instant | {count} candidature | {count} candidatures",

@@ -349,6 +349,9 @@ export default {
     loginLink: "Log in",
     applied: "You applied on {date}",
     myApplicationsLink: "My applications",
+    // The employer of the offer, under its heading
+    yours: "This offer is yours",
+    editLink: "Edit the offer",
     description: "The position",
     facts: "In short",
     place: "Place",
@@ -484,6 +487,7 @@ export default {
   offerApplications: {
     title: "Applications",
     back: "My offers",
+    backToReceived: "Applications received",
     notFound: "This offer does not exist, or is not yours.",
     loadFailed: "The applications could not be loaded.",
     count: "No application yet | {count} application | {count} applications",
