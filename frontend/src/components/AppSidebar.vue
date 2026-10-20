@@ -25,6 +25,12 @@ const session = useSession();
     <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
       {{ t("nav.myOffers") }}
     </RouterLink>
+    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
+      {{ t("nav.receivedApplications") }}
+    </RouterLink>
+    <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
+      {{ t("nav.myApplications") }}
+    </RouterLink>
     <p class="group">{{ t("nav.account") }}</p>
     <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
   </nav>

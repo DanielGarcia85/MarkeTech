@@ -70,6 +70,10 @@ INSTALLED_APPS = [
     "profiles",
     # Offers: the job offers of the employers
     "offers",
+    # Applications: the candidates applying to the offers
+    "applications",
+    # Demo: the seed_demo command only, test data for a development database
+    "demo",
 ]
 
 # Model used for every user account, instead of Django's default one. Must be

@@ -157,7 +157,17 @@ onMounted(() => {
     <RouterLink :to="{ name: 'myOffers' }">← {{ t("offerForm.back") }}</RouterLink>
   </p>
 
-  <h1>{{ offer ? t("offerForm.editTitle") : t("offerForm.newTitle") }}</h1>
+  <div class="head">
+    <h1>{{ offer ? t("offerForm.editTitle") : t("offerForm.newTitle") }}</h1>
+    <!-- The applications received by the offer being edited -->
+    <RouterLink
+      v-if="offer && offer.status !== 'draft'"
+      :to="{ name: 'offerApplications', params: { id: offer.id } }"
+      class="secondary applications"
+    >
+      {{ t("myOffers.applications", offer.applications_count ?? 0) }}
+    </RouterLink>
+  </div>
 
   <p v-if="notFound" class="notice">{{ t("offerForm.notFound") }}</p>
 
@@ -274,6 +284,19 @@ onMounted(() => {
 
 .back a:hover {
   text-decoration: underline;
+}
+
+/* The title on the left, the link to the applications on the right */
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.applications {
+  text-decoration: none;
 }
 
 h1 {

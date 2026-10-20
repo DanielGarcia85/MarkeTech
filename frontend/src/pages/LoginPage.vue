@@ -7,20 +7,31 @@
   authentication API through the session module, which keeps the user on
   success. A 400 shows its errors under the fields, a 401 means the address
   has not been verified yet, a 429 that the attempts come too fast. Once
-  logged in, the visitor goes to the home page (a user already logged in
-  never reaches this page: the router sends them home).
+  logged in, the visitor goes to the page they were asking for, given in
+  the address as ?next= by the router or by a link, or to the home page (a
+  user already logged in never reaches this page: the router sends them
+  home).
 -->
 
 <script setup lang="ts">
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import { errorsByParam } from "../api/http";
 import { login } from "../session";
 
 const { t } = useI18n();
+const route = useRoute();
 const router = useRouter();
+
+// Where to go once logged in: the address asked for, when it is one of
+// this site (a path, not an address of another site), else the home page
+function next(): string {
+  const asked = route.query.next;
+  const path = typeof asked === "string" ? asked : "";
+  return path.startsWith("/") && !path.startsWith("//") ? path : "/";
+}
 
 // What the visitor types
 const email = ref("");
@@ -39,7 +50,7 @@ async function submit(): Promise<void> {
   try {
     const answer = await login(email.value, password.value);
     if (answer.status === 200) {
-      router.replace({ name: "home" });
+      router.replace(next());
     } else if (answer.status === 401) {
       // The only step the API can still ask for here: verify the address
       unverified.value = true;

@@ -7,9 +7,11 @@
   router sends anyone else away). The offers as cards, newest first, with
   their state and the moves allowed from it: a draft is edited, published
   or deleted; a published offer is edited or closed; a closed offer is
-  published again or deleted. A deletion asks for a confirmation. A refused
-  move shows the reason under the card; the usual one, a company without a
-  name, links to the profile.
+  published again or deleted. A deletion asks for a confirmation, and is
+  not offered once candidates applied: the offer is closed instead. Each
+  card links to the applications received. A refused move shows the reason
+  under the card; the usual one, a company without a name, links to the
+  profile.
 -->
 
 <script setup lang="ts">
@@ -121,6 +123,16 @@ onMounted(() => {
     <ul v-else class="cards">
       <li v-for="offer in offers" :key="offer.id">
         <OfferCard :offer="offer" :countries="countries" show-status>
+          <!-- The applications received: a link when there are some, a
+               word when none; a draft cannot have any -->
+          <RouterLink
+            v-if="offer.applications_count"
+            :to="{ name: 'offerApplications', params: { id: offer.id } }"
+            class="secondary"
+          >
+            {{ t("myOffers.applications", offer.applications_count) }}
+          </RouterLink>
+          <span v-else-if="offer.status !== 'draft'" class="none">{{ t("myOffers.applications", 0) }}</span>
           <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }" class="secondary">
             {{ t("myOffers.edit") }}
           </RouterLink>
@@ -143,7 +155,7 @@ onMounted(() => {
             {{ t("myOffers.close") }}
           </button>
           <button
-            v-if="offer.status !== 'published'"
+            v-if="offer.status !== 'published' && !offer.applications_count"
             type="button"
             class="as-link danger"
             :disabled="busy === offer.id"
@@ -213,6 +225,11 @@ onMounted(() => {
 /* Deleting, in the colour of the errors */
 .danger {
   color: var(--mt-error);
+}
+
+/* No application yet: a word in the place of the link */
+.none {
+  color: var(--mt-muted);
 }
 
 /* The reason of a refused move takes a whole line under the buttons */
