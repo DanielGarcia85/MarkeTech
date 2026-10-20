@@ -20,6 +20,7 @@ export default {
 
   // Header: session state and links of the account
   header: {
+    offers: "Offers",
     signup: "Sign up",
     login: "Log in",
     profile: "My profile",
@@ -243,6 +244,61 @@ export default {
     newPasswordConfirm: "Confirm the new password",
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
+  },
+
+  // Job offers: the public list, its filters, and the detail of an offer
+  offers: {
+    title: "Job offers",
+    count: "No offer | {count} offer | {count} offers",
+    filters: "Filters",
+    search: "Search",
+    reset: "Reset",
+    keyword: "Keyword",
+    keywordHint: "In the title",
+    city: "City",
+    country: "Country",
+    anyCountry: "Any country",
+    contractLabel: "Contract",
+    anyContract: "Any contract",
+    remoteLabel: "Remote work",
+    anyRemote: "Any",
+    salaryMin: "Minimum salary (CHF)",
+    publishedAfter: "Published since",
+    none: "No offer matches these criteria.",
+    loadFailed: "The offers could not be loaded.",
+    page: "Page {page} of {pages}",
+    previous: "Previous",
+    next: "Next",
+    publishedOn: "Published on {date}",
+    detailsLink: "View the offer",
+    back: "All offers",
+    notFound: "This offer does not exist, or is no longer published.",
+    description: "The position",
+    facts: "In short",
+    place: "Place",
+    salaryLabel: "Salary",
+    experienceLabel: "Experience",
+    contract: {
+      permanent: "Permanent",
+      fixed_term: "Fixed term",
+      internship: "Internship",
+      student: "Student job",
+    },
+    remote: {
+      on_site: "On site",
+      hybrid: "Hybrid",
+      remote: "Remote",
+    },
+    period: {
+      month: "per month",
+      year: "per year",
+    },
+    salary: {
+      range: "CHF {range} {period}",
+      from: "From CHF {amount} {period}",
+      upTo: "Up to CHF {amount} {period}",
+    },
+    experience: "{count} year of experience | {count} years of experience",
   },
 
   // Not-found page, for any address the router does not know

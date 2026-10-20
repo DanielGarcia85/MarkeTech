@@ -20,6 +20,8 @@ import NewPasswordPage from "./pages/NewPasswordPage.vue";
 import PasswordResetPage from "./pages/PasswordResetPage.vue";
 import PrivacyPage from "./pages/PrivacyPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
+import OffersPage from "./pages/OffersPage.vue";
+import OfferPage from "./pages/OfferPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import { useSession, whenLoaded } from "./session";
 
@@ -44,6 +46,9 @@ export const router = createRouter({
     { path: "/account/password/reset", name: "passwordReset", component: PasswordResetPage },
     { path: "/account/password/reset/:key", name: "newPassword", component: NewPasswordPage },
     { path: "/account/profile", name: "profile", component: ProfilePage, meta: { requiresAuth: true } },
+    // The job offers: the public list, then one offer by its number
+    { path: "/offers", name: "offers", component: OffersPage },
+    { path: "/offers/:id(\\d+)", name: "offer", component: OfferPage },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     // Any other address: the "not found" page, the address left as typed
     { path: "/:pathMatch(.*)*", name: "notFound", component: NotFoundPage },

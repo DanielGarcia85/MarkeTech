@@ -22,6 +22,7 @@ const fr: typeof en = {
 
   // Header: session state and links of the account
   header: {
+    offers: "Offres",
     signup: "S'inscrire",
     login: "Se connecter",
     profile: "Mon profil",
@@ -245,6 +246,61 @@ const fr: typeof en = {
     newPasswordConfirm: "Confirmez le nouveau mot de passe",
     changePassword: "Changer de mot de passe",
     passwordChanged: "Mot de passe changé.",
+  },
+
+  // Job offers: the public list, its filters, and the detail of an offer
+  offers: {
+    title: "Offres d'emploi",
+    count: "Aucune offre | {count} offre | {count} offres",
+    filters: "Filtres",
+    search: "Rechercher",
+    reset: "Réinitialiser",
+    keyword: "Mot-clé",
+    keywordHint: "Dans le titre",
+    city: "Ville",
+    country: "Pays",
+    anyCountry: "Tous les pays",
+    contractLabel: "Contrat",
+    anyContract: "Tous les contrats",
+    remoteLabel: "Télétravail",
+    anyRemote: "Indifférent",
+    salaryMin: "Salaire minimum (CHF)",
+    publishedAfter: "Publiée depuis le",
+    none: "Aucune offre ne correspond à ces critères.",
+    loadFailed: "Les offres n'ont pas pu être chargées.",
+    page: "Page {page} sur {pages}",
+    previous: "Précédent",
+    next: "Suivant",
+    publishedOn: "Publiée le {date}",
+    detailsLink: "Voir l'offre",
+    back: "Toutes les offres",
+    notFound: "Cette offre n'existe pas, ou n'est plus publiée.",
+    description: "Le poste",
+    facts: "En bref",
+    place: "Lieu",
+    salaryLabel: "Salaire",
+    experienceLabel: "Expérience",
+    contract: {
+      permanent: "CDI",
+      fixed_term: "CDD",
+      internship: "Stage",
+      student: "Job étudiant",
+    },
+    remote: {
+      on_site: "Sur site",
+      hybrid: "Hybride",
+      remote: "À distance",
+    },
+    period: {
+      month: "par mois",
+      year: "par an",
+    },
+    salary: {
+      range: "CHF {range} {period}",
+      from: "Dès CHF {amount} {period}",
+      upTo: "Jusqu'à CHF {amount} {period}",
+    },
+    experience: "{count} an d'expérience | {count} ans d'expérience",
   },
 
   // Not-found page, for any address the router does not know
