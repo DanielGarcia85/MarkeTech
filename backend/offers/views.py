@@ -23,6 +23,10 @@ Routes (offers/urls.py, under /api/, built by the router)
   POST    offers/<id>/publish/  employer: draft or closed -> published
   POST    offers/<id>/close/    employer: published -> closed
 
+An offer that received applications is not deleted (the candidates would
+lose their trace): closed instead. The employer's answers carry the number
+of applications received, the public ones do not.
+
 Who may do what
 ───────────────
 Reading the list and a published offer is public. Everything else needs a
@@ -40,7 +44,7 @@ moves are added as actions. The whole decision is in get_queryset() and in
 get_permissions().
 """
 
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from rest_framework import filters, permissions, status, viewsets
@@ -53,7 +57,7 @@ from accounts.models import User
 from profiles.models import EmployerProfile
 
 from .models import JobOffer
-from .serializers import JobOfferSerializer
+from .serializers import JobOfferSerializer, MyOfferSerializer
 
 # ── Who ───────────────────────────────────────────────────────────────
 
@@ -110,6 +114,13 @@ class JobOfferViewSet(viewsets.ModelViewSet):
             return [permissions.AllowAny()]
         return [IsEmployer()]
 
+    def get_serializer_class(self):
+        """The public shape for the reading, the employer's shape (with the
+        number of applications) for everything else."""
+        if self.action in ("list", "retrieve"):
+            return JobOfferSerializer
+        return MyOfferSerializer
+
     def get_queryset(self):
         """What the request may see, before any filter of the list."""
         offers = JobOffer.objects.select_related("employer__user")
@@ -154,13 +165,23 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         """A new offer belongs to the employer who sends it, as a draft."""
         serializer.save(employer=employer_profile_of(self.request.user))
 
+    def perform_destroy(self, offer):
+        """Refused once candidates applied: the offer is closed instead, and
+        the applications stay with their candidates."""
+        if offer.applications.exists():
+            message = "This offer has received applications: close it instead of deleting it."
+            raise ValidationError({"non_field_errors": [message]})
+        offer.delete()
+
     # ── The extra routes ──────────────────────────────────────────────
 
     @action(detail=False, methods=["get"])
     def mine(self, request):
-        """All the offers of the employer, in any state, newest first;
-        no pages: an employer has a handful of offers."""
-        offers = self.get_queryset().order_by("-created_at")
+        """All the offers of the employer, in any state, newest first, each
+        with its number of applications counted by the same query; no
+        pages: an employer has a handful of offers."""
+        offers = self.get_queryset().annotate(applications_count=Count("applications"))
+        offers = offers.order_by("-created_at")
         return Response(self.get_serializer(offers, many=True).data)
 
     @action(detail=True, methods=["post"])

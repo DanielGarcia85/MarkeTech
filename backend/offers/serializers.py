@@ -18,7 +18,9 @@ choices as their stored values (draft, permanent, hybrid...: the frontend
 has the translated texts), plus "company": the name and the logo URL read on
 the profile of the employer at the time of the answer, never copied. The
 status and the dates are read only: the status moves through the publish
-and close routes, the dates are set by the model.
+and close routes, the dates are set by the model. For the employer only,
+"applications_count": how many candidates applied (the public does not
+need it, and an offer does not say how many compete for it).
 """
 
 from django_countries.serializers import CountryFieldMixin
@@ -78,3 +80,18 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
         if errors:
             raise serializers.ValidationError(errors)
         return data
+
+
+class MyOfferSerializer(JobOfferSerializer):
+    """A job offer as its employer sees it: the same, with the number of
+    applications received."""
+
+    applications_count = serializers.SerializerMethodField()
+
+    class Meta(JobOfferSerializer.Meta):
+        fields = JobOfferSerializer.Meta.fields + ["applications_count"]
+
+    def get_applications_count(self, offer):
+        """Counted by the query of the list when it did (mine), else now."""
+        count = getattr(offer, "applications_count", None)
+        return offer.applications.count() if count is None else count
