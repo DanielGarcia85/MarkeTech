@@ -46,6 +46,7 @@ const fr: typeof en = {
     linkedin: "LinkedIn",
     portfolio: "Portfolio",
     contact: "Contact",
+    terms: "Conditions d'utilisation",
     privacy: "Confidentialité",
     copyright: "© {year} Daniel Garcia",
   },
@@ -61,6 +62,10 @@ const fr: typeof en = {
     role: "Je suis",
     candidate: "Candidat",
     employer: "Employeur",
+    terms: "J'accepte les {terms} et j'ai lu la {privacy}.",
+    termsLink: "conditions d'utilisation",
+    privacyLink: "politique de confidentialité",
+    termsRequired: "Vous devez accepter les conditions d'utilisation pour créer un compte.",
     submit: "Créer mon compte",
     sent: "Nous avons envoyé un e-mail à {email}. Ouvrez-le et suivez son lien pour activer votre compte.",
     haveAccount: "Déjà un compte ?",
@@ -187,6 +192,67 @@ const fr: typeof en = {
       changes: {
         title: "Modifications de cette page",
         intro: ["Cette page décrit le site tel qu'il est. Elle change quand le site change, et la date en tête dit quand elle a été mise à jour pour la dernière fois."],
+      },
+    },
+  },
+
+  // Terms of use, accepted at sign-up: sections in the same shape as the
+  // privacy page (title and paragraphs)
+  terms: {
+    title: "Conditions d'utilisation",
+    updated: "Dernière mise à jour : 20 octobre 2026",
+    sections: {
+      purpose: {
+        title: "Ce qu'est MarkeTech",
+        intro: [
+          "MarkeTech est un projet de démonstration réalisé par Daniel Garcia, à Genève, pour montrer son travail : une plateforme d'offres d'emploi pour les étudiants et les jeunes diplômés en informatique. Il n'a aucune activité commerciale : aucune offre n'engage qui que ce soit, personne n'est recruté par son intermédiaire, et rien n'y est vendu.",
+          "En créant un compte, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le site.",
+        ],
+      },
+      account: {
+        title: "Votre compte",
+        intro: [
+          "Un compte est personnel : une personne, une adresse e-mail qui vous appartient, un mot de passe que vous gardez pour vous. Vous choisissez votre rôle à l'inscription, candidat ou employeur, et vous répondez de ce qui est fait avec votre compte.",
+          "Vous pouvez demander la suppression de votre compte à tout moment, en écrivant à {contact} depuis l'adresse du compte ; tout ce qui s'y rattache est supprimé avec lui.",
+        ],
+      },
+      use: {
+        title: "Usage du site",
+        intro: [
+          "Le site est là pour être essayé. Vous n'avez pas besoin d'y mettre de vrais documents ni de vraies données, et vous n'y mettez pas les données d'une autre personne sans son accord.",
+          "Il est interdit d'y publier un contenu illicite, trompeur ou offensant, de se faire passer pour quelqu'un d'autre, de tenter d'accéder à un compte ou à des données qui ne sont pas les vôtres, ou de perturber le fonctionnement du site, par exemple par des requêtes automatisées.",
+        ],
+      },
+      content: {
+        title: "Ce que vous publiez",
+        intro: [
+          "Ce que vous publiez (profil, offres, documents) reste à vous, et vous en répondez : un employeur est responsable des offres qu'il publie. En le publiant, vous autorisez le site à le montrer aux personnes que ses fonctions impliquent, et à tout visiteur pour une offre publiée.",
+          "L'administrateur du site peut retirer un contenu contraire aux présentes conditions, et suspendre ou supprimer le compte qui l'a publié, sans préavis.",
+        ],
+      },
+      availability: {
+        title: "Sans garantie",
+        intro: [
+          "Le site est fourni tel quel, sans garantie de disponibilité ni d'exactitude : il peut changer, être interrompu ou s'arrêter à tout moment, sans préavis. Dans les limites de la loi, son auteur ne répond pas d'un dommage lié à son usage ou à son indisponibilité.",
+        ],
+      },
+      data: {
+        title: "Vos données",
+        intro: [
+          "Ce que le site fait de vos données est décrit dans la politique de confidentialité, accessible depuis le pied de page. Vous en prenez connaissance en créant un compte.",
+        ],
+      },
+      law: {
+        title: "Droit applicable",
+        intro: [
+          "Les présentes conditions sont soumises au droit suisse. Le for est à Genève, sous réserve des dispositions impératives.",
+        ],
+      },
+      changes: {
+        title: "Modifications de ces conditions",
+        intro: [
+          "Ces conditions peuvent changer avec le site ; la date en tête dit quand elles ont été mises à jour pour la dernière fois. En continuant d'utiliser le site après une modification, vous l'acceptez.",
+        ],
       },
     },
   },

@@ -45,7 +45,11 @@ const year = new Date().getFullYear();
       </li>
     </ul>
     <p class="legal">
-      <RouterLink :to="{ name: 'privacy' }">{{ t("footer.privacy") }}</RouterLink>
+      <span class="pages">
+        <RouterLink :to="{ name: 'terms' }">{{ t("footer.terms") }}</RouterLink>
+        ·
+        <RouterLink :to="{ name: 'privacy' }">{{ t("footer.privacy") }}</RouterLink>
+      </span>
       <span>{{ t("footer.copyright", { year }) }}</span>
     </p>
   </footer>

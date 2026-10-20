@@ -19,6 +19,7 @@ import VerifyEmailPage from "./pages/VerifyEmailPage.vue";
 import NewPasswordPage from "./pages/NewPasswordPage.vue";
 import PasswordResetPage from "./pages/PasswordResetPage.vue";
 import PrivacyPage from "./pages/PrivacyPage.vue";
+import TermsPage from "./pages/TermsPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
 import OfferPage from "./pages/OfferPage.vue";
 import MyOffersPage from "./pages/MyOffersPage.vue";
@@ -58,6 +59,7 @@ export const router = createRouter({
     { path: "/employer/offers/new", name: "offerNew", component: OfferFormPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/:id(\\d+)/edit", name: "offerEdit", component: OfferFormPage, meta: { requiresRole: "employer" } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
+    { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed
     { path: "/:pathMatch(.*)*", name: "notFound", component: NotFoundPage },
   ],

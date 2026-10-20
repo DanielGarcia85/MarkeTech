@@ -42,8 +42,11 @@ class UserAdmin(DjangoUserAdmin):
                 ),
             },
         ),
-        ("Important dates", {"fields": ("last_login", "date_joined")}),
+        ("Important dates", {"fields": ("last_login", "date_joined", "terms_accepted_at")}),
     )
+
+    # Set by the sign-up form only: shown, never edited by hand
+    readonly_fields = ("terms_accepted_at",)
 
     # Screen that creates a user
     add_fieldsets = (
