@@ -42,4 +42,6 @@ urlpatterns = [
     path("api/", include("profiles.urls")),
     # Offers API: the job offers, public reading and management by the employers
     path("api/", include("offers.urls")),
+    # Applications API: the candidates applying to the offers, both sides reading
+    path("api/", include("applications.urls")),
 ]

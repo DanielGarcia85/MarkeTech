@@ -63,7 +63,8 @@ def application_file_path(application, filename):
 def attachment_path(attachment, filename):
     """Documents joined: applications/<user id>/<offer id>/documents/<file name>."""
     application = attachment.application
-    return f"applications/{application.candidate.user_id}/{application.offer_id}/documents/{filename}"
+    folder = f"applications/{application.candidate.user_id}/{application.offer_id}"
+    return f"{folder}/documents/{filename}"
 
 
 # ── Models ────────────────────────────────────────────────────────────
