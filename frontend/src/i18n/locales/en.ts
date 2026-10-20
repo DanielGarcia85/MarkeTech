@@ -12,6 +12,12 @@ export default {
     notice: "This application is under construction.",
   },
 
+  // The two roles, as shown to the logged-in user (header menu, profile)
+  roles: {
+    candidate: "Candidate",
+    employer: "Employer",
+  },
+
   // Header: session state and links of the account
   header: {
     signup: "Sign up",

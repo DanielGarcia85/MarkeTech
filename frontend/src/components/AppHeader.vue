@@ -5,8 +5,9 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page, and kept at the top of the
   window while the page scrolls. A logged-in user is shown as a round with
-  their initials, which opens a small menu: their name, the profile, the
-  way to log out. A visitor gets the links to sign up and to log in.
+  their initials, which opens a small menu: their name and role, the
+  profile, the way to log out. A visitor gets the links to sign up and to
+  log in.
 -->
 
 <script setup lang="ts">
@@ -93,7 +94,10 @@ async function leave(): Promise<void> {
           {{ initials }}
         </button>
         <div v-if="open" class="menu" role="menu">
-          <p class="who">{{ session.user.display }}</p>
+          <p class="who">
+            {{ session.user.display }}
+            <span v-if="session.user.role" class="role">{{ t("roles." + session.user.role) }}</span>
+          </p>
           <RouterLink :to="{ name: 'profile' }" role="menuitem" @click="open = false">
             {{ t("header.profile") }}
           </RouterLink>
@@ -191,14 +195,23 @@ async function leave(): Promise<void> {
   box-shadow: 0 8px 24px rgba(30, 41, 59, 0.12);
 }
 
-/* The name of the account, at the top of the menu, not clickable */
+/* The name of the account, at the top of the menu, not clickable, with
+   the role under it in smaller letters */
 .who {
   margin: 0;
   padding: 6px 14px 8px;
   border-bottom: 1px solid var(--mt-border);
-  color: var(--mt-muted);
+  color: var(--mt-text);
   font-size: 0.85rem;
   white-space: nowrap;
+}
+
+.role {
+  display: block;
+  color: var(--mt-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* One entry per line, link or button alike */
