@@ -94,6 +94,8 @@ class OfferApiTests(TestCase):
         self.assertEqual(offer["company"], {"name": "Acme", "logo": None})
         self.assertEqual(offer["currency"], "CHF")
         self.assertIsNotNone(offer["published_at"])
+        # Nobody's own, for a visitor
+        self.assertFalse(offer["mine"])
 
     def test_the_list_is_newest_first_and_can_be_ordered(self):
         old = self.offer(title="Old")
@@ -233,6 +235,8 @@ class OfferApiTests(TestCase):
         response = self.login(self.employer).get("/api/offers/mine/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(sorted(o["title"] for o in response.json()), ["Closed", "Draft", "Published"])
+        # Each one their own, with its number of applications
+        self.assertTrue(all(o["mine"] and o["applications_count"] == 0 for o in response.json()))
         self.assertEqual(self.login(self.candidate).get("/api/offers/mine/").status_code, 403)
         self.assertEqual(Client().get("/api/offers/mine/").status_code, 403)
 

@@ -18,9 +18,12 @@ choices as their stored values (draft, permanent, hybrid...: the frontend
 has the translated texts), plus "company": the name and the logo URL read on
 the profile of the employer at the time of the answer, never copied. The
 status and the dates are read only: the status moves through the publish
-and close routes, the dates are set by the model. For the employer only,
-"applications_count": how many candidates applied (the public does not
-need it, and an offer does not say how many compete for it).
+and close routes, the dates are set by the model. "mine": whether the
+offer belongs to the user asking, so that the pages know what to offer
+(editing, the applications) without comparing names. For the employer of
+the offer only, "applications_count": how many candidates applied (the
+public does not need it, and an offer does not say how many compete for
+it).
 """
 
 from django_countries.serializers import CountryFieldMixin
@@ -33,6 +36,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
     """A job offer, for the public list as for its employer."""
 
     company = serializers.SerializerMethodField()
+    mine = serializers.SerializerMethodField()
 
     class Meta:
         model = JobOffer
@@ -56,6 +60,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "company",
+            "mine",
         ]
         read_only_fields = ["status", "published_at", "created_at", "updated_at"]
 
@@ -66,6 +71,12 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
             "name": employer.company_name,
             "logo": employer.logo.url if employer.logo else None,
         }
+
+    def get_mine(self, offer):
+        """Whether the user asking is the employer of the offer; false for
+        a visitor, a candidate, another employer, or without a request."""
+        request = self.context.get("request")
+        return bool(request) and offer.employer.user_id == request.user.pk
 
     def validate(self, data):
         """The checks that need more than one field: a range is not reversed."""
@@ -84,7 +95,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
 class MyOfferSerializer(JobOfferSerializer):
     """A job offer as its employer sees it: the same, with the number of
-    applications received."""
+    applications received. Never given for somebody else's offer."""
 
     applications_count = serializers.SerializerMethodField()
 

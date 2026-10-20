@@ -25,7 +25,8 @@ Routes (offers/urls.py, under /api/, built by the router)
 
 An offer that received applications is not deleted (the candidates would
 lose their trace): closed instead. The employer's answers carry the number
-of applications received, the public ones do not.
+of applications received, the public ones do not; the detail of an offer
+carries it for its own employer only.
 
 Who may do what
 ───────────────
@@ -120,6 +121,13 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         if self.action in ("list", "retrieve"):
             return JobOfferSerializer
         return MyOfferSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """One offer: the employer's shape for their own, the public shape
+        for anybody else's (the count is not for the competition)."""
+        offer = self.get_object()
+        shape = MyOfferSerializer if offer.employer.user_id == request.user.pk else JobOfferSerializer
+        return Response(shape(offer, context=self.get_serializer_context()).data)
 
     def get_queryset(self):
         """What the request may see, before any filter of the list."""

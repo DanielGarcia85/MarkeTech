@@ -449,8 +449,14 @@ class ApplicationApiTests(MediaTestCase):
         client = self.login(self.employer)
         counts = {o["id"]: o["applications_count"] for o in client.get("/api/offers/mine/").json()}
         self.assertEqual(counts, {self.offer.pk: 2, empty.pk: 0})
-        # The public does not see the count
-        self.assertNotIn("applications_count", Client().get("/api/offers/%d/" % self.offer.pk).json())
+        # The detail of the offer: the count for its employer, who sees it is
+        # theirs; neither for the public nor for another employer
+        detail = client.get("/api/offers/%d/" % self.offer.pk).json()
+        self.assertEqual((detail["mine"], detail["applications_count"]), (True, 2))
+        for other in (Client(), self.login(self.other_employer), self.login(self.candidate)):
+            detail = other.get("/api/offers/%d/" % self.offer.pk).json()
+            self.assertFalse(detail["mine"])
+            self.assertNotIn("applications_count", detail)
         response = client.delete("/api/offers/%d/" % self.offer.pk)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
