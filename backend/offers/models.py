@@ -28,7 +28,6 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
-from django.db.models.functions import Lower
 from django.utils import timezone
 from django_countries.fields import CountryField
 
@@ -61,6 +60,10 @@ class JobOffer(models.Model):
     class SalaryPeriod(models.TextChoices):
         MONTH = "month", "Per month"
         YEAR = "year", "Per year"
+
+    class Currency(models.TextChoices):
+        CHF = "CHF", "Swiss franc"
+        EUR = "EUR", "Euro"
 
     # ── Who and what ──────────────────────────────────────────────────
     # The offers of an employer are deleted with their profile. From the
@@ -98,14 +101,20 @@ class JobOffer(models.Model):
         blank=True,
         validators=[MinValueValidator(10), MaxValueValidator(100)],
     )
-    # Gross salary in Swiss francs, as a range, per month or per year; both
-    # amounts optional, min <= max when both are given
+    # Gross salary as a range, per month or per year, in francs or in euros
+    # (an offer in France: decision of 20.10.2026); both amounts optional,
+    # min <= max when both are given
     salary_min = models.PositiveIntegerField(null=True, blank=True)
     salary_max = models.PositiveIntegerField(null=True, blank=True)
     salary_period = models.CharField(
         max_length=5,
         choices=SalaryPeriod.choices,
         default=SalaryPeriod.MONTH,
+    )
+    currency = models.CharField(
+        max_length=3,
+        choices=Currency.choices,
+        default=Currency.CHF,
     )
     experience_years = models.PositiveSmallIntegerField(null=True, blank=True)
 
@@ -126,8 +135,9 @@ class JobOffer(models.Model):
         ordering = ["-created_at"]
         constraints = [
             # The database refuses what the forms and the API check first:
-            # a range reversed, or the same title twice among the offers of
-            # an employer that are not closed (case-insensitive)
+            # a range reversed. Nothing about the titles: an employer may
+            # post the same title twice, in two cities (decision of
+            # 20.10.2026)
             models.CheckConstraint(
                 condition=(
                     Q(salary_min__isnull=True)
@@ -146,19 +156,12 @@ class JobOffer(models.Model):
                 name="offer_workload_min_lte_max",
                 violation_error_message="The maximum workload must be at least the minimum.",
             ),
-            models.UniqueConstraint(
-                "employer",
-                Lower("title"),
-                condition=~Q(status="closed"),
-                name="offer_title_unique_per_employer",
-                violation_error_message="This employer already has an offer with this title.",
-            ),
         ]
 
     def __str__(self):
         return self.title
 
-        # ── The date of publication ───────────────────────────────────────
+    # ── The date of publication ───────────────────────────────────────
     # Whoever changes the status (the API, the admin site), the date
     # follows: the model remembers the status it was loaded with, and
     # save() stamps published_at when the offer becomes published

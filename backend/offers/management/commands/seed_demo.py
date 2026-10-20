@@ -566,6 +566,8 @@ EMPLOYERS = [
         "company_city": "Lyon",
         "company_country": "FR",
         "company_phone": "+33 4 00 00 00 30",
+        # The currency of the salaries of its offers (CHF when not given)
+        "currency": "EUR",
         "offers": [
             {
                 "title": "Développeur·euse front-end Vue.js",
@@ -849,16 +851,19 @@ class Command(BaseCommand):
         company = {key: person[key] for key in person if key.startswith("company_")}
         profile = EmployerProfile.objects.create(user=user, **self.contact(person), **company)
         for offer in person["offers"]:
-            self.offer(profile, offer)
+            self.offer(profile, offer, person.get("currency", JobOffer.Currency.CHF))
         return len(person["offers"])
 
-    def offer(self, profile, fields):
-        """One offer, dated days_ago days before today when it was published
-        (a closed offer was published once too)."""
+    def offer(self, profile, fields, currency):
+        """One offer, in the currency of its employer, dated days_ago days
+        before today when it was published (a closed offer was published
+        once too)."""
         fields = dict(fields)
         status = fields.pop("status")
         days_ago = fields.pop("days_ago")
-        offer = JobOffer.objects.create(employer=profile, status=JobOffer.Status.DRAFT, **fields)
+        offer = JobOffer.objects.create(
+            employer=profile, status=JobOffer.Status.DRAFT, currency=currency, **fields
+        )
         if status != JobOffer.Status.DRAFT:
             # Written straight to the row: save() would stamp today
             published_at = timezone.now() - timedelta(days=days_ago)

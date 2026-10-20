@@ -55,6 +55,7 @@ from profiles.models import EmployerProfile
 from .models import JobOffer
 from .serializers import JobOfferSerializer
 
+
 # ── Who ───────────────────────────────────────────────────────────────
 
 
@@ -139,11 +140,13 @@ class JobOfferViewSet(viewsets.ModelViewSet):
             offers = offers.filter(remote=remote)
         if (salary := params.get("salary_min", "").strip()).isdigit():
             # At least this much, among the offers that state a salary for
-            # the same period (a monthly figure says nothing about a yearly)
+            # the same period and in the same currency (a monthly figure
+            # says nothing about a yearly one, nor francs about euros)
             period = params.get("salary_period", JobOffer.SalaryPeriod.MONTH)
+            currency = params.get("currency", JobOffer.Currency.CHF).upper()
             amount = int(salary)
             reaches = Q(salary_max__gte=amount) | Q(salary_max__isnull=True, salary_min__gte=amount)
-            offers = offers.filter(reaches, salary_period=period)
+            offers = offers.filter(reaches, salary_period=period, currency=currency)
         if published_after := parse_date(params.get("published_after", "")):
             offers = offers.filter(published_at__date__gte=published_after)
         return offers
@@ -151,13 +154,6 @@ class JobOfferViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """A new offer belongs to the employer who sends it, as a draft."""
         serializer.save(employer=employer_profile_of(self.request.user))
-
-    def get_serializer_context(self):
-        """The serializer needs the employer to check the titles on create."""
-        context = super().get_serializer_context()
-        if is_employer(self.request.user):
-            context["employer"] = employer_profile_of(self.request.user)
-        return context
 
     # ── The extra routes ──────────────────────────────────────────────
 
@@ -177,16 +173,6 @@ class JobOfferViewSet(viewsets.ModelViewSet):
             raise ValidationError({"non_field_errors": ["This offer is already published."]})
         if not offer.employer.company_name.strip():
             message = "Give the name of your company in your profile before publishing."
-            raise ValidationError({"non_field_errors": [message]})
-        # The title must be free among the open offers, as for a new one
-        taken = (
-            JobOffer.objects.filter(employer=offer.employer, title__iexact=offer.title)
-            .exclude(status=JobOffer.Status.CLOSED)
-            .exclude(pk=offer.pk)
-            .exists()
-        )
-        if taken:
-            message = "You already have an open offer with this title."
             raise ValidationError({"non_field_errors": [message]})
         offer.status = JobOffer.Status.PUBLISHED
         offer.save()

@@ -8,8 +8,8 @@ Responsibility
 ──────────────
 Turn a job offer into JSON for the API, and read back what an employer
 sends, with the checks of the model (lengths, bounds, choices) and the ones
-that need two fields or the other offers (ranges, title taken). Contains no
-view: views.py decides who may do what, and changes the status.
+that need two fields (the ranges). Contains no view: views.py decides who
+may do what, and changes the status.
 
 What the JSON looks like
 ────────────────────────
@@ -47,6 +47,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
             "salary_min",
             "salary_max",
             "salary_period",
+            "currency",
             "experience_years",
             "status",
             "published_at",
@@ -65,7 +66,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        """The checks that need more than one field, or the other offers."""
+        """The checks that need more than one field: a range is not reversed."""
         # The value after the change: what is sent, else what is stored
         def value(field):
             return data.get(field, getattr(self.instance, field, None))
@@ -74,17 +75,6 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
         for low, high in (("salary_min", "salary_max"), ("workload_min", "workload_max")):
             if value(low) and value(high) and value(low) > value(high):
                 errors[high] = "The maximum must be at least the minimum."
-        # A title is unique among the offers of the employer that are not
-        # closed, whatever the case; the offer being edited does not count
-        employer = self.instance.employer if self.instance else self.context["employer"]
-        taken = (
-            JobOffer.objects.filter(employer=employer, title__iexact=value("title"))
-            .exclude(status=JobOffer.Status.CLOSED)
-            .exclude(pk=getattr(self.instance, "pk", None))
-            .exists()
-        )
-        if taken:
-            errors["title"] = "You already have an offer with this title."
         if errors:
             raise serializers.ValidationError(errors)
         return data

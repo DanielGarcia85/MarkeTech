@@ -9,9 +9,9 @@ Responsibility
 Check the offers API as the frontend will use it: anyone reads the published
 offers, filtered, ordered and paged; an employer creates, edits, publishes,
 closes and deletes their own offers and nobody else's; the rules of the
-fields, of the titles and of the states hold; a candidate and a visitor are
-kept out of the management. Then the seed_demo command, which fills a
-development database with test accounts and offers.
+fields and of the states hold; a candidate and a visitor are kept out of
+the management. Then the seed_demo command, which fills a development
+database with test accounts and offers.
 """
 
 import json
@@ -97,6 +97,7 @@ class OfferApiTests(TestCase):
         self.assertEqual(offer["status"], "published")
         # The company comes from the profile of the employer, not from the offer
         self.assertEqual(offer["company"], {"name": "Acme", "logo": None})
+        self.assertEqual(offer["currency"], "CHF")
         self.assertIsNotNone(offer["published_at"])
 
     def test_the_list_is_newest_first_and_can_be_ordered(self):
@@ -116,7 +117,8 @@ class OfferApiTests(TestCase):
                    remote="hybrid", salary_min=6000, salary_max=8000, salary_period="month")
         self.offer(title="Java developer", city="Lausanne", country="CH", contract="student",
                    remote="on_site", salary_min=90000, salary_period="year")
-        self.offer(title="Data analyst", city="Lyon", country="FR", contract="internship")
+        self.offer(title="Data analyst", city="Lyon", country="FR", contract="internship",
+                   salary_min=3000, salary_max=4000, salary_period="month", currency="EUR")
 
         def titles(query):
             return sorted(o["title"] for o in Client().get("/api/offers/" + query).json()["results"])
@@ -127,10 +129,13 @@ class OfferApiTests(TestCase):
         self.assertEqual(titles("?country=fr"), ["Data analyst"])
         self.assertEqual(titles("?contract=internship"), ["Data analyst"])
         self.assertEqual(titles("?remote=hybrid"), ["Python developer"])
-        # A salary filter compares offers of the same period only
+        # A salary filter compares offers of the same period and currency only
         self.assertEqual(titles("?salary_min=7000"), ["Python developer"])
         self.assertEqual(titles("?salary_min=9000"), [])
         self.assertEqual(titles("?salary_min=80000&salary_period=year"), ["Java developer"])
+        # In francs unless said otherwise: the offer in euros is left out
+        self.assertEqual(titles("?salary_min=3500"), ["Python developer"])
+        self.assertEqual(titles("?salary_min=3500&currency=eur"), ["Data analyst"])
         # Published after a date; a bad parameter is ignored
         self.assertEqual(len(titles("?published_after=2000-01-01")), 3)
         self.assertEqual(titles("?published_after=2999-01-01"), [])
@@ -164,13 +169,14 @@ class OfferApiTests(TestCase):
 
     def test_an_employer_creates_a_draft_and_nobody_else_creates(self):
         employer = self.login(self.employer)
-        data = {**OFFER, "salary_min": 6000, "workload_min": 80, "workload_max": 100}
+        data = {**OFFER, "salary_min": 6000, "currency": "EUR", "workload_min": 80, "workload_max": 100}
         response = self.post(employer, "/api/offers/", data)
         self.assertEqual(response.status_code, 201)
         offer = response.json()
         self.assertEqual(offer["status"], "draft")
         self.assertEqual((offer["published_at"], offer["company"]["name"]), (None, "Acme"))
         self.assertEqual((offer["remote"], offer["salary_period"], offer["salary_max"]), ("on_site", "month", None))
+        self.assertEqual(offer["currency"], "EUR")
         self.assertEqual(JobOffer.objects.get().employer, self.company)
         # A candidate and a visitor may not; the role, not the session, decides
         self.assertEqual(self.post(self.login(self.candidate), "/api/offers/", OFFER).status_code, 403)
@@ -188,22 +194,22 @@ class OfferApiTests(TestCase):
         self.assertIn("title", errors(title=""))
         self.assertIn("country", errors(country="XX"))
         self.assertIn("contract", errors(contract="freelance"))
+        self.assertIn("currency", errors(currency="USD"))
         self.assertIn("salary_max", errors(salary_min=8000, salary_max=6000))
         self.assertIn("workload_max", errors(workload_min=100, workload_max=80))
         self.assertIn("workload_min", errors(workload_min=5))
         self.assertIn("experience_years", errors(experience_years=-1))
 
-    def test_a_title_is_unique_among_the_open_offers_of_an_employer(self):
+    def test_the_same_title_may_be_used_twice(self):
+        # The same job in two cities, by one employer; and by another one
         employer = self.login(self.employer)
-        self.assertEqual(self.post(employer, "/api/offers/", OFFER).status_code, 201)
-        # The same title again, whatever the case: refused
-        response = self.post(employer, "/api/offers/", {**OFFER, "title": "PYTHON DEVELOPER"})
-        self.assertEqual((response.status_code, list(response.json())), (400, ["title"]))
-        # Another employer may use it
+        first = self.post(employer, "/api/offers/", OFFER)
+        second = self.post(employer, "/api/offers/", {**OFFER, "city": "Lausanne"})
+        self.assertEqual((first.status_code, second.status_code), (201, 201))
         self.assertEqual(self.post(self.login(self.other), "/api/offers/", OFFER).status_code, 201)
-        # A closed offer frees its title
-        self.offer(title="Old job", status="closed")
-        self.assertEqual(self.post(employer, "/api/offers/", {**OFFER, "title": "Old job"}).status_code, 201)
+        for offer in (first, second):
+            self.assertEqual(self.post(employer, "/api/offers/%d/publish/" % offer.json()["id"]).status_code, 200)
+        self.assertEqual(Client().get("/api/offers/?title=python").json()["count"], 2)
 
     def test_an_employer_changes_and_deletes_their_own_offers_only(self):
         mine = self.offer(title="Mine")
@@ -264,7 +270,7 @@ class OfferApiTests(TestCase):
         self.assertEqual(self.post(self.login(self.candidate), url + "close/").status_code, 403)
         self.assertEqual(Client().post(url + "close/").status_code, 403)
 
-    def test_publishing_needs_the_name_of_the_company_and_a_free_title(self):
+    def test_publishing_needs_the_name_of_the_company(self):
         self.company.company_name = ""
         self.company.save()
         employer = self.login(self.employer)
@@ -275,12 +281,6 @@ class OfferApiTests(TestCase):
         self.assertEqual(JobOffer.objects.get(pk=offer.pk).status, "draft")
         self.company.company_name = "Acme"
         self.company.save()
-        # A closed offer whose title is used again by an open one stays closed
-        closed = self.offer(title="Taken", status="closed")
-        self.offer(title="taken")
-        response = self.post(employer, "/api/offers/%d/publish/" % closed.pk)
-        self.assertEqual(response.status_code, 400)
-        self.assertIn("title", response.json()["non_field_errors"][0])
         self.assertEqual(self.post(employer, "/api/offers/%d/publish/" % offer.pk).status_code, 200)
 
 
@@ -301,6 +301,8 @@ class SeedDemoTests(TestCase):
         self.assertEqual(JobOffer.objects.filter(status="published").count(), 24)
         # A closed offer was published once: it has a date too
         self.assertEqual(JobOffer.objects.filter(published_at__isnull=True).count(), 3)
+        # The offers of the French employer are in euros
+        self.assertEqual(JobOffer.objects.filter(currency="EUR").count(), 10)
         self.assertEqual(Client().get("/api/offers/").json()["count"], 24)
         self.assertIn("Demo-1234", out.getvalue())
 

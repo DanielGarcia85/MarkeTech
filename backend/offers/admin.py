@@ -42,7 +42,7 @@ class JobOfferAdmin(admin.ModelAdmin):
                 "fields": (
                     "contract",
                     ("workload_min", "workload_max"),
-                    ("salary_min", "salary_max", "salary_period"),
+                    ("salary_min", "salary_max", "salary_period", "currency"),
                     "experience_years",
                 ),
             },
