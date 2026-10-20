@@ -296,6 +296,8 @@ class SeedDemoTests(TestCase):
         self.assertEqual(User.objects.filter(email__endswith="@test.com").count(), 6)
         # Every address is verified: allauth would refuse the login otherwise
         self.assertEqual(EmailAddress.objects.filter(verified=True, primary=True).count(), 6)
+        # And the terms accepted, as a sign-up would have left them
+        self.assertEqual(User.objects.filter(terms_accepted_at__isnull=False).count(), 6)
         self.assertEqual(EmployerProfile.objects.exclude(company_name="").count(), 3)
         self.assertEqual(JobOffer.objects.count(), 30)
         self.assertEqual(JobOffer.objects.filter(status="published").count(), 24)

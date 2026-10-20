@@ -83,8 +83,7 @@ CANDIDATES = [
 # ── The employers and their offers ────────────────────────────────────
 # One dict per employer: the account, the profile with the company, and
 # the offers. An offer: the fields of the model, plus "days_ago", the age
-# of its publication (None for a draft). Titles are unique per employer:
-# the database refuses the same title twice among the open offers.
+# of its publication (None for a draft).
 
 EMPLOYERS = [
     {
@@ -824,14 +823,16 @@ class Command(BaseCommand):
     # ── The rows ──────────────────────────────────────────────────────
 
     def user(self, person, role):
-        """The account, with its address verified: allauth lets nobody log
-        in before the address is confirmed."""
+        """The account, with its address verified (allauth lets nobody log
+        in before the address is confirmed) and the terms accepted, as a
+        sign-up would have left it."""
         user = User.objects.create_user(
             email=person["email"],
             password=PASSWORD,
             role=role,
             first_name=person["first_name"],
             last_name=person["last_name"],
+            terms_accepted_at=timezone.now(),
         )
         EmailAddress.objects.create(user=user, email=user.email, verified=True, primary=True)
         return user
