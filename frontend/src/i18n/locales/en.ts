@@ -6,7 +6,7 @@
 // The other languages must provide exactly the same keys.
 
 export default {
-    // Tagline and notice of the application
+  // Tagline and notice of the application
   app: {
     tagline: "Tech jobs and student jobs for recent graduates and students.",
     notice: "This application is under construction.",
@@ -32,6 +32,7 @@ export default {
     label: "Main navigation",
     offers: "Offers",
     allOffers: "All the offers",
+    myOffers: "My offers",
     account: "My account",
     profile: "Profile",
   },
@@ -263,7 +264,7 @@ export default {
     anyContract: "Any contract",
     remoteLabel: "Remote work",
     anyRemote: "Any",
-    salaryMin: "Minimum salary (CHF)",
+    salaryMin: "Minimum salary",
     publishedAfter: "Published since",
     none: "No offer matches these criteria.",
     loadFailed: "The offers could not be loaded.",
@@ -278,6 +279,8 @@ export default {
     facts: "In short",
     place: "Place",
     salaryLabel: "Salary",
+    currencyLabel: "Currency",
+    periodLabel: "Period",
     experienceLabel: "Experience",
     contract: {
       permanent: "Permanent",
@@ -295,11 +298,60 @@ export default {
       year: "per year",
     },
     salary: {
-      range: "CHF {range} {period}",
-      from: "From CHF {amount} {period}",
-      upTo: "Up to CHF {amount} {period}",
+      range: "{currency} {range} {period}",
+      from: "From {currency} {amount} {period}",
+      upTo: "Up to {currency} {amount} {period}",
+    },
+    status: {
+      draft: "Draft",
+      published: "Published",
+      closed: "Closed",
     },
     experience: "{count} year of experience | {count} years of experience",
+  },
+
+  // The offers of an employer: the list with its moves
+  myOffers: {
+    title: "My offers",
+    new: "New offer",
+    none: "You have no offer yet. Create the first one: it stays a draft until you publish it.",
+    loadFailed: "Your offers could not be loaded.",
+    edit: "Edit",
+    publish: "Publish",
+    republish: "Publish again",
+    close: "Close",
+    delete: "Delete",
+    confirmDelete: "Delete the offer \"{title}\"? It cannot be recovered.",
+    needsCompany: "Give the name of your company in your profile before publishing.",
+    companyLink: "Complete my profile",
+  },
+
+  // The form of an offer, new or changed
+  offerForm: {
+    newTitle: "New offer",
+    editTitle: "Edit the offer",
+    back: "My offers",
+    notFound: "This offer does not exist, or is not yours.",
+    title: "Title",
+    description: "Description",
+    descriptionHint: "The job, the team, the profile sought. Line breaks are kept.",
+    city: "City",
+    country: "Country",
+    chooseCountry: "Choose a country",
+    contract: "Contract",
+    chooseContract: "Choose a contract",
+    remote: "Remote work",
+    workload: "Workload (%)",
+    workloadMax: "Maximum workload",
+    workloadHint: "From the first figure to the second; the same figure in both for a fixed workload.",
+    experience: "Years of experience asked",
+    salary: "Gross salary",
+    salaryMax: "Maximum salary",
+    salaryHint: "Minimum and maximum, or only one of them; leave both empty to say nothing.",
+    required: "This field is required.",
+    save: "Save",
+    saveAndPublish: "Save and publish",
+    saveAndRepublish: "Save and publish again",
   },
 
   // Not-found page, for any address the router does not know

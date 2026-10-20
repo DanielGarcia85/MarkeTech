@@ -14,7 +14,7 @@ const fr: typeof en = {
     notice: "Cette application est en cours de construction.",
   },
 
-   // The two roles, as shown to the logged-in user (header menu, profile)
+  // The two roles, as shown to the logged-in user (header menu, profile)
   roles: {
     candidate: "Candidat",
     employer: "Employeur",
@@ -34,6 +34,7 @@ const fr: typeof en = {
     label: "Navigation principale",
     offers: "Offres",
     allOffers: "Toutes les offres",
+    myOffers: "Mes offres",
     account: "Mon compte",
     profile: "Profil",
   },
@@ -79,7 +80,7 @@ const fr: typeof en = {
   },
 
   // Address verification page, reached from the link in the e-mail
-    verify: {
+  verify: {
     title: "Vérification de l'adresse e-mail",
     pending: "Vérification de votre lien…",
     confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
@@ -265,7 +266,7 @@ const fr: typeof en = {
     anyContract: "Tous les contrats",
     remoteLabel: "Télétravail",
     anyRemote: "Indifférent",
-    salaryMin: "Salaire minimum (CHF)",
+    salaryMin: "Salaire minimum",
     publishedAfter: "Publiée depuis le",
     none: "Aucune offre ne correspond à ces critères.",
     loadFailed: "Les offres n'ont pas pu être chargées.",
@@ -280,6 +281,8 @@ const fr: typeof en = {
     facts: "En bref",
     place: "Lieu",
     salaryLabel: "Salaire",
+    currencyLabel: "Devise",
+    periodLabel: "Période",
     experienceLabel: "Expérience",
     contract: {
       permanent: "CDI",
@@ -297,11 +300,60 @@ const fr: typeof en = {
       year: "par an",
     },
     salary: {
-      range: "CHF {range} {period}",
-      from: "Dès CHF {amount} {period}",
-      upTo: "Jusqu'à CHF {amount} {period}",
+      range: "{currency} {range} {period}",
+      from: "Dès {currency} {amount} {period}",
+      upTo: "Jusqu'à {currency} {amount} {period}",
+    },
+    status: {
+      draft: "Brouillon",
+      published: "Publiée",
+      closed: "Clôturée",
     },
     experience: "{count} an d'expérience | {count} ans d'expérience",
+  },
+
+  // The offers of an employer: the list with its moves
+  myOffers: {
+    title: "Mes offres",
+    new: "Nouvelle offre",
+    none: "Vous n'avez pas encore d'offre. Créez la première : elle reste un brouillon tant que vous ne la publiez pas.",
+    loadFailed: "Vos offres n'ont pas pu être chargées.",
+    edit: "Modifier",
+    publish: "Publier",
+    republish: "Republier",
+    close: "Clôturer",
+    delete: "Supprimer",
+    confirmDelete: "Supprimer l'offre « {title} » ? Elle ne pourra pas être récupérée.",
+    needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
+    companyLink: "Compléter mon profil",
+  },
+
+  // The form of an offer, new or changed
+  offerForm: {
+    newTitle: "Nouvelle offre",
+    editTitle: "Modifier l'offre",
+    back: "Mes offres",
+    notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
+    title: "Titre",
+    description: "Description",
+    descriptionHint: "Le poste, l'équipe, le profil recherché. Les sauts de ligne sont conservés.",
+    city: "Ville",
+    country: "Pays",
+    chooseCountry: "Choisir un pays",
+    contract: "Contrat",
+    chooseContract: "Choisir un contrat",
+    remote: "Télétravail",
+    workload: "Taux d'activité (%)",
+    workloadMax: "Taux maximum",
+    workloadHint: "Du premier chiffre au second ; le même chiffre dans les deux pour un taux fixe.",
+    experience: "Années d'expérience demandées",
+    salary: "Salaire brut",
+    salaryMax: "Salaire maximum",
+    salaryHint: "Minimum et maximum, ou un seul des deux ; les deux vides pour ne rien dire.",
+    required: "Ce champ est obligatoire.",
+    save: "Enregistrer",
+    saveAndPublish: "Enregistrer et publier",
+    saveAndRepublish: "Enregistrer et republier",
   },
 
   // Not-found page, for any address the router does not know

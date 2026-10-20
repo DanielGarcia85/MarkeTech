@@ -3,10 +3,11 @@
 
   Offer card — one job offer in a list
   ───────────────────────────────────────────────────────────────────────────
-  Used by the public list, and later by the list of an employer. The logo
-  of the company (or its initial), the company, the title as a link to the
-  page of the offer, the place and the conditions, the salary when given,
-  the date of publication.
+  Used by the public list and by the list of an employer. The logo of the
+  company (or its initial), the company, the title as a link to the page of
+  the offer, the place and the conditions, the salary when given, the date
+  of publication. The list of an employer asks for the state of the offer
+  as a pill, and puts its buttons in the slot under the text.
 -->
 
 <script setup lang="ts">
@@ -21,6 +22,8 @@ const props = defineProps<{
   offer: Offer;
   // The countries, to write the name of the country of the offer
   countries: Country[];
+  // Show the state (draft, published, closed): the employer's list only
+  showStatus?: boolean;
 }>();
 
 const { t } = useI18n();
@@ -37,13 +40,18 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
       <span v-else class="logo-empty" aria-hidden="true">{{ initial }}</span>
     </div>
     <div class="body">
-      <p class="company">{{ offer.company.name }}</p>
+      <p class="company">
+        {{ offer.company.name }}
+        <span v-if="showStatus" class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+      </p>
       <h2 class="title">
         <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
       </h2>
       <p class="line">{{ text.place(offer, countries) }} · {{ text.conditions(offer) }}</p>
       <p v-if="text.salary(offer)" class="line">{{ text.salary(offer) }}</p>
-      <p class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
+      <p v-if="offer.published_at" class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
+      <!-- The buttons of the employer's list, when there are some -->
+      <div v-if="$slots.default" class="actions"><slot /></div>
     </div>
   </article>
 </template>
@@ -87,13 +95,42 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
 }
 
 .body {
+  flex: 1;
   min-width: 0;
 }
 
 .company {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin: 0;
   color: var(--mt-muted);
   font-size: 0.9rem;
+}
+
+/* The state of the offer: grey for a draft, green once published, dark
+   grey when closed */
+.pill {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--mt-border);
+  border-radius: 999px;
+  background: var(--mt-surface);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pill.published {
+  border-color: var(--mt-success-surface);
+  background: var(--mt-success-surface);
+  color: var(--mt-success);
+}
+
+.pill.closed {
+  background: var(--mt-border);
+  color: var(--mt-text);
 }
 
 .title {
@@ -117,5 +154,14 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
   margin: 6px 0 0;
   color: var(--mt-muted);
   font-size: 0.85rem;
+}
+
+/* The buttons, side by side, under the text of the card */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-top: 12px;
 }
 </style>

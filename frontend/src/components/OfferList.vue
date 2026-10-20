@@ -18,6 +18,7 @@ import { useRoute, useRouter, type LocationQuery } from "vue-router";
 
 import {
   CONTRACTS,
+  CURRENCIES,
   EMPTY_FILTERS,
   PAGE_SIZE,
   REMOTES,
@@ -63,11 +64,16 @@ const pageItems = computed<number[]>(() => {
 });
 
 // On a narrow screen, the filters are folded until this is true; the
-// button shows how many filters are set
+// button shows how many filters are set (the period and the currency only
+// qualify the amount)
 const filtersOpen = ref(false);
 const activeFilters = computed(
-  () => Object.entries(filters).filter(([key, value]) => value && key !== "salary_period").length,
+  () => Object.entries(filters).filter(([key, value]) => value && !qualifies(key)).length,
 );
+
+function qualifies(key: string): boolean {
+  return key === "salary_period" || key === "currency";
+}
 
 // ── The address ───────────────────────────────────────────────────────
 
@@ -91,7 +97,7 @@ function pageOf(query: LocationQuery): number {
 function toQuery(): Record<string, string> {
   const query: Record<string, string> = {};
   for (const [key, value] of Object.entries(filters)) {
-    if (value && (key !== "salary_period" || filters.salary_min)) query[key] = value;
+    if (value && (!qualifies(key) || filters.salary_min)) query[key] = value;
   }
   if (page.value > 1) query.page = String(page.value);
   return query;
@@ -200,11 +206,14 @@ onMounted(() => {
         </option>
       </select>
     </div>
-    <div class="field">
+    <div class="field salary">
       <label for="salary">{{ t("offers.salaryMin") }}</label>
       <div class="pair">
         <input id="salary" v-model.trim="filters.salary_min" type="number" min="0" step="100" />
-        <select v-model="filters.salary_period" :aria-label="t('offers.salaryLabel')">
+        <select v-model="filters.currency" :aria-label="t('offers.currencyLabel')">
+          <option v-for="currency in CURRENCIES" :key="currency" :value="currency">{{ currency }}</option>
+        </select>
+        <select v-model="filters.salary_period" :aria-label="t('offers.periodLabel')">
           <option v-for="period in SALARY_PERIODS" :key="period" :value="period">
             {{ t("offers.period." + period) }}
           </option>
@@ -283,13 +292,20 @@ onMounted(() => {
   max-width: none;
 }
 
-/* An amount and its period, side by side */
+/* An amount, its currency and its period, side by side: the amount takes
+   the width the two lists leave, and keeps room for six figures */
 .pair {
   display: flex;
   gap: 8px;
 }
 
+.pair input {
+  flex: 1;
+  min-width: 100px;
+}
+
 .pair select {
+  flex: none;
   width: auto;
 }
 
@@ -396,6 +412,13 @@ onMounted(() => {
 
   .filters:not(.open) {
     display: none;
+  }
+}
+
+/* Wide enough for several columns: the salary and its two lists take two */
+@media (min-width: 721px) {
+  .salary {
+    grid-column: span 2;
   }
 }
 </style>

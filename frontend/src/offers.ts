@@ -34,18 +34,18 @@ export function useOfferText() {
     return parts.join(" · ");
   }
 
-  // "CHF 6 000 – 8 000 per month", "from CHF 90 000 per year", "up to ...",
+  // "CHF 6 000 – 8 000 per month", "from EUR 40 000 per year", "up to ...",
   // or "" when the offer says nothing about the salary
   function salary(offer: Offer): string {
     const amount = new Intl.NumberFormat(locale.value, { maximumFractionDigits: 0 });
-    const { salary_min: low, salary_max: high } = offer;
+    const { salary_min: low, salary_max: high, currency } = offer;
     const period = t("offers.period." + offer.salary_period);
     if (low && high) {
       const range = low === high ? amount.format(low) : `${amount.format(low)} – ${amount.format(high)}`;
-      return t("offers.salary.range", { range, period });
+      return t("offers.salary.range", { currency, range, period });
     }
-    if (low) return t("offers.salary.from", { amount: amount.format(low), period });
-    if (high) return t("offers.salary.upTo", { amount: amount.format(high), period });
+    if (low) return t("offers.salary.from", { currency, amount: amount.format(low), period });
+    if (high) return t("offers.salary.upTo", { currency, amount: amount.format(high), period });
     return "";
   }
 

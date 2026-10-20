@@ -5,20 +5,26 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue on the left of the page, for a logged-in user only.
   One group of links per area of the application; a group gets its links
-  when the pages exist, never before. On a narrow window, the bar becomes a
-  strip under the header.
+  when the pages exist, never before, and a link of one role shows for that
+  role only. On a narrow window, the bar becomes a strip under the header.
 -->
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
+import { useSession } from "../session";
+
 const { t } = useI18n();
+const session = useSession();
 </script>
 
 <template>
   <nav class="sidebar" :aria-label="t('nav.label')">
     <p class="group">{{ t("nav.offers") }}</p>
     <RouterLink :to="{ name: 'home' }">{{ t("nav.allOffers") }}</RouterLink>
+    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
+      {{ t("nav.myOffers") }}
+    </RouterLink>
     <p class="group">{{ t("nav.account") }}</p>
     <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
   </nav>
