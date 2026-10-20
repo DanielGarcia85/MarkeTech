@@ -115,7 +115,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 19 October 2026",
+    updated: "Last updated: 20 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -132,7 +132,7 @@ export default {
           { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
           { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
-          { term: "Job offers", text: "Title, description, location, salary range, years of experience required, company name and logo, date of publication. Offers are visible to every visitor of the site." },
+          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the date, the status (received, in progress, accepted, rejected) and its history. An application is seen by the candidate and by the employer who published the offer." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
           { term: "Favourites", text: "The offers a candidate has set aside." },

@@ -117,7 +117,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 19 octobre 2026",
+    updated: "Dernière mise à jour : 20 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -134,7 +134,7 @@ const fr: typeof en = {
           { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion." },
           { term: "Profil candidat", text: "Adresse postale, numéro de téléphone, photo, CV et tout autre document que vous joignez." },
           { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
-          { term: "Offres d'emploi", text: "Titre, description, lieu, fourchette de salaire, années d'expérience demandées, nom et logo de l'entreprise, date de publication. Les offres sont visibles par tous les visiteurs du site." },
+          { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, la date, le statut (reçue, en cours, acceptée, refusée) et son historique. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre." },
           { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté." },
