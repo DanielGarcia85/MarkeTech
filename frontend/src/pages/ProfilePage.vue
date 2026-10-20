@@ -467,6 +467,10 @@ async function submitPassword(): Promise<void> {
             <p v-if="fileErrors.photo" class="error">{{ fileErrors.photo }}</p>
           </div>
           <div class="fields stacked">
+            <!-- The role of the account, above the names: the page cannot change it -->
+            <p v-if="session.user.role" class="role">
+              <span class="pill">{{ t("roles." + session.user.role) }}</span>
+            </p>
             <div v-for="field in IDENTITY_FIELDS" :key="field.key" class="field">
               <label :for="field.key">{{ t(field.label) }}</label>
               <input
@@ -759,6 +763,24 @@ h2 {
   margin: 10px 0 16px;
   color: var(--mt-blue);
   font-size: 1.35rem;
+}
+
+/* The role, as a small rounded label above the names */
+.role {
+  margin: 0 0 12px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 12px;
+  border: 1px solid var(--mt-border);
+  border-radius: 999px;
+  background: var(--mt-surface);
+  color: var(--mt-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 h3 {

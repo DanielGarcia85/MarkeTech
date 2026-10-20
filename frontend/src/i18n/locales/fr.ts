@@ -14,6 +14,12 @@ const fr: typeof en = {
     notice: "Cette application est en cours de construction.",
   },
 
+   // The two roles, as shown to the logged-in user (header menu, profile)
+  roles: {
+    candidate: "Candidat",
+    employer: "Employeur",
+  },
+
   // Header: session state and links of the account
   header: {
     signup: "S'inscrire",
