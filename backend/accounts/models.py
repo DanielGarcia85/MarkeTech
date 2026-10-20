@@ -41,6 +41,10 @@ class User(AbstractUser):
     # Empty for an administrator, who is recognised by is_staff instead
     role = models.CharField(max_length=20, choices=Role.choices, blank=True)
 
+    # When the user accepted the terms of use at sign-up (forms.py); empty
+    # for an account created before the terms existed, or in the admin site
+    terms_accepted_at = models.DateTimeField(null=True, blank=True)
+
     # Field Django uses as the login, in the admin site and at authentication
     USERNAME_FIELD = "email"
 

@@ -121,6 +121,7 @@ class ProfileApiTests(TestCase):
                     "first_name": "Léa",
                     "last_name": "Doe",
                     "role": role,
+                    "terms": True,
                 }),
                 content_type="application/json",
                 HTTP_X_CSRFTOKEN=client.cookies["csrftoken"].value,

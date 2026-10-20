@@ -73,17 +73,25 @@ class AuthenticationApiTests(TestCase):
         return self.api(
             "POST",
             "auth/signup",
-            {"email": EMAIL, "password": PASSWORD, "role": "candidate", **NAMES},
+            {"email": EMAIL, "password": PASSWORD, "role": "candidate", "terms": True, **NAMES},
         )
 
-    def test_signup_requires_the_names_and_a_role(self):
+    def test_signup_requires_the_names_a_role_and_the_terms(self):
         self.api("GET", "auth/session")
         response = self.api(
             "POST", "auth/signup", {"email": EMAIL, "password": PASSWORD}
         )
         self.assertEqual(response.status_code, 400)
         missing = {error["param"] for error in response.json()["errors"]}
-        self.assertEqual(missing, {"first_name", "last_name", "role"})
+        self.assertEqual(missing, {"first_name", "last_name", "role", "terms"})
+        # The box left unticked is refused like a missing field
+        response = self.api(
+            "POST",
+            "auth/signup",
+            {"email": EMAIL, "password": PASSWORD, "role": "candidate", "terms": False, **NAMES},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual([error["param"] for error in response.json()["errors"]], ["terms"])
         self.assertFalse(User.objects.exists())
 
     def test_signup_stores_the_address_in_lower_case_with_names_and_role(self):
@@ -95,6 +103,8 @@ class AuthenticationApiTests(TestCase):
         self.assertEqual(user.first_name, "Léa")
         self.assertEqual(user.last_name, "Doe")
         self.assertEqual(user.role, User.Role.CANDIDATE)
+        # The acceptance of the terms is dated
+        self.assertIsNotNone(user.terms_accepted_at)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("/account/verify-email/", mail.outbox[0].body)
 
