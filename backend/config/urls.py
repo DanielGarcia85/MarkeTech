@@ -40,4 +40,6 @@ urlpatterns = [
     path("_allauth/", include("allauth.headless.urls")),
     # Profiles API: the profile of the user, their documents, the files
     path("api/", include("profiles.urls")),
+    # Offers API: the job offers, public reading and management by the employers
+    path("api/", include("offers.urls")),
 ]
