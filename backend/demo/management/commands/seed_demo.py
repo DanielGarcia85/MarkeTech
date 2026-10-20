@@ -1,4 +1,4 @@
-# backend/offers/management/commands/seed_demo.py
+# backend/demo/management/commands/seed_demo.py
 
 """
 Seed demo — test accounts and job offers for a development database
