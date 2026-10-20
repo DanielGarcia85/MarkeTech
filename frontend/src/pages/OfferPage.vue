@@ -7,7 +7,9 @@
   a published offer to all, and an unpublished one to its employer only;
   anything else is "not found" here, with a way back to the list. The
   company, the title, the facts in a list, then the description as it was
-  typed, line breaks kept.
+  typed, line breaks kept. Under the heading, the way to apply: a button
+  for a candidate, an invitation to log in for a visitor, and, once
+  applied, the date and the state of the application sent.
 -->
 
 <script setup lang="ts">
@@ -15,29 +17,48 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
+import { listApplications, type Application } from "../api/applications";
 import { getOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
+import { useApplicationText } from "../applications";
 import { useOfferText } from "../offers";
+import { useSession, whenLoaded } from "../session";
 
 const { t, locale } = useI18n();
 const route = useRoute();
 const text = useOfferText();
+const applicationText = useApplicationText();
+const session = useSession();
 
 const offer = ref<Offer | null>(null);
 // True once the backend has said there is no such offer for this visitor
 const notFound = ref(false);
 const countries = ref<Country[]>([]);
+// The application of the logged-in candidate to this offer, if any
+const myApplication = ref<Application | null>(null);
+
+const isCandidate = computed(() => session.user?.role === "candidate");
 
 const initial = computed(() => offer.value?.company.name.trim().charAt(0).toUpperCase() || "?");
 
 async function load(): Promise<void> {
   notFound.value = false;
+  myApplication.value = null;
   try {
     offer.value = await getOffer(Number(route.params.id));
   } catch {
     // 404 for anyone who may not see it, or no such offer: the same page
     offer.value = null;
     notFound.value = true;
+    return;
+  }
+  // A candidate: has the offer been applied to already?
+  await whenLoaded();
+  if (!isCandidate.value) return;
+  try {
+    myApplication.value = (await listApplications({ offer: offer.value.id }))[0] ?? null;
+  } catch {
+    // The button shows; the backend would refuse a second application
   }
 }
 
@@ -78,6 +99,26 @@ onMounted(() => {
         <p class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
       </div>
     </header>
+
+    <!-- Applying: the application sent, or the button, or the invitation
+         to log in; nothing for an employer, nor once the offer is closed -->
+    <div v-if="myApplication" class="apply applied">
+      <p>
+        {{ t("offers.applied", { date: applicationText.date(myApplication.created_at) }) }}
+        <span class="pill" :class="myApplication.status">{{ applicationText.status(myApplication.status) }}</span>
+      </p>
+      <RouterLink :to="{ name: 'myApplications' }">{{ t("offers.myApplicationsLink") }}</RouterLink>
+    </div>
+    <div v-else-if="offer.status === 'published' && isCandidate" class="apply">
+      <RouterLink :to="{ name: 'apply', params: { id: offer.id } }" class="primary button">{{ t("offers.apply") }}</RouterLink>
+    </div>
+    <p v-else-if="offer.status === 'published' && !session.user" class="apply">
+      <i18n-t keypath="offers.loginToApply" tag="span">
+        <template #login>
+          <RouterLink :to="{ name: 'login', query: { next: route.fullPath } }">{{ t("offers.loginLink") }}</RouterLink>
+        </template>
+      </i18n-t>
+    </p>
 
     <!-- The facts, as a list of terms and values -->
     <section class="section">
@@ -167,6 +208,63 @@ onMounted(() => {
   margin: 0;
   color: var(--mt-muted);
   font-size: 0.9rem;
+}
+
+/* The way to apply, under the heading */
+.apply {
+  margin: 20px 0 0;
+}
+
+.apply .button {
+  display: inline-block;
+  text-decoration: none;
+}
+
+/* The application sent: the date and the state, a link to the list */
+.applied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--mt-border);
+  border-radius: 4px;
+  background: var(--mt-surface);
+}
+
+.applied p {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.pill {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--mt-border);
+  border-radius: 999px;
+  background: var(--mt-background);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pill.in_progress {
+  border-color: var(--mt-blue);
+  color: var(--mt-blue);
+}
+
+.pill.accepted {
+  border-color: var(--mt-success-surface);
+  background: var(--mt-success-surface);
+  color: var(--mt-success);
+}
+
+.pill.rejected {
+  border-color: var(--mt-error);
+  color: var(--mt-error);
 }
 
 /* The sections, separated by a rule, as on the profile page */

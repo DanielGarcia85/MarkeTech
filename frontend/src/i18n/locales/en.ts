@@ -33,6 +33,7 @@ export default {
     offers: "Offers",
     allOffers: "All the offers",
     myOffers: "My offers",
+    myApplications: "My applications",
     account: "My account",
     profile: "Profile",
   },
@@ -341,6 +342,12 @@ export default {
     detailsLink: "View the offer",
     back: "All offers",
     notFound: "This offer does not exist, or is no longer published.",
+    // Applying, under the heading of an offer
+    apply: "Apply",
+    loginToApply: "{login} to apply to this offer.",
+    loginLink: "Log in",
+    applied: "You applied on {date}",
+    myApplicationsLink: "My applications",
     description: "The position",
     facts: "In short",
     place: "Place",
@@ -390,6 +397,7 @@ export default {
     confirmDelete: "Delete the offer \"{title}\"? It cannot be recovered.",
     needsCompany: "Give the name of your company in your profile before publishing.",
     companyLink: "Complete my profile",
+    applications: "No application | {count} application | {count} applications",
   },
 
   // The form of an offer, new or changed
@@ -418,6 +426,75 @@ export default {
     save: "Save",
     saveAndPublish: "Save and publish",
     saveAndRepublish: "Save and publish again",
+  },
+
+  // Job applications: what the candidate's and the employer's pages share
+  applications: {
+    status: {
+      received: "Received",
+      in_progress: "In progress",
+      accepted: "Accepted",
+      rejected: "Rejected",
+    },
+    // One step of the history: "In progress on 14 October"
+    historyStep: "{status} on {date}",
+    sentOn: "Sent on {date}",
+    cv: "CV",
+    coverLetter: "Cover letter",
+  },
+
+  // Applying to an offer: the form of a candidate
+  apply: {
+    title: "Apply",
+    back: "Back to the offer",
+    notOpen: "This offer is not open to applications.",
+    alreadyApplied: "You have already applied to this offer.",
+    myApplicationsLink: "See my applications",
+    cv: "CV",
+    cvProfile: "The CV of my profile ({name})",
+    cvOther: "Another file",
+    cvNone: "Your profile has no CV yet: send one here, or keep one in your profile to join it in one click.",
+    cvRequired: "Choose a CV.",
+    coverLetter: "Cover letter (optional)",
+    choose: "Choose a file",
+    replace: "Replace",
+    remove: "Remove",
+    documents: "Documents of my profile to join",
+    documentsNone: "Your profile has no document.",
+    profileLink: "Add some",
+    fileHint: "{types}, {size} MB at most.",
+    tooBig: "This file is bigger than {size} MB.",
+    wrongType: "This type of file is not accepted ({types}).",
+    submit: "Send my application",
+  },
+
+  // The applications of a candidate: the list with the withdrawal
+  myApplications: {
+    title: "My applications",
+    none: "You have not applied yet. The offers are on the home page.",
+    loadFailed: "Your applications could not be loaded.",
+    offerLink: "View the offer",
+    offerClosed: "offer closed",
+    withdraw: "Withdraw",
+    confirmWithdraw: "Withdraw your application to \"{title}\"? Its files will be deleted.",
+  },
+
+  // The applications to one offer, for its employer
+  offerApplications: {
+    title: "Applications",
+    back: "My offers",
+    notFound: "This offer does not exist, or is not yours.",
+    loadFailed: "The applications could not be loaded.",
+    count: "No application yet | {count} application | {count} applications",
+    set: {
+      in_progress: "Mark in progress",
+      accepted: "Accept",
+      rejected: "Reject",
+    },
+    confirm: {
+      accepted: "Accept the application of {name}?",
+      rejected: "Reject the application of {name}?",
+    },
   },
 
   // Not-found page, for any address the router does not know

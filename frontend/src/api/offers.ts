@@ -30,7 +30,8 @@ export const PAGE_SIZE = 10;
 
 // An offer as the API gives it. The company is read on the profile of the
 // employer at the time of the answer: its name, and the URL of its logo or
-// null. The country is its two-letter code; a date is an ISO string.
+// null. The country is its two-letter code; a date is an ISO string. The
+// number of applications comes with the employer's own offers only.
 export type Offer = {
   id: number;
   title: string;
@@ -51,6 +52,7 @@ export type Offer = {
   created_at: string;
   updated_at: string;
   company: { name: string; logo: string | null };
+  applications_count?: number;
 };
 
 // One page of the public list, as the backend paginates it

@@ -8,7 +8,8 @@
 // application owns: Vite does it in development, nginx.conf in production.
 // A route may be reserved to users (requiresAuth), to visitors (guestOnly)
 // or to one role (requiresRole): the guard at the end sends the others
-// away before the page is shown.
+// away before the page is shown. A visitor sent to the login page comes
+// back to the page asked for once logged in (?next=, read by LoginPage).
 
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -24,6 +25,9 @@ import ProfilePage from "./pages/ProfilePage.vue";
 import OfferPage from "./pages/OfferPage.vue";
 import MyOffersPage from "./pages/MyOffersPage.vue";
 import OfferFormPage from "./pages/OfferFormPage.vue";
+import OfferApplicationsPage from "./pages/OfferApplicationsPage.vue";
+import ApplyPage from "./pages/ApplyPage.vue";
+import MyApplicationsPage from "./pages/MyApplicationsPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import type { Role } from "./api/account";
 import { useSession, whenLoaded } from "./session";
@@ -54,10 +58,14 @@ export const router = createRouter({
     // The job offers: the list is the home page; one offer by its number
     { path: "/offers", redirect: (to) => ({ name: "home", query: to.query }) },
     { path: "/offers/:id(\\d+)", name: "offer", component: OfferPage },
+    // Applying to an offer, and the applications of a candidate
+    { path: "/offers/:id(\\d+)/apply", name: "apply", component: ApplyPage, meta: { requiresRole: "candidate" } },
+    { path: "/candidate/applications", name: "myApplications", component: MyApplicationsPage, meta: { requiresRole: "candidate" } },
     // The offers of an employer: their list, a new one, one to change
     { path: "/employer/offers", name: "myOffers", component: MyOffersPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/new", name: "offerNew", component: OfferFormPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/:id(\\d+)/edit", name: "offerEdit", component: OfferFormPage, meta: { requiresRole: "employer" } },
+    { path: "/employer/offers/:id(\\d+)/applications", name: "offerApplications", component: OfferApplicationsPage, meta: { requiresRole: "employer" } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed
@@ -66,17 +74,17 @@ export const router = createRouter({
 });
 
 // Before each navigation: a page for users sends a visitor to the login
-// page, a page for visitors sends a user to the home page, a page of one
-// role sends the other role to the home page. Waits for the session to be
-// known first, so that a reload on a user's page does not bounce while the
-// backend is being asked
+// page, with the address asked for to come back to; a page for visitors
+// sends a user to the home page, a page of one role sends the other role to
+// the home page. Waits for the session to be known first, so that a reload
+// on a user's page does not bounce while the backend is being asked
 const session = useSession();
 
 router.beforeEach(async (to) => {
   const { requiresAuth, guestOnly, requiresRole } = to.meta;
   if (!requiresAuth && !guestOnly && !requiresRole) return true;
   await whenLoaded();
-  if ((requiresAuth || requiresRole) && !session.user) return { name: "login" };
+  if ((requiresAuth || requiresRole) && !session.user) return { name: "login", query: { next: to.fullPath } };
   if (guestOnly && session.user) return { name: "home" };
   if (requiresRole && session.user?.role !== requiresRole) return { name: "home" };
   return true;

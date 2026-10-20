@@ -35,6 +35,7 @@ const fr: typeof en = {
     offers: "Offres",
     allOffers: "Toutes les offres",
     myOffers: "Mes offres",
+    myApplications: "Mes candidatures",
     account: "Mon compte",
     profile: "Profil",
   },
@@ -343,6 +344,12 @@ const fr: typeof en = {
     detailsLink: "Voir l'offre",
     back: "Toutes les offres",
     notFound: "Cette offre n'existe pas, ou n'est plus publiée.",
+    // Applying, under the heading of an offer
+    apply: "Postuler",
+    loginToApply: "{login} pour postuler à cette offre.",
+    loginLink: "Connectez-vous",
+    applied: "Vous avez postulé le {date}",
+    myApplicationsLink: "Mes candidatures",
     description: "Le poste",
     facts: "En bref",
     place: "Lieu",
@@ -392,6 +399,7 @@ const fr: typeof en = {
     confirmDelete: "Supprimer l'offre « {title} » ? Elle ne pourra pas être récupérée.",
     needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
     companyLink: "Compléter mon profil",
+    applications: "Aucune candidature | {count} candidature | {count} candidatures",
   },
 
   // The form of an offer, new or changed
@@ -420,6 +428,75 @@ const fr: typeof en = {
     save: "Enregistrer",
     saveAndPublish: "Enregistrer et publier",
     saveAndRepublish: "Enregistrer et republier",
+  },
+
+  // Job applications: what the candidate's and the employer's pages share
+  applications: {
+    status: {
+      received: "Reçue",
+      in_progress: "En cours",
+      accepted: "Acceptée",
+      rejected: "Refusée",
+    },
+    // One step of the history: "En cours le 14 octobre"
+    historyStep: "{status} le {date}",
+    sentOn: "Envoyée le {date}",
+    cv: "CV",
+    coverLetter: "Lettre de motivation",
+  },
+
+  // Applying to an offer: the form of a candidate
+  apply: {
+    title: "Postuler",
+    back: "Retour à l'offre",
+    notOpen: "Cette offre n'est pas ouverte aux candidatures.",
+    alreadyApplied: "Vous avez déjà postulé à cette offre.",
+    myApplicationsLink: "Voir mes candidatures",
+    cv: "CV",
+    cvProfile: "Le CV de mon profil ({name})",
+    cvOther: "Un autre fichier",
+    cvNone: "Votre profil n'a pas encore de CV : envoyez-en un ici, ou gardez-en un dans votre profil pour le joindre d'un clic.",
+    cvRequired: "Choisissez un CV.",
+    coverLetter: "Lettre de motivation (facultatif)",
+    choose: "Choisir un fichier",
+    replace: "Remplacer",
+    remove: "Enlever",
+    documents: "Documents de mon profil à joindre",
+    documentsNone: "Votre profil n'a pas de document.",
+    profileLink: "En ajouter",
+    fileHint: "{types}, {size} Mo au plus.",
+    tooBig: "Ce fichier dépasse {size} Mo.",
+    wrongType: "Ce type de fichier n'est pas accepté ({types}).",
+    submit: "Envoyer ma candidature",
+  },
+
+  // The applications of a candidate: the list with the withdrawal
+  myApplications: {
+    title: "Mes candidatures",
+    none: "Vous n'avez pas encore postulé. Les offres sont sur l'accueil.",
+    loadFailed: "Vos candidatures n'ont pas pu être chargées.",
+    offerLink: "Voir l'offre",
+    offerClosed: "offre clôturée",
+    withdraw: "Retirer",
+    confirmWithdraw: "Retirer votre candidature à « {title} » ? Ses fichiers seront supprimés.",
+  },
+
+  // The applications to one offer, for its employer
+  offerApplications: {
+    title: "Candidatures",
+    back: "Mes offres",
+    notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
+    loadFailed: "Les candidatures n'ont pas pu être chargées.",
+    count: "Aucune candidature pour l'instant | {count} candidature | {count} candidatures",
+    set: {
+      in_progress: "Mettre en cours",
+      accepted: "Accepter",
+      rejected: "Refuser",
+    },
+    confirm: {
+      accepted: "Accepter la candidature de {name} ?",
+      rejected: "Refuser la candidature de {name} ?",
+    },
   },
 
   // Not-found page, for any address the router does not know
