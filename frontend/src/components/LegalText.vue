@@ -96,4 +96,18 @@ h2 {
 .items dd {
   margin: 0;
 }
+
+/* Both edges straight on a wide screen, where the lines are long enough;
+   ragged on the right under 721 px, where justifying opens rivers */
+.legal p,
+.legal dd {
+  hyphens: auto;
+}
+
+@media (min-width: 721px) {
+  .legal p,
+  .legal dd {
+    text-align: justify;
+  }
+}
 </style>
