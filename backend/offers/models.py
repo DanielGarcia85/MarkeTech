@@ -1,0 +1,171 @@
+# backend/offers/models.py
+
+"""
+Job offer model — what an employer publishes
+─────────────────────────────────────────────────────────────────────────────
+
+Responsibility
+──────────────
+Define a job offer: its text, its place, its conditions (contract, workload,
+remote work, salary, experience), and its state in the life of the offer.
+An offer belongs to one employer profile and goes away with it.
+
+What is not here
+────────────────
+The name and the logo of the company: they are read on the profile of the
+employer whenever the offer is shown (the original project copied them into
+every offer at creation, and they went stale). Nor the rules of the API
+(who may read or change what): they live in the views and serializers.
+
+The states
+──────────
+draft: being written, seen by its employer only. published: in the public
+list, from published_at. closed: withdrawn, kept by its employer as history
+and reopenable. Decisions of 20.10.2026.
+"""
+
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import F, Q
+from django.db.models.functions import Lower
+from django_countries.fields import CountryField
+
+from profiles.models import EmployerProfile
+
+
+class JobOffer(models.Model):
+    """One job offer of an employer."""
+
+    # ── The choices ───────────────────────────────────────────────────
+    # The value stored (left) never changes; the label (right) is for the
+    # admin site, the frontend shows its own translated texts
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Draft"
+        PUBLISHED = "published", "Published"
+        CLOSED = "closed", "Closed"
+
+    class Contract(models.TextChoices):
+        PERMANENT = "permanent", "Permanent"
+        FIXED_TERM = "fixed_term", "Fixed term"
+        INTERNSHIP = "internship", "Internship"
+        STUDENT = "student", "Student job"
+
+    class Remote(models.TextChoices):
+        ON_SITE = "on_site", "On site"
+        HYBRID = "hybrid", "Hybrid"
+        REMOTE = "remote", "Remote"
+
+    class SalaryPeriod(models.TextChoices):
+        MONTH = "month", "Per month"
+        YEAR = "year", "Per year"
+
+    # ── Who and what ──────────────────────────────────────────────────
+    # The offers of an employer are deleted with their profile. From the
+    # profile: profile.offers
+    employer = models.ForeignKey(
+        EmployerProfile,
+        on_delete=models.CASCADE,
+        related_name="offers",
+    )
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+
+    # ── Where ─────────────────────────────────────────────────────────
+    city = models.CharField(max_length=100)
+    # ISO 3166-1 code, same list as the profiles; required: the public
+    # search filters by country
+    country = CountryField()
+    remote = models.CharField(
+        max_length=10,
+        choices=Remote.choices,
+        default=Remote.ON_SITE,
+    )
+
+    # ── The conditions ────────────────────────────────────────────────
+    contract = models.CharField(max_length=12, choices=Contract.choices)
+    # Workload as a range of percentages, "80–100 %" the Swiss way; both
+    # optional, and min <= max when both are given (constraint below)
+    workload_min = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(10), MaxValueValidator(100)],
+    )
+    workload_max = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(10), MaxValueValidator(100)],
+    )
+    # Gross salary in Swiss francs, as a range, per month or per year; both
+    # amounts optional, min <= max when both are given
+    salary_min = models.PositiveIntegerField(null=True, blank=True)
+    salary_max = models.PositiveIntegerField(null=True, blank=True)
+    salary_period = models.CharField(
+        max_length=5,
+        choices=SalaryPeriod.choices,
+        default=SalaryPeriod.MONTH,
+    )
+    experience_years = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    # ── The life of the offer ─────────────────────────────────────────
+    status = models.CharField(
+        max_length=9,
+        choices=Status.choices,
+        default=Status.DRAFT,
+    )
+    # Set when the offer is published (again, when reopened): the public
+    # list is sorted and filtered by it
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        # Newest first, wherever the offers are listed without another order
+        ordering = ["-created_at"]
+        constraints = [
+            # The database refuses what the forms and the API check first:
+            # a range reversed, or the same title twice among the offers of
+            # an employer that are not closed (case-insensitive)
+            models.CheckConstraint(
+                condition=(
+                    Q(salary_min__isnull=True)
+                    | Q(salary_max__isnull=True)
+                    | Q(salary_min__lte=F("salary_max"))
+                ),
+                name="offer_salary_min_lte_max",
+                violation_error_message="The maximum salary must be at least the minimum.",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    Q(workload_min__isnull=True)
+                    | Q(workload_max__isnull=True)
+                    | Q(workload_min__lte=F("workload_max"))
+                ),
+                name="offer_workload_min_lte_max",
+                violation_error_message="The maximum workload must be at least the minimum.",
+            ),
+            models.UniqueConstraint(
+                "employer",
+                Lower("title"),
+                condition=~Q(status="closed"),
+                name="offer_title_unique_per_employer",
+                violation_error_message="This employer already has an offer with this title.",
+            ),
+        ]
+
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        """Checks that need more than one field, with a message per field.
+
+        Called by the admin site and by full_clean(); the API serializer
+        does the same checks in its own validate()."""
+        errors = {}
+        if self.salary_min and self.salary_max and self.salary_min > self.salary_max:
+            errors["salary_max"] = "The maximum must be at least the minimum."
+        if self.workload_min and self.workload_max and self.workload_min > self.workload_max:
+            errors["workload_max"] = "The maximum must be at least the minimum."
+        if errors:
+            raise ValidationError(errors)

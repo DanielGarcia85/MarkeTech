@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     "accounts",
     # Profiles: what a candidate or an employer says about themselves
     "profiles",
+    # Offers: the job offers of the employers
+    "offers",
 ]
 
 # Model used for every user account, instead of Django's default one. Must be
