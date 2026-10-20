@@ -36,6 +36,7 @@ const fr: typeof en = {
     allOffers: "Toutes les offres",
     myOffers: "Mes offres",
     myApplications: "Mes candidatures",
+    receivedApplications: "Candidatures reçues",
     account: "Mon compte",
     profile: "Profil",
   },
@@ -497,6 +498,16 @@ const fr: typeof en = {
       accepted: "Accepter la candidature de {name} ?",
       rejected: "Refuser la candidature de {name} ?",
     },
+  },
+
+  // All the applications received by an employer, whatever the offer
+  receivedApplications: {
+    title: "Candidatures reçues",
+    status: "État",
+    allStatuses: "Tous",
+    loadFailed: "Les candidatures n'ont pas pu être chargées.",
+    count: "Aucune candidature | {count} candidature | {count} candidatures",
+    forOffer: "Pour",
   },
 
   // Not-found page, for any address the router does not know

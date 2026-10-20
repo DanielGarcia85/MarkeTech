@@ -34,6 +34,7 @@ export default {
     allOffers: "All the offers",
     myOffers: "My offers",
     myApplications: "My applications",
+    receivedApplications: "Applications received",
     account: "My account",
     profile: "Profile",
   },
@@ -495,6 +496,16 @@ export default {
       accepted: "Accept the application of {name}?",
       rejected: "Reject the application of {name}?",
     },
+  },
+
+  // All the applications received by an employer, whatever the offer
+  receivedApplications: {
+    title: "Applications received",
+    status: "Status",
+    allStatuses: "All",
+    loadFailed: "The applications could not be loaded.",
+    count: "No application | {count} application | {count} applications",
+    forOffer: "For",
   },
 
   // Not-found page, for any address the router does not know

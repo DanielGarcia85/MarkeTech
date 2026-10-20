@@ -26,6 +26,7 @@ import OfferPage from "./pages/OfferPage.vue";
 import MyOffersPage from "./pages/MyOffersPage.vue";
 import OfferFormPage from "./pages/OfferFormPage.vue";
 import OfferApplicationsPage from "./pages/OfferApplicationsPage.vue";
+import ReceivedApplicationsPage from "./pages/ReceivedApplicationsPage.vue";
 import ApplyPage from "./pages/ApplyPage.vue";
 import MyApplicationsPage from "./pages/MyApplicationsPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
@@ -66,6 +67,8 @@ export const router = createRouter({
     { path: "/employer/offers/new", name: "offerNew", component: OfferFormPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/:id(\\d+)/edit", name: "offerEdit", component: OfferFormPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/:id(\\d+)/applications", name: "offerApplications", component: OfferApplicationsPage, meta: { requiresRole: "employer" } },
+    // All the applications received by an employer, whatever the offer
+    { path: "/employer/applications", name: "receivedApplications", component: ReceivedApplicationsPage, meta: { requiresRole: "employer" } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed
