@@ -29,6 +29,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 from django.db.models.functions import Lower
+from django.utils import timezone
 from django_countries.fields import CountryField
 
 from profiles.models import EmployerProfile
@@ -114,8 +115,8 @@ class JobOffer(models.Model):
         choices=Status.choices,
         default=Status.DRAFT,
     )
-    # Set when the offer is published (again, when reopened): the public
-    # list is sorted and filtered by it
+    # Set by save() when the offer becomes published (again, when it is
+    # reopened): the public list is sorted and filtered by it
     published_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -156,6 +157,29 @@ class JobOffer(models.Model):
 
     def __str__(self):
         return self.title
+
+        # ── The date of publication ───────────────────────────────────────
+    # Whoever changes the status (the API, the admin site), the date
+    # follows: the model remembers the status it was loaded with, and
+    # save() stamps published_at when the offer becomes published
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """Called by Django for every row read: keeps the status read."""
+        offer = super().from_db(db, field_names, values)
+        offer._loaded_status = offer.status if "status" in field_names else None
+        return offer
+
+    def save(self, *args, **kwargs):
+        """Stamps the publication when the offer is published, or published
+        again after a draft or a closure; an edit of a published offer
+        keeps its date."""
+        was_published = getattr(self, "_loaded_status", None) == self.Status.PUBLISHED
+        is_published = self.status == self.Status.PUBLISHED
+        if is_published and (self.published_at is None or not was_published):
+            self.published_at = timezone.now()
+        super().save(*args, **kwargs)
+        self._loaded_status = self.status
 
     def clean(self):
         """Checks that need more than one field, with a message per field.
