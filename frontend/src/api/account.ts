@@ -36,6 +36,8 @@ export type SignupData = {
   firstName: string;
   lastName: string;
   role: Role;
+  // The terms of use accepted: the backend refuses the sign-up otherwise
+  terms: boolean;
 };
 
 // Creates the account; 401 afterwards, because the address must be verified.
@@ -47,6 +49,7 @@ export function signUp(data: SignupData): Promise<ApiResponse<SessionData>> {
     first_name: data.firstName,
     last_name: data.lastName,
     role: data.role,
+    terms: data.terms,
   });
 }
 

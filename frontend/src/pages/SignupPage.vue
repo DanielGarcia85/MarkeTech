@@ -4,11 +4,12 @@
   Sign-up page — creates an account, then asks to confirm the address
   ───────────────────────────────────────────────────────────────────────────
   Displayed for "/account/signup". Sends the names, the address, the
-  password and the role to the authentication API. A 400 shows its errors
-  under the fields; a 401 means the account is there and the confirmation
-  e-mail is on its way, whether the account is new or already existed (the
-  API never tells which). A logged-in user has nothing to do here: the
-  router sends them home before the page is shown.
+  password, the role and the acceptance of the terms of use to the
+  authentication API. A 400 shows its errors under the fields; a 401 means
+  the account is there and the confirmation e-mail is on its way, whether
+  the account is new or already existed (the API never tells which). A
+  logged-in user has nothing to do here: the router sends them home before
+  the page is shown.
 -->
 
 <script setup lang="ts">
@@ -27,6 +28,8 @@ const email = ref("");
 const password = ref("");
 const passwordConfirm = ref("");
 const role = ref<Role>("candidate");
+// The terms of use: the account is not created until the box is ticked
+const terms = ref(false);
 
 // What the page shows: the errors by field, a request in flight, the e-mail
 // sent
@@ -36,9 +39,14 @@ const sent = ref(false);
 
 async function submit(): Promise<void> {
   errors.value = {};
-  // The only check made here: the API receives the password once
+  // The two checks made here: the API receives the password once, and the
+  // box is ticked (the backend refuses too, with a drier message)
   if (password.value !== passwordConfirm.value) {
     errors.value = { passwordConfirm: t("form.passwordMismatch") };
+    return;
+  }
+  if (!terms.value) {
+    errors.value = { terms: t("signup.termsRequired") };
     return;
   }
   sending.value = true;
@@ -49,6 +57,7 @@ async function submit(): Promise<void> {
       firstName: firstName.value,
       lastName: lastName.value,
       role: role.value,
+      terms: terms.value,
     });
     if (answer.status === 401) {
       sent.value = true;
@@ -142,6 +151,23 @@ async function submit(): Promise<void> {
       <p v-if="errors.role" class="error">{{ errors.role }}</p>
     </fieldset>
 
+    <!-- The terms, with their links: i18n-t puts each link where the text
+         says {terms} or {privacy} -->
+    <div class="field consent">
+      <label>
+        <input v-model="terms" type="checkbox" />
+        <i18n-t keypath="signup.terms" tag="span">
+          <template #terms>
+            <RouterLink :to="{ name: 'terms' }" target="_blank">{{ t("signup.termsLink") }}</RouterLink>
+          </template>
+          <template #privacy>
+            <RouterLink :to="{ name: 'privacy' }" target="_blank">{{ t("signup.privacyLink") }}</RouterLink>
+          </template>
+        </i18n-t>
+      </label>
+      <p v-if="errors.terms" class="error">{{ errors.terms }}</p>
+    </div>
+
     <button type="submit" class="primary" :disabled="sending">
       {{ t("signup.submit") }}
     </button>
@@ -152,3 +178,19 @@ async function submit(): Promise<void> {
     <RouterLink :to="{ name: 'login' }">{{ t("signup.loginLink") }}</RouterLink>
   </p>
 </template>
+
+<style scoped>
+/* The box and its sentence on one line, the sentence wrapping under itself */
+.consent label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 420px;
+  font-weight: normal;
+}
+
+.consent input {
+  flex: none;
+  margin-top: 5px;
+}
+</style>

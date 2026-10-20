@@ -44,6 +44,7 @@ export default {
     linkedin: "LinkedIn",
     portfolio: "Portfolio",
     contact: "Contact",
+    terms: "Terms of use",
     privacy: "Privacy",
     copyright: "© {year} Daniel Garcia",
   },
@@ -59,6 +60,10 @@ export default {
     role: "I am",
     candidate: "A candidate",
     employer: "An employer",
+    terms: "I accept the {terms} and I have read the {privacy}.",
+    termsLink: "terms of use",
+    privacyLink: "privacy policy",
+    termsRequired: "You must accept the terms of use to create an account.",
     submit: "Create my account",
     sent: "We have sent an e-mail to {email}. Open it and follow its link to activate your account.",
     haveAccount: "Already have an account?",
@@ -185,6 +190,67 @@ export default {
       changes: {
         title: "Changes to this page",
         intro: ["This page describes the site as it is. It changes when the site changes, and the date at the top says when it was last updated."],
+      },
+    },
+  },
+
+  // Terms of use, accepted at sign-up: sections in the same shape as the
+  // privacy page (title and paragraphs)
+  terms: {
+    title: "Terms of use",
+    updated: "Last updated: 20 October 2026",
+    sections: {
+      purpose: {
+        title: "What MarkeTech is",
+        intro: [
+          "MarkeTech is a demonstration project built by Daniel Garcia, in Geneva, to show his work: a job board for students and young graduates in computer science. It has no commercial activity: no offer commits anyone, nobody is hired through it, and nothing is sold on it.",
+          "By creating an account, you accept these terms. If you do not accept them, do not use the site.",
+        ],
+      },
+      account: {
+        title: "Your account",
+        intro: [
+          "An account is personal: one person, an e-mail address that is yours, a password you keep to yourself. You choose your role when you sign up, candidate or employer, and you are responsible for what is done with your account.",
+          "You can ask for your account to be deleted at any time, by writing to {contact} from the address of the account; everything attached to it goes with it.",
+        ],
+      },
+      use: {
+        title: "Using the site",
+        intro: [
+          "The site is there to be tried out. You do not need to put real documents or real data on it, and you do not put another person's data on it without their consent.",
+          "It is forbidden to publish unlawful, misleading or offensive content, to pass yourself off as someone else, to try to reach an account or data that are not yours, or to disturb the working of the site, for instance with automated requests.",
+        ],
+      },
+      content: {
+        title: "What you publish",
+        intro: [
+          "What you publish (profile, offers, documents) remains yours, and you answer for it: an employer is responsible for the offers it publishes. By publishing it, you allow the site to show it to the people its features imply, and to every visitor for a published offer.",
+          "The administrator of the site may withdraw content that goes against these terms, and suspend or delete the account that published it, without notice.",
+        ],
+      },
+      availability: {
+        title: "No warranty",
+        intro: [
+          "The site is provided as it is, with no warranty of availability or accuracy: it may change, be interrupted or stop at any time, without notice. Within the limits of the law, its author is not liable for any damage related to its use or its unavailability.",
+        ],
+      },
+      data: {
+        title: "Your data",
+        intro: [
+          "What the site does with your data is described in the privacy policy, reached from the footer. You take note of it when you create an account.",
+        ],
+      },
+      law: {
+        title: "Applicable law",
+        intro: [
+          "These terms are governed by Swiss law. The courts of Geneva have jurisdiction, subject to mandatory provisions.",
+        ],
+      },
+      changes: {
+        title: "Changes to these terms",
+        intro: [
+          "These terms may change with the site; the date at the top says when they were last updated. By going on using the site after a change, you accept it.",
+        ],
       },
     },
   },
