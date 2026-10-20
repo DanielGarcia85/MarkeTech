@@ -98,6 +98,15 @@ class ProfileApiTests(TestCase):
         """Whether the file behind a URL of the API exists in MEDIA_ROOT."""
         return os.path.exists(os.path.join(MEDIA, url.removeprefix("/api/files/")))
 
+    def status(self, client, url):
+        """Status of a GET on a file URL, the response closed at once. A
+        served file stays open until its response is closed, and Windows
+        refuses to delete an open file: a test that removes the file next
+        would fail there, and only there."""
+        response = client.get(url)
+        response.close()
+        return response.status_code
+
     # ── The profile ───────────────────────────────────────────────────
 
     def test_signup_creates_the_profile_of_the_role(self):
@@ -295,10 +304,10 @@ class ProfileApiTests(TestCase):
         employer = self.login(self.employer)
         photo_url = self.patch_files(employer, {"photo": self.file("me.png", png())}).json()["photo"]
         self.assertTrue(photo_url.startswith("/api/files/employers/%d/" % self.employer.pk))
-        self.assertEqual(employer.get(photo_url).status_code, 200)
-        self.assertEqual(self.login(self.admin).get(photo_url).status_code, 200)
-        self.assertEqual(self.login(self.candidate).get(photo_url).status_code, 404)
-        self.assertEqual(Client().get(photo_url).status_code, 404)
+        self.assertEqual(self.status(employer, photo_url), 200)
+        self.assertEqual(self.status(self.login(self.admin), photo_url), 200)
+        self.assertEqual(self.status(self.login(self.candidate), photo_url), 404)
+        self.assertEqual(self.status(Client(), photo_url), 404)
         # Removed by its route, like a candidate's; gone from the disk
         response = employer.delete("/api/profile/photo/")
         self.assertEqual((response.status_code, response.json()["photo"]), (200, None))
