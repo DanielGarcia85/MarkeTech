@@ -55,7 +55,6 @@ from profiles.models import EmployerProfile
 from .models import JobOffer
 from .serializers import JobOfferSerializer
 
-
 # ── Who ───────────────────────────────────────────────────────────────
 
 
