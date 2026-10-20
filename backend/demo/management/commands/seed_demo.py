@@ -1,20 +1,24 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts and job offers for a development database
+Seed demo — test accounts, job offers and applications for a development database
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
 ──────────────
 Fill a development database with what the pages need to be looked at: three
-candidates, three employers with their company, and ten job offers per
-employer spread over the cities, the contracts, the salaries and the last
-two months — eight published, one draft and one closed each. Everything is
-invented. The six accounts share one password, printed at the end.
+candidates with a CV and documents, three employers with their company, ten
+job offers per employer spread over the cities, the contracts, the salaries
+and the last two months — eight published, one draft and one closed each —
+and nine applications in every state, with their history. Everything is
+invented, the files included: one-page PDFs written by the command itself
+(no library needed for a page of text). The six accounts share one
+password, printed at the end.
 
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
-                                        profiles and offers go with them)
+                                        profiles, offers, applications and
+                                        files go with them)
 
 Why a command and not a fixture
 ───────────────────────────────
@@ -34,18 +38,22 @@ from datetime import timedelta
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
 from accounts.models import User
+from applications.models import Attachment, JobApplication
+from applications.serializers import copy_of
 from offers.models import JobOffer
-from profiles.models import CandidateProfile, EmployerProfile
+from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
 PASSWORD = "Demo-1234"
 
 # ── The candidates ────────────────────────────────────────────────────
-# The account (names) and the profile (contact details), in one dict each
+# The account (names), the profile (contact details), the lines of the CV
+# and the names of the documents, in one dict each
 
 CANDIDATES = [
     {
@@ -57,6 +65,13 @@ CANDIDATES = [
         "postal_code": "1207",
         "city": "Genève",
         "country": "CH",
+        "cv": [
+            "Développeuse full stack",
+            "Quatre ans d'expérience en Java Spring et Vue.js",
+            "Bachelor en informatique de gestion, HEG Genève",
+            "Français, anglais",
+        ],
+        "documents": ["Diplome_HEG.pdf", "Certificat_travail.pdf"],
     },
     {
         "email": "candidat2@test.com",
@@ -67,6 +82,13 @@ CANDIDATES = [
         "postal_code": "1227",
         "city": "Carouge",
         "country": "CH",
+        "cv": [
+            "Ingénieur DevOps",
+            "Six ans en administration Linux et cloud AWS",
+            "CFC d'informaticien, brevet fédéral",
+            "Français, anglais, allemand",
+        ],
+        "documents": ["Certificat_CFC.pdf"],
     },
     {
         "email": "candidat3@test.com",
@@ -77,6 +99,13 @@ CANDIDATES = [
         "postal_code": "74100",
         "city": "Annemasse",
         "country": "FR",
+        "cv": [
+            "Data scientist junior",
+            "Master en science des données, Université de Lyon",
+            "Stage de six mois en data engineering",
+            "Français, anglais, espagnol",
+        ],
+        "documents": ["Attestation_stage.pdf"],
     },
 ]
 
@@ -775,17 +804,159 @@ EMPLOYERS = [
     },
 ]
 
+# ── The applications ──────────────────────────────────────────────────
+# Who applied to which offer (the employer and the title name it), how
+# many days ago, with a cover letter or not, with which documents of their
+# profile, and the states it went through since: (state, days ago). An
+# application is never older than the publication of its offer.
+
+APPLICATIONS = [
+    {
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Développeur·euse Java Spring senior",
+        "days_ago": 1,
+        "letter": True,
+        "documents": ["Diplome_HEG.pdf"],
+        "moves": [],
+    },
+    {
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Ingénieur·e DevOps",
+        "days_ago": 8,
+        "letter": True,
+        "documents": ["Diplome_HEG.pdf", "Certificat_travail.pdf"],
+        "moves": [("in_progress", 6), ("accepted", 2)],
+    },
+    {
+        "candidate": "candidat1@test.com",
+        "employer": "employeur3@test.com",
+        "offer": "Développeur·euse Java Spring",
+        "days_ago": 13,
+        "letter": False,
+        "documents": [],
+        "moves": [("rejected", 9)],
+    },
+    {
+        "candidate": "candidat2@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Développeur·euse Java Spring senior",
+        "days_ago": 2,
+        "letter": True,
+        "documents": ["Certificat_CFC.pdf"],
+        "moves": [],
+    },
+    {
+        "candidate": "candidat2@test.com",
+        "employer": "employeur2@test.com",
+        "offer": "Ingénieur·e cloud AWS",
+        "days_ago": 3,
+        "letter": False,
+        "documents": [],
+        "moves": [("in_progress", 1)],
+    },
+    {
+        "candidate": "candidat2@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Administrateur·trice systèmes Linux",
+        "days_ago": 20,
+        "letter": True,
+        "documents": ["Certificat_CFC.pdf"],
+        "moves": [("in_progress", 16), ("rejected", 12)],
+    },
+    {
+        "candidate": "candidat3@test.com",
+        "employer": "employeur3@test.com",
+        "offer": "Développeur·euse Python Django",
+        "days_ago": 4,
+        "letter": True,
+        "documents": ["Attestation_stage.pdf"],
+        "moves": [],
+    },
+    {
+        "candidate": "candidat3@test.com",
+        "employer": "employeur2@test.com",
+        "offer": "Data scientist junior",
+        "days_ago": 10,
+        "letter": False,
+        "documents": ["Attestation_stage.pdf"],
+        "moves": [("in_progress", 7)],
+    },
+    {
+        # An application accepted on an offer closed since
+        "candidate": "candidat3@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Développeur·euse PHP Symfony",
+        "days_ago": 52,
+        "letter": True,
+        "documents": [],
+        "moves": [("in_progress", 48), ("accepted", 45)],
+    },
+]
+
 EMAILS = [person["email"] for person in CANDIDATES + EMPLOYERS]
 
 
+# ── The files ─────────────────────────────────────────────────────────
+
+
+def pdf(title, lines):
+    """A one-page PDF with a title and a few lines of text, as bytes.
+
+    Written by hand: a PDF is a text file made of numbered objects (the
+    catalog, the pages, one page, its content, a font), an index of their
+    positions (xref) and a trailer. Helvetica is one of the fonts every
+    viewer has; WinAnsi is its encoding with the accented letters."""
+
+    def escaped(text):
+        # In a PDF string, backslash and parentheses are escaped; the text
+        # is encoded in WinAnsi (cp1252), a character it lacks becomes "?"
+        text = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        return text.encode("cp1252", errors="replace")
+
+    content = [b"BT", b"/F1 18 Tf", b"72 760 Td", b"(" + escaped(title) + b") Tj"]
+    content += [b"/F1 12 Tf", b"0 -30 Td"]
+    for line in lines:
+        content += [b"(" + escaped(line) + b") Tj", b"0 -18 Td"]
+    content.append(b"ET")
+    stream = b"\n".join(content)
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R"
+        b" /Resources << /Font << /F1 5 0 R >> >> >>",
+        b"<< /Length %d >>\nstream\n" % len(stream) + stream + b"\nendstream",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>",
+    ]
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for number, body in enumerate(objects, 1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % number + body + b"\nendobj\n"
+    xref = len(out)
+    out += b"xref\n0 %d\n" % (len(objects) + 1)
+    out += b"0000000000 65535 f \n"
+    for offset in offsets:
+        out += b"%010d 00000 n \n" % offset
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\n" % (len(objects) + 1)
+    out += b"startxref\n%d\n%%%%EOF\n" % xref
+    return bytes(out)
+
+
+def pdf_file(name, title, lines):
+    """The same, as a file Django stores under the path of a model field."""
+    return ContentFile(pdf(title, lines), name=name)
+
+
 class Command(BaseCommand):
-    help = "Create six test accounts (three candidates, three employers) and their job offers."
+    help = "Create six test accounts (three candidates, three employers), their job offers and applications."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help="Delete the six test accounts first, with their profiles and offers.",
+            help="Delete the six test accounts first, with their profiles, offers and applications.",
         )
         parser.add_argument(
             "--force",
@@ -799,13 +970,17 @@ class Command(BaseCommand):
                 "DEBUG is off: refusing to create accounts with a known password (--force to go on)."
             )
 
+        # The documents made for the candidates, by address and name, for
+        # the applications that join them
+        self.documents = {}
         existing = User.objects.filter(email__in=EMAILS)
         if existing.exists():
             if not options["reset"]:
                 raise CommandError(
                     "The test accounts already exist: run again with --reset to replace them."
                 )
-            # The profiles, the offers and the addresses of allauth go with the users
+            # The profiles, the offers, the applications, the addresses of
+            # allauth and the files (signals) go with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -814,8 +989,14 @@ class Command(BaseCommand):
             for person in CANDIDATES:
                 self.candidate(person)
             offers = sum(self.employer(person) for person in EMPLOYERS)
+            for spec in APPLICATIONS:
+                self.application(spec)
 
-        self.stdout.write(self.style.SUCCESS(f"Created {len(EMAILS)} accounts and {offers} offers."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Created {len(EMAILS)} accounts, {offers} offers and {len(APPLICATIONS)} applications."
+            )
+        )
         self.stdout.write(f"Password of every account: {PASSWORD}")
         for email in EMAILS:
             self.stdout.write(f"  {email}")
@@ -842,8 +1023,20 @@ class Command(BaseCommand):
         return {key: person[key] for key in ("phone", "address", "postal_code", "city", "country")}
 
     def candidate(self, person):
+        """The account, the profile with its CV, and the documents."""
         user = self.user(person, User.Role.CANDIDATE)
-        CandidateProfile.objects.create(user=user, **self.contact(person))
+        name = f"{person['first_name']} {person['last_name']}"
+        profile = CandidateProfile.objects.create(
+            user=user,
+            cv=pdf_file(f"CV_{person['last_name']}.pdf", name, person["cv"]),
+            **self.contact(person),
+        )
+        for document in person["documents"]:
+            title = document.removesuffix(".pdf").replace("_", " ")
+            lines = [f"Document de {name}, pour la démonstration."]
+            self.documents[person["email"], document] = CandidateDocument.objects.create(
+                candidate=profile, file=pdf_file(document, title, lines)
+            )
 
     def employer(self, person):
         """The account, the profile with its company, the offers; returns
@@ -869,3 +1062,41 @@ class Command(BaseCommand):
             # Written straight to the row: save() would stamp today
             published_at = timezone.now() - timedelta(days=days_ago)
             JobOffer.objects.filter(pk=offer.pk).update(status=status, published_at=published_at)
+
+    def application(self, spec):
+        """One application, its files copied from the profile like the API
+        does (the letter written here), dated days_ago days before today,
+        then moved through its states, each dated too."""
+        profile = CandidateProfile.objects.get(user__email=spec["candidate"])
+        offer = JobOffer.objects.get(employer__user__email=spec["employer"], title=spec["offer"])
+        name = profile.user.get_full_name()
+        letter = ""
+        if spec["letter"]:
+            lines = [
+                "Madame, Monsieur,",
+                f"Votre offre « {offer.title} » correspond à ce que je cherche.",
+                "Vous trouverez mon CV ci-joint ; je reste à votre disposition",
+                "pour un entretien.",
+                name,
+            ]
+            letter = pdf_file("Lettre_de_motivation.pdf", "Lettre de motivation", lines)
+        application = JobApplication.objects.create(
+            offer=offer, candidate=profile, cv=copy_of(profile.cv), cover_letter=letter
+        )
+        for document in spec["documents"]:
+            source = self.documents[spec["candidate"], document]
+            Attachment.objects.create(application=application, file=copy_of(source.file))
+        # The dates, written straight to the rows: the model stamps today.
+        # Then read back: save() below writes every field of the instance,
+        # and the instance still holds the dates of its creation
+        now = timezone.now()
+        sent = now - timedelta(days=spec["days_ago"])
+        JobApplication.objects.filter(pk=application.pk).update(created_at=sent, updated_at=sent)
+        application.history.update(changed_at=sent)
+        application.refresh_from_db()
+        for status, days_ago in spec["moves"]:
+            application.status = status
+            application.save()
+            when = now - timedelta(days=days_ago)
+            JobApplication.objects.filter(pk=application.pk).update(updated_at=when)
+            application.history.filter(status=status).update(changed_at=when)
