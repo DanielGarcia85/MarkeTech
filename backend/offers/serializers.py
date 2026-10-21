@@ -20,10 +20,12 @@ the profile of the employer at the time of the answer, never copied. The
 status and the dates are read only: the status moves through the publish
 and close routes, the dates are set by the model. "mine": whether the
 offer belongs to the user asking, so that the pages know what to offer
-(editing, the applications) without comparing names. For the employer of
-the offer only, "applications_count": how many candidates applied (the
-public does not need it, and an offer does not say how many compete for
-it).
+(editing, the applications) without comparing names. "favorite": whether
+the candidate asking put the offer aside (the heart), computed by the view
+for a candidate, false for anyone else. For the employer of the offer
+only, "applications_count" and "favorites_count": how many candidates
+applied, how many put it aside (the public does not need them, and an
+offer does not say how many compete for it).
 """
 
 from django_countries.serializers import CountryFieldMixin
@@ -37,6 +39,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
     company = serializers.SerializerMethodField()
     mine = serializers.SerializerMethodField()
+    favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = JobOffer
@@ -61,6 +64,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
             "updated_at",
             "company",
             "mine",
+            "favorite",
         ]
         read_only_fields = ["status", "published_at", "created_at", "updated_at"]
 
@@ -78,6 +82,11 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
         request = self.context.get("request")
         return bool(request) and offer.employer.user_id == request.user.pk
 
+    def get_favorite(self, offer):
+        """Whether the candidate asking put the offer aside: annotated by the
+        view for a candidate (favorites/models.py), absent otherwise."""
+        return bool(getattr(offer, "favorite", False))
+
     def validate(self, data):
         """The checks that need more than one field: a range is not reversed."""
         # The value after the change: what is sent, else what is stored
@@ -94,15 +103,21 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
 
 class MyOfferSerializer(JobOfferSerializer):
-    """A job offer as its employer sees it: the same, with the number of
-    applications received. Never given for somebody else's offer."""
+    """A job offer as its employer sees it: the same, with the numbers of
+    applications received and of candidates who put it aside. Never given
+    for somebody else's offer."""
 
     applications_count = serializers.SerializerMethodField()
+    favorites_count = serializers.SerializerMethodField()
 
     class Meta(JobOfferSerializer.Meta):
-        fields = JobOfferSerializer.Meta.fields + ["applications_count"]
+        fields = JobOfferSerializer.Meta.fields + ["applications_count", "favorites_count"]
 
     def get_applications_count(self, offer):
         """Counted by the query of the list when it did (mine), else now."""
         count = getattr(offer, "applications_count", None)
         return offer.applications.count() if count is None else count
+
+    def get_favorites_count(self, offer):
+        count = getattr(offer, "favorites_count", None)
+        return offer.favorites.count() if count is None else count
