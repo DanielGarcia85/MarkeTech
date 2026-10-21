@@ -123,14 +123,14 @@ onMounted(load);
   <p v-if="notFound" class="notice">{{ t("receivedApplications.notFound") }}</p>
 
   <template v-else>
-    <!-- Narrowed to one offer: the offer named, its state, its form, and
-         the way back to every offer -->
-    <p v-if="offer" class="offer">
+    <!-- Narrowed to one offer: the offer named as a group heading would
+         name it, with its state and the way to its form -->
+    <h2 v-if="offer" class="title offer">
       <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
-      · {{ offer.city }}
+      <span class="muted">· {{ offer.city }}</span>
       <span class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
-      <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }">{{ t("offers.editLink") }}</RouterLink>
-    </p>
+      <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }" class="edit">{{ t("offers.editLink") }}</RouterLink>
+    </h2>
 
     <p v-if="loadFailed" class="error">{{ t("receivedApplications.loadFailed") }}</p>
 
@@ -202,14 +202,14 @@ onMounted(load);
   font: inherit;
 }
 
-/* The offer the page is narrowed to, under the title */
+/* The offer the page is narrowed to, under the title: a group heading */
 .offer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin: 12px 0 0;
-  color: var(--mt-muted);
+  margin-top: 12px;
+}
+
+.edit {
+  font-size: 0.95rem;
+  font-weight: normal;
 }
 
 .count {
