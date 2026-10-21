@@ -1,7 +1,7 @@
 <!--
   frontend/src/pages/ProfilePage.vue
 
-  Profile page — the names, contact details, company, files and account
+  Profile page — the names, contact details, company and files
   ───────────────────────────────────────────────────────────────────────────
   Displayed for "/account/profile", for a logged-in user only: the router
   sends a visitor to the login page. Both roles have a photo, a drawn
@@ -10,24 +10,16 @@
   rule, the fields on two columns on a wide window, one on a narrow one.
   The text fields, names included, are saved together by the Save button;
   a file is sent as soon as it is chosen, and removed after a confirmation
-  (the dialog of confirm.ts). The account comes last: a new e-mail
-  address, confirmed by a link sent to it, and a new password, given with
-  the current one. Every action done shows a short confirmation next to
-  where it happened.
+  (the dialog of confirm.ts). Every action done shows a short confirmation
+  next to where it happened. The e-mail address and the password have a
+  page of their own (CredentialsPage).
 -->
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import {
-  cancelEmailChange,
-  changeEmail,
-  changePassword,
-  listEmails,
-  type EmailAddressInfo,
-} from "../api/account";
-import { errorsByParam, firstErrors } from "../api/http";
+import { firstErrors } from "../api/http";
 import {
   ACCEPTED,
   MAX_DOCUMENTS,
@@ -61,8 +53,8 @@ const session = useSession();
 type FileKind = ProfileFileField | "document";
 
 // Where a confirmation can appear: next to the Save button, in each file
-// block, under the password form
-type BadgePlace = "form" | FileKind | "password";
+// block
+type BadgePlace = "form" | FileKind;
 
 // The confirmation shown at each place, if any: its text, and a number
 // that changes at every showing, so that the animation starts again when
@@ -160,7 +152,6 @@ async function load(): Promise<void> {
     return;
   }
   loadCountries();
-  loadEmails();
 }
 
 // Runs once, when the page opens: the router has already made sure that
@@ -316,111 +307,6 @@ async function dropDocument(id: number): Promise<void> {
 // A date of the API, shown in the language of the interface
 function formatDate(value: string): string {
   return new Date(value).toLocaleDateString(locale.value);
-}
-
-// ── The account: e-mail address ───────────────────────────────────────
-
-// The new address waiting for its link to be opened, if any
-const pendingEmail = ref<string | null>(null);
-// What the user types, the errors by field, a call in flight, and whether
-// the e-mail has just been sent
-const newEmail = ref("");
-const emailErrors = ref<Record<string, string>>({});
-const emailSending = ref(false);
-const emailSent = ref(false);
-
-// Keeps, from the addresses of the account, the one not verified yet
-function keepPending(addresses: EmailAddressInfo[]): void {
-  pendingEmail.value = addresses.find((address) => !address.verified)?.email ?? null;
-}
-
-// Reads the addresses once the profile is loaded, to show a pending change
-// made earlier. The page works without it.
-async function loadEmails(): Promise<void> {
-  try {
-    const answer = await listEmails();
-    if (answer.status === 200 && answer.data) keepPending(answer.data);
-  } catch {
-    // Nothing to show, then
-  }
-}
-
-async function submitEmail(): Promise<void> {
-  emailErrors.value = {};
-  emailSent.value = false;
-  emailSending.value = true;
-  try {
-    const answer = await changeEmail(newEmail.value);
-    if (answer.status === 200 && answer.data) {
-      keepPending(answer.data);
-      emailSent.value = true;
-      newEmail.value = "";
-    } else if (answer.status === 429) {
-      emailErrors.value = { "": t("form.tooMany") };
-    } else if (answer.errors) {
-      emailErrors.value = errorsByParam(answer.errors);
-    } else {
-      emailErrors.value = { "": t("form.failed") };
-    }
-  } catch {
-    emailErrors.value = { "": t("form.unreachable") };
-  } finally {
-    emailSending.value = false;
-  }
-}
-
-// Drops the pending address: the current one simply stays
-async function cancelEmail(): Promise<void> {
-  if (!pendingEmail.value) return;
-  emailErrors.value = {};
-  emailSent.value = false;
-  emailSending.value = true;
-  try {
-    const answer = await cancelEmailChange(pendingEmail.value);
-    if (answer.status === 200 && answer.data) {
-      keepPending(answer.data);
-    } else {
-      emailErrors.value = { "": t("form.failed") };
-    }
-  } catch {
-    emailErrors.value = { "": t("form.unreachable") };
-  } finally {
-    emailSending.value = false;
-  }
-}
-
-// ── The account: password ─────────────────────────────────────────────
-
-const passwords = reactive({ current: "", next: "", confirm: "" });
-const passwordErrors = ref<Record<string, string>>({});
-const passwordSending = ref(false);
-
-async function submitPassword(): Promise<void> {
-  passwordErrors.value = {};
-  // The only check made here: the API receives the new password once
-  if (passwords.next !== passwords.confirm) {
-    passwordErrors.value = { confirm: t("form.passwordMismatch") };
-    return;
-  }
-  passwordSending.value = true;
-  try {
-    const answer = await changePassword(passwords.current, passwords.next);
-    if (answer.status === 200) {
-      Object.assign(passwords, { current: "", next: "", confirm: "" });
-      showBadge("password", t("profile.passwordChanged"));
-    } else if (answer.status === 429) {
-      passwordErrors.value = { "": t("form.tooMany") };
-    } else if (answer.errors) {
-      // By field: current_password, new_password
-      passwordErrors.value = errorsByParam(answer.errors);
-    } else {
-      passwordErrors.value = { "": t("form.failed") };
-    }
-  } catch {
-    passwordErrors.value = { "": t("form.unreachable") };
-  } finally {
-    passwordSending.value = false;
-  }
 }
 </script>
 
@@ -672,81 +558,6 @@ async function submitPassword(): Promise<void> {
         </div>
       </div>
     </section>
-
-    <!-- The account: the address, changed through a confirmation link, and
-         the password, changed with the current one -->
-    <section class="section">
-      <h2>{{ t("profile.account") }}</h2>
-      <div class="columns">
-        <form novalidate @submit.prevent="submitEmail">
-          <h3>{{ t("profile.email") }}</h3>
-          <p>{{ t("profile.currentEmail", { email: profile.email }) }}</p>
-          <p v-if="emailSent" class="notice">{{ t("profile.emailSent") }}</p>
-          <p v-if="pendingEmail" class="pending">
-            {{ t("profile.emailPending", { email: pendingEmail }) }}
-            <button type="button" class="as-link" :disabled="emailSending" @click="cancelEmail">
-              {{ t("profile.cancel") }}
-            </button>
-          </p>
-          <p v-if="emailErrors['']" class="error">{{ emailErrors[""] }}</p>
-          <div class="field">
-            <label for="new-email">{{ t("profile.newEmail") }}</label>
-            <input id="new-email" v-model="newEmail" type="email" autocomplete="email" />
-            <p v-if="emailErrors.email" class="error">{{ emailErrors.email }}</p>
-          </div>
-          <button type="submit" class="primary" :disabled="emailSending">
-            {{ t("profile.changeEmail") }}
-          </button>
-        </form>
-
-        <form novalidate @submit.prevent="submitPassword">
-          <h3>{{ t("profile.password") }}</h3>
-          <p v-if="passwordErrors['']" class="error">{{ passwordErrors[""] }}</p>
-          <div class="field">
-            <label for="current-password">{{ t("profile.currentPassword") }}</label>
-            <input
-              id="current-password"
-              v-model="passwords.current"
-              type="password"
-              autocomplete="current-password"
-            />
-            <p v-if="passwordErrors.current_password" class="error">
-              {{ passwordErrors.current_password }}
-            </p>
-          </div>
-          <div class="field">
-            <label for="new-password">{{ t("profile.newPassword") }}</label>
-            <input
-              id="new-password"
-              v-model="passwords.next"
-              type="password"
-              autocomplete="new-password"
-            />
-            <p v-if="passwordErrors.new_password" class="error">
-              {{ passwordErrors.new_password }}
-            </p>
-          </div>
-          <div class="field">
-            <label for="new-password-confirm">{{ t("profile.newPasswordConfirm") }}</label>
-            <input
-              id="new-password-confirm"
-              v-model="passwords.confirm"
-              type="password"
-              autocomplete="new-password"
-            />
-            <p v-if="passwordErrors.confirm" class="error">{{ passwordErrors.confirm }}</p>
-          </div>
-          <p class="actions">
-            <button type="submit" class="primary" :disabled="passwordSending">
-              {{ t("profile.changePassword") }}
-            </button>
-            <span v-if="badges.password" :key="badges.password.id" class="badge">
-              {{ badges.password.text }}
-            </span>
-          </p>
-        </form>
-      </div>
-    </section>
   </template>
 </template>
 
@@ -959,15 +770,6 @@ h3 {
   align-items: baseline;
   gap: 12px;
   padding: 6px 0;
-}
-
-/* The address waiting for its link, with the way to give it up */
-.pending {
-  color: var(--mt-muted);
-}
-
-.pending .as-link {
-  margin-left: 8px;
 }
 
 /* Narrow window: one column everywhere */

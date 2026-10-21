@@ -9,7 +9,7 @@ export default {
   // Tagline and notice of the application
   app: {
     tagline: "Tech jobs and student jobs for recent graduates and students.",
-    notice: "This application is under construction.",
+    notice: "Demo site, under construction",
   },
 
   // The two roles, as shown to the logged-in user (header menu, profile)
@@ -34,9 +34,16 @@ export default {
     allOffers: "All the offers",
     myOffers: "My offers",
     myApplications: "My applications",
+    myFavorites: "My favourites",
     receivedApplications: "Applications received",
     account: "My account",
     profile: "Profile",
+    credentials: "Login details",
+  },
+
+  // Empty lists: the way to the place where they get filled
+  empty: {
+    browse: "See the offers",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -91,9 +98,9 @@ export default {
     confirmed: "Your e-mail address is confirmed. You can now log in.",
     changed: "Your new e-mail address is now in force.",
     invalid: "This link is invalid or has expired. Log in: if your address is still unconfirmed, you will receive a new link.",
-    invalidLoggedIn: "This link is invalid or has expired. Your current address stays in force; you can ask again from your profile.",
+    invalidLoggedIn: "This link is invalid or has expired. Your current address stays in force; you can ask again from your login details.",
     loginLink: "Log in",
-    profileLink: "Back to my profile",
+    credentialsLink: "Back to my login details",
   },
 
   // Password reset: the page that asks for the link
@@ -122,7 +129,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 20 October 2026",
+    updated: "Last updated: 21 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -142,7 +149,7 @@ export default {
           { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
-          { term: "Favourites", text: "The offers a candidate has set aside." },
+          { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
           { term: "Appointments", text: "Proposed by an employer about an application: date and time, description, the candidate's answer and the message that goes with it." },
           { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name and last name, visible to every visitor." },
           { term: "Technical data", text: "The server logs the requests it receives: IP address, page requested, date, browser. These logs serve for security and troubleshooting only, and are erased automatically as newer ones replace them." },
@@ -257,8 +264,7 @@ export default {
     },
   },
 
-  // Profile page: names and contact details, company, files and documents,
-  // then the account: e-mail address and password
+  // Profile page: names and contact details, company, files and documents
   profile: {
     title: "My profile",
     identity: "Identity",
@@ -300,7 +306,11 @@ export default {
     loadFailed: "Your profile cannot be loaded. Please try again later.",
     tooBig: "This file is bigger than {size} MB.",
     wrongType: "This type of file is not accepted ({types}).",
-    account: "Account",
+  },
+
+  // Credentials page: the e-mail address and the password of the account
+  credentials: {
+    title: "My login details",
     email: "E-mail address",
     currentEmail: "Current address: {email}",
     newEmail: "New e-mail address",
@@ -341,7 +351,6 @@ export default {
     next: "Next",
     publishedOn: "Published on {date}",
     detailsLink: "View the offer",
-    back: "All offers",
     notFound: "This offer does not exist, or is no longer published.",
     // Applying, under the heading of an offer
     apply: "Apply",
@@ -402,6 +411,7 @@ export default {
     needsCompany: "Give the name of your company in your profile before publishing.",
     companyLink: "Complete my profile",
     applications: "No application | {count} application | {count} applications",
+    favorites: "No favourite | {count} favourite | {count} favourites",
   },
 
   // The form of an offer, new or changed
@@ -483,14 +493,28 @@ export default {
     confirmWithdraw: "Withdraw your application to \"{title}\"? Its files will be deleted.",
   },
 
-  // The applications to one offer, for its employer
-  offerApplications: {
-    title: "Applications",
-    back: "My offers",
-    backToReceived: "Applications received",
+  // The heart on the offers, and the favorites of a candidate
+  favorites: {
+    add: "Add to my favourites",
+    remove: "Remove from my favourites",
+    loginToSave: "Log in to put this offer aside",
+  },
+  myFavorites: {
+    title: "My favourites",
+    none: "No offer put aside yet. The heart on an offer keeps it here.",
+    loadFailed: "Your favourites could not be loaded.",
+  },
+
+  // The applications received by an employer, all of them or one offer's
+  receivedApplications: {
+    title: "Applications received",
+    status: "Status",
+    allStatuses: "All",
+    allApplications: "All applications",
     notFound: "This offer does not exist, or is not yours.",
     loadFailed: "The applications could not be loaded.",
-    count: "No application yet | {count} application | {count} applications",
+    none: "No application to show.",
+    count: "No application | {count} application | {count} applications",
     set: {
       in_progress: "Mark in progress",
       accepted: "Accept",
@@ -500,16 +524,6 @@ export default {
       accepted: "Accept the application of {name}?",
       rejected: "Reject the application of {name}?",
     },
-  },
-
-  // All the applications received by an employer, whatever the offer
-  receivedApplications: {
-    title: "Applications received",
-    status: "Status",
-    allStatuses: "All",
-    loadFailed: "The applications could not be loaded.",
-    count: "No application | {count} application | {count} applications",
-    forOffer: "For",
   },
 
   // Not-found page, for any address the router does not know

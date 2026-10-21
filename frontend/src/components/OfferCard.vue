@@ -3,22 +3,29 @@
 
   Offer card — one job offer in a list
   ───────────────────────────────────────────────────────────────────────────
-  Used by the public list and by the list of an employer. The logo of the
-  company (or its initial), the company, the title as a link to the page of
-  the offer, the place and the conditions, the salary when given, the date
-  of publication. The list of an employer asks for the state of the offer
-  as a pill, and puts its buttons in the slot under the text.
+  Used by the public list, by the favorites of a candidate and by the list
+  of an employer. A white box with soft corners, lifted a little under the
+  pointer: the mark of the company (CompanyMark: its logo, or its initial
+  on a colour), the company, the title as a link to the page of the offer,
+  the place, the contract, workload and remote work as tags (OfferTags),
+  the salary when given, the date of publication; on the right, the heart
+  (FavoriteButton), which tells the parent when the offer is put aside or
+  taken back. The list of an employer asks for the state of the offer as a
+  pill (a closed offer shows it anyway: it may sit among the favorites),
+  and puts its buttons in the slot under the text.
 -->
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { Offer } from "../api/offers";
 import type { Country } from "../api/profile";
 import { useOfferText } from "../offers";
+import CompanyMark from "./CompanyMark.vue";
+import FavoriteButton from "./FavoriteButton.vue";
+import OfferTags from "./OfferTags.vue";
 
-const props = defineProps<{
+defineProps<{
   offer: Offer;
   // The countries, to write the name of the country of the offer
   countries: Country[];
@@ -26,77 +33,68 @@ const props = defineProps<{
   showStatus?: boolean;
 }>();
 
+// The offer was put aside or taken back: the parent updates its copy
+defineEmits<{ favorite: [favorite: boolean] }>();
+
 const { t } = useI18n();
 const text = useOfferText();
-
-// Without a logo, the first letter of the company in a square
-const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpperCase() || "?");
 </script>
 
 <template>
   <article class="card">
-    <div class="logo-box">
-      <img v-if="offer.company.logo" :src="offer.company.logo" alt="" class="logo" />
-      <span v-else class="logo-empty" aria-hidden="true">{{ initial }}</span>
-    </div>
+    <CompanyMark :name="offer.company.name" :logo="offer.company.logo" :size="72" />
     <div class="body">
       <p class="company">
         {{ offer.company.name }}
-        <span v-if="showStatus" class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+        <span v-if="showStatus || offer.status === 'closed'" class="pill" :class="offer.status">
+          {{ t("offers.status." + offer.status) }}
+        </span>
       </p>
       <h2 class="title">
         <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
       </h2>
-      <p class="line">{{ text.place(offer, countries) }} · {{ text.conditions(offer) }}</p>
-      <p v-if="text.salary(offer)" class="line">{{ text.salary(offer) }}</p>
+      <p class="line">{{ text.place(offer, countries) }}</p>
+      <p class="line"><OfferTags :offer="offer" /></p>
+      <p v-if="text.salary(offer)" class="line salary">{{ text.salary(offer) }}</p>
       <p v-if="offer.published_at" class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
       <!-- The buttons of the employer's list, when there are some -->
       <div v-if="$slots.default" class="actions"><slot /></div>
+    </div>
+    <!-- The heart: a candidate's, or a visitor's way to the login page -->
+    <div class="aside">
+      <FavoriteButton :offer="offer" @change="$emit('favorite', $event)" />
     </div>
   </article>
 </template>
 
 <style scoped>
-/* The logo on the left, the text on the right, a rule under each card */
+/* The mark on the left, the text on the right, in a box; the box comes
+   forward a little under the pointer */
 .card {
   display: flex;
   gap: 20px;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--mt-border);
-}
-
-.logo-box {
-  flex: 0 0 72px;
-}
-
-/* The logo in a square, kept whole, like on the profile page */
-.logo,
-.logo-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
+  margin-bottom: 12px;
+  padding: 18px 20px;
   border: 1px solid var(--mt-border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--mt-background);
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.logo {
-  padding: 6px;
-  object-fit: contain;
-}
-
-.logo-empty {
-  background: var(--mt-surface);
-  color: var(--mt-muted);
-  font-size: 1.5rem;
-  font-weight: 600;
+.card:hover {
+  border-color: var(--mt-blue-border);
+  box-shadow: 0 6px 18px rgba(31, 80, 106, 0.1);
 }
 
 .body {
   flex: 1;
   min-width: 0;
+}
+
+.aside {
+  flex: none;
 }
 
 .company {
@@ -147,7 +145,11 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
 }
 
 .line {
-  margin: 0 0 2px;
+  margin: 0 0 4px;
+}
+
+.salary {
+  font-weight: 500;
 }
 
 .date {

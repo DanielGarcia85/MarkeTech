@@ -24,9 +24,10 @@ Routes (offers/urls.py, under /api/, built by the router)
   POST    offers/<id>/close/    employer: published -> closed
 
 An offer that received applications is not deleted (the candidates would
-lose their trace): closed instead. The employer's answers carry the number
-of applications received, the public ones do not; the detail of an offer
-carries it for its own employer only.
+lose their trace): closed instead. The employer's answers carry the numbers
+of applications received and of favorites, the public ones do not; the
+detail of an offer carries them for its own employer only. For a candidate,
+every offer says whether they put it aside ("favorite", the heart).
 
 Who may do what
 ───────────────
@@ -45,7 +46,7 @@ moves are added as actions. The whole decision is in get_queryset() and in
 get_permissions().
 """
 
-from django.db.models import Count, Q
+from django.db.models import Count, Exists, OuterRef, Q
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from rest_framework import filters, permissions, status, viewsets
@@ -55,6 +56,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 from accounts.models import User
+from favorites.models import Favorite
 from profiles.models import EmployerProfile
 
 from .models import JobOffer
@@ -68,11 +70,24 @@ def is_employer(user):
     return user.is_authenticated and user.role == User.Role.EMPLOYER
 
 
+def is_candidate(user):
+    """A logged-in user whose role is candidate."""
+    return user.is_authenticated and user.role == User.Role.CANDIDATE
+
+
 class IsEmployer(permissions.BasePermission):
     """The same, as a permission for the views."""
 
     def has_permission(self, request, view):
         return is_employer(request.user)
+
+
+class IsCandidate(permissions.BasePermission):
+    """A logged-in candidate, as a permission for the views (used by the
+    applications and the favorites)."""
+
+    def has_permission(self, request, view):
+        return is_candidate(request.user)
 
 
 def employer_profile_of(user):
@@ -133,6 +148,11 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         """What the request may see, before any filter of the list."""
         offers = JobOffer.objects.select_related("employer__user")
         user = self.request.user
+        if is_candidate(user):
+            # Whether the candidate put each offer aside, in the same query
+            # (a sub-query per row, not a request per card)
+            put_aside = Favorite.objects.filter(offer=OuterRef("pk"), candidate__user=user)
+            offers = offers.annotate(favorite=Exists(put_aside))
         mine = Q(employer__user=user) if is_employer(user) else Q(pk__in=[])
         if self.action == "list":
             return self.filtered(offers.filter(status=JobOffer.Status.PUBLISHED))
@@ -186,9 +206,13 @@ class JobOfferViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"])
     def mine(self, request):
         """All the offers of the employer, in any state, newest first, each
-        with its number of applications counted by the same query; no
-        pages: an employer has a handful of offers."""
-        offers = self.get_queryset().annotate(applications_count=Count("applications"))
+        with its numbers of applications and of favorites counted by the
+        same query (distinct: two joins would multiply the rows); no pages:
+        an employer has a handful of offers."""
+        offers = self.get_queryset().annotate(
+            applications_count=Count("applications", distinct=True),
+            favorites_count=Count("favorites", distinct=True),
+        )
         offers = offers.order_by("-created_at")
         return Response(self.get_serializer(offers, many=True).data)
 

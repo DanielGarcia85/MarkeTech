@@ -44,4 +44,6 @@ urlpatterns = [
     path("api/", include("offers.urls")),
     # Applications API: the candidates applying to the offers, both sides reading
     path("api/", include("applications.urls")),
+    # Favorites API: the offers a candidate puts aside
+    path("api/", include("favorites.urls")),
 ]

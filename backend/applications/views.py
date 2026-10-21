@@ -47,26 +47,14 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from accounts.models import User
-from offers.views import IsEmployer, is_employer
+from offers.views import IsCandidate, IsEmployer, is_candidate, is_employer
 from profiles.models import CandidateProfile
 
 from .models import JobApplication
 from .serializers import ApplySerializer, JobApplicationSerializer
 
 # ── Who is asking ─────────────────────────────────────────────────────
-
-
-def is_candidate(user):
-    """A logged-in user whose role is candidate."""
-    return user.is_authenticated and user.role == User.Role.CANDIDATE
-
-
-class IsCandidate(permissions.BasePermission):
-    """The same, as a permission for the views."""
-
-    def has_permission(self, request, view):
-        return is_candidate(request.user)
+# The roles and their permissions are those of offers/views.py
 
 
 def candidate_profile_of(user):

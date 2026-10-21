@@ -3,7 +3,8 @@
 // Offer texts — how an offer is written on the pages
 // ─────────────────────────────────────────────────────────────────────────────
 // The lines that the list and the detail page share: the place, the
-// conditions, the salary, the date. A composable, because the words and the
+// workload, the salary, the date (the contract and the remote work are
+// shown as tags, by OfferTags). A composable, because the words and the
 // number formats depend on the language displayed.
 
 import { useI18n } from "vue-i18n";
@@ -21,17 +22,12 @@ export function useOfferText() {
     return `${offer.city}, ${country}`;
   }
 
-  // "Permanent · 80–100 % · Hybrid": the contract, the workload when given,
-  // the remote work
-  function conditions(offer: Offer): string {
-    const parts = [t("offers.contract." + offer.contract)];
-    if (offer.workload_min || offer.workload_max) {
-      const low = offer.workload_min ?? offer.workload_max;
-      const high = offer.workload_max ?? offer.workload_min;
-      parts.push(low === high ? `${low} %` : `${low}–${high} %`);
-    }
-    parts.push(t("offers.remote." + offer.remote));
-    return parts.join(" · ");
+  // "80–100 %", "100 %", or "" when the offer says nothing about it
+  function workload(offer: Offer): string {
+    if (!offer.workload_min && !offer.workload_max) return "";
+    const low = offer.workload_min ?? offer.workload_max;
+    const high = offer.workload_max ?? offer.workload_min;
+    return low === high ? `${low} %` : `${low}–${high} %`;
   }
 
   // "CHF 6 000 – 8 000 per month", "from EUR 40 000 per year", "up to ...",
@@ -61,5 +57,5 @@ export function useOfferText() {
     return new Intl.DateTimeFormat(locale.value, { dateStyle: "long" }).format(new Date(offer.published_at));
   }
 
-  return { place, conditions, salary, experience, published };
+  return { place, workload, salary, experience, published };
 }

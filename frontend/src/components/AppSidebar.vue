@@ -1,18 +1,24 @@
 <!--
   frontend/src/components/AppSidebar.vue
 
-  Side bar — the navigation of a logged-in user, on every page
+  Side bar — the navigation, on every page
   ───────────────────────────────────────────────────────────────────────────
-  Displayed by App.vue on the left of the page, for a logged-in user only.
-  One group of links per area of the application; a group gets its links
-  when the pages exist, never before, and a link of one role shows for that
-  role only. On a narrow window, the bar becomes a strip under the header.
+  Displayed by App.vue on the left of the page, for everyone: a visitor
+  gets the list of the offers only, so that the pages keep the same layout
+  before and after logging in; a logged-in user gets the links of their
+  role and their account (the profile, then the e-mail address and the
+  password), each link with a small drawing before it (Icon). One group
+  of links per area of the application; a group gets its links when the
+  pages exist, never before. On a narrow
+  window, the bar becomes a strip under the header, where each group keeps
+  its title and its links on one line, and wraps as a whole.
 -->
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
 import { useSession } from "../session";
+import Icon from "./Icon.vue";
 
 const { t } = useI18n();
 const session = useSession();
@@ -20,26 +26,35 @@ const session = useSession();
 
 <template>
   <nav class="sidebar" :aria-label="t('nav.label')">
-    <p class="group">{{ t("nav.offers") }}</p>
-    <RouterLink :to="{ name: 'home' }">{{ t("nav.allOffers") }}</RouterLink>
-    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
-      {{ t("nav.myOffers") }}
-    </RouterLink>
-    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
-      {{ t("nav.receivedApplications") }}
-    </RouterLink>
-    <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
-      {{ t("nav.myApplications") }}
-    </RouterLink>
-    <p class="group">{{ t("nav.account") }}</p>
-    <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
+    <div class="block">
+      <p class="group">{{ t("nav.offers") }}</p>
+      <RouterLink :to="{ name: 'home' }"><Icon name="briefcase" />{{ t("nav.allOffers") }}</RouterLink>
+      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
+        <Icon name="clipboard" />{{ t("nav.myOffers") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
+        <Icon name="inbox" />{{ t("nav.receivedApplications") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
+        <Icon name="send" />{{ t("nav.myApplications") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
+        <Icon name="heart" />{{ t("nav.myFavorites") }}
+      </RouterLink>
+    </div>
+    <div v-if="session.user" class="block">
+      <p class="group">{{ t("nav.account") }}</p>
+      <RouterLink :to="{ name: 'profile' }"><Icon name="user" />{{ t("nav.profile") }}</RouterLink>
+      <RouterLink :to="{ name: 'credentials' }"><Icon name="key" />{{ t("nav.credentials") }}</RouterLink>
+    </div>
   </nav>
 </template>
 
 <style scoped>
+/* Wide enough for the longest link, its drawing before it, on one line */
 .sidebar {
   flex: none;
-  width: 220px;
+  width: 248px;
   padding: 20px 12px;
   border-right: 1px solid var(--mt-border);
   background: var(--mt-surface);
@@ -56,18 +71,30 @@ const session = useSession();
 }
 
 /* A gap above every group but the first */
-.sidebar a + .group {
+.block + .block {
   margin-top: 20px;
 }
 
-/* One link per line; the page being shown is marked by the router with
-   the class router-link-active */
+/* One link per line, its drawing before its words, in the muted colour
+   until the link is the current page or under the pointer; the page
+   being shown is marked by the router with the class router-link-active */
 .sidebar a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 8px 10px;
   border-radius: 6px;
   color: var(--mt-text);
   text-decoration: none;
+}
+
+.sidebar a .icon {
+  color: var(--mt-muted);
+}
+
+.sidebar a:hover .icon,
+.sidebar a.router-link-active .icon {
+  color: inherit;
 }
 
 .sidebar a:hover {
@@ -79,21 +106,34 @@ const session = useSession();
   color: #ffffff;
 }
 
-/* Narrow window: a strip under the header, the links side by side */
+/* Narrow window: a strip under the header; each group is a line of its
+   own title and links, the groups side by side while the width allows,
+   then one under the other, aligned on the left */
 @media (max-width: 900px) {
   .sidebar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 8px;
+    gap: 4px 24px;
     width: auto;
     padding: 8px 16px;
     border-right: none;
     border-bottom: 1px solid var(--mt-border);
   }
 
+  .block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .block + .block {
+    margin-top: 0;
+  }
+
   .group {
-    margin: 0 8px 0 0;
+    margin: 0 4px 0 0;
   }
 
   .sidebar a {

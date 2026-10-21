@@ -4,8 +4,8 @@
   Root component — top of the component tree, and the page shell
   ───────────────────────────────────────────────────────────────────────────
   Mounted by main.ts. Asks the backend who is logged in, then lays out the
-  three bands of every page: the header, the body (the side bar of a
-  logged-in user, then the current page) and the footer, plus the
+  three bands of every page: the header, the body (the side bar, then the
+  current page) and the footer, plus the
   confirmation dialog that any page may open. The body stretches so that
   the footer stays at the bottom of the window, even on a short page.
   Every page is declared in router.ts.
@@ -16,9 +16,7 @@ import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppSidebar from "./components/AppSidebar.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
-import { loadSession, useSession } from "./session";
-
-const session = useSession();
+import { loadSession } from "./session";
 
 // Runs once, when the application starts
 loadSession();
@@ -28,8 +26,9 @@ loadSession();
   <div class="shell">
     <AppHeader />
     <div class="body">
-      <!-- The navigation of a logged-in user, before the page -->
-      <AppSidebar v-if="session.user" />
+      <!-- The navigation, before the page: the offers for everyone, more
+           for a logged-in user -->
+      <AppSidebar />
       <main class="page">
         <RouterView />
       </main>

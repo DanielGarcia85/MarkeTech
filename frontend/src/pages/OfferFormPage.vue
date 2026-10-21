@@ -162,7 +162,7 @@ onMounted(() => {
     <!-- The applications received by the offer being edited -->
     <RouterLink
       v-if="offer && offer.status !== 'draft'"
-      :to="{ name: 'offerApplications', params: { id: offer.id } }"
+      :to="{ name: 'receivedApplications', query: { offer: String(offer.id) } }"
       class="secondary applications"
     >
       {{ t("myOffers.applications", offer.applications_count ?? 0) }}

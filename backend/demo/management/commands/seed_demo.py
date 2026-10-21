@@ -1,24 +1,26 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts, job offers and applications for a development database
+Seed demo — test accounts, offers, applications and favorites for a development database
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
 ──────────────
 Fill a development database with what the pages need to be looked at: three
-candidates with a CV and documents, three employers with their company, ten
-job offers per employer spread over the cities, the contracts, the salaries
-and the last two months — eight published, one draft and one closed each —
-and nine applications in every state, with their history. Everything is
-invented, the files included: one-page PDFs written by the command itself
-(no library needed for a page of text). The six accounts share one
+candidates with a CV and documents, three employers with their company and
+its logo, ten job offers per employer spread over the cities, the
+contracts, the salaries and the last two months — eight published, one
+draft and one closed each — nine applications in every state, with their
+history, and eight favorites. Everything is invented, the files included:
+one-page PDFs written by the command itself (no library needed for a page
+of text), and logos drawn with Pillow (the initials of the company on a
+colour), which the image fields need anyway. The six accounts share one
 password, printed at the end.
 
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
-                                        profiles, offers, applications and
-                                        files go with them)
+                                        profiles, offers, applications,
+                                        favorites and files go with them)
 
 Why a command and not a fixture
 ───────────────────────────────
@@ -35,6 +37,7 @@ off (a server) unless --force is given.
 """
 
 from datetime import timedelta
+from io import BytesIO
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -42,10 +45,12 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
+from PIL import Image, ImageDraw, ImageFont
 
 from accounts.models import User
 from applications.models import Attachment, JobApplication
 from applications.serializers import copy_of
+from favorites.models import Favorite
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
@@ -130,6 +135,7 @@ EMPLOYERS = [
         "company_city": "Genève",
         "company_country": "CH",
         "company_phone": "+41 22 000 00 10",
+        "logo": ("LT", "#2d6f91"),
         "offers": [
             {
                 "title": "Développeur·euse Java Spring senior",
@@ -369,6 +375,7 @@ EMPLOYERS = [
         "company_city": "Lausanne",
         "company_country": "CH",
         "company_phone": "+41 21 000 00 20",
+        "logo": ("AD", "#2f855a"),
         "offers": [
             {
                 "title": "Data engineer Python",
@@ -594,6 +601,7 @@ EMPLOYERS = [
         "company_city": "Lyon",
         "company_country": "FR",
         "company_phone": "+33 4 00 00 00 30",
+        "logo": ("RD", "#6b46c1"),
         # The currency of the salaries of its offers (CHF when not given)
         "currency": "EUR",
         "offers": [
@@ -895,6 +903,22 @@ APPLICATIONS = [
     },
 ]
 
+# ── The favorites ─────────────────────────────────────────────────────
+# Who put which offer aside (the employer and the title name it), how many
+# days ago. One is on an offer closed since: a favorite stays until the
+# candidate takes it back.
+
+FAVORITES = [
+    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse Full Stack Vue / Django", 4),
+    ("candidat1@test.com", "employeur2@test.com", "Data engineer Python", 1),
+    ("candidat1@test.com", "employeur3@test.com", "Développeur·euse front-end Vue.js", 2),
+    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse PHP Symfony", 53),
+    ("candidat2@test.com", "employeur2@test.com", "Ingénieur·e cloud AWS", 3),
+    ("candidat2@test.com", "employeur1@test.com", "Administrateur·trice systèmes Linux", 21),
+    ("candidat3@test.com", "employeur2@test.com", "Data scientist junior", 10),
+    ("candidat3@test.com", "employeur3@test.com", "Développeur·euse Python Django", 5),
+]
+
 EMAILS = [person["email"] for person in CANDIDATES + EMPLOYERS]
 
 
@@ -949,14 +973,36 @@ def pdf_file(name, title, lines):
     return ContentFile(pdf(title, lines), name=name)
 
 
+def logo(initials, colour):
+    """A square PNG logo, as bytes: the initials of the company in white on
+    a rounded square of its colour. Pillow's own font, so that nothing has
+    to be installed; the text is measured, then placed in the middle."""
+    side = 256
+    image = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((0, 0, side - 1, side - 1), radius=48, fill=colour)
+    font = ImageFont.load_default(size=112)
+    left, top, right, bottom = draw.textbbox((0, 0), initials, font=font)
+    position = ((side - (right - left)) / 2 - left, (side - (bottom - top)) / 2 - top)
+    draw.text(position, initials, fill="white", font=font)
+    buffer = BytesIO()
+    image.save(buffer, "PNG")
+    return buffer.getvalue()
+
+
+def logo_file(initials, colour):
+    """The same, as a file Django stores under the path of the logo field."""
+    return ContentFile(logo(initials, colour), name="logo.png")
+
+
 class Command(BaseCommand):
-    help = "Create six test accounts (three candidates, three employers), their job offers and applications."
+    help = "Create six test accounts (three candidates, three employers), their job offers, applications and favorites."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help="Delete the six test accounts first, with their profiles, offers and applications.",
+            help="Delete the six test accounts first, with their profiles, offers, applications and favorites.",
         )
         parser.add_argument(
             "--force",
@@ -979,8 +1025,8 @@ class Command(BaseCommand):
                 raise CommandError(
                     "The test accounts already exist: run again with --reset to replace them."
                 )
-            # The profiles, the offers, the applications, the addresses of
-            # allauth and the files (signals) go with the users
+            # The profiles, the offers, the applications, the favorites, the
+            # addresses of allauth and the files (signals) go with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -991,10 +1037,13 @@ class Command(BaseCommand):
             offers = sum(self.employer(person) for person in EMPLOYERS)
             for spec in APPLICATIONS:
                 self.application(spec)
+            for candidate, employer, title, days_ago in FAVORITES:
+                self.favorite(candidate, employer, title, days_ago)
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Created {len(EMAILS)} accounts, {offers} offers and {len(APPLICATIONS)} applications."
+                f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications "
+                f"and {len(FAVORITES)} favorites."
             )
         )
         self.stdout.write(f"Password of every account: {PASSWORD}")
@@ -1039,11 +1088,13 @@ class Command(BaseCommand):
             )
 
     def employer(self, person):
-        """The account, the profile with its company, the offers; returns
-        how many offers were made."""
+        """The account, the profile with its company and its logo, the
+        offers; returns how many offers were made."""
         user = self.user(person, User.Role.EMPLOYER)
         company = {key: person[key] for key in person if key.startswith("company_")}
-        profile = EmployerProfile.objects.create(user=user, **self.contact(person), **company)
+        profile = EmployerProfile.objects.create(
+            user=user, logo=logo_file(*person["logo"]), **self.contact(person), **company
+        )
         for offer in person["offers"]:
             self.offer(profile, offer, person.get("currency", JobOffer.Currency.CHF))
         return len(person["offers"])
@@ -1100,3 +1151,12 @@ class Command(BaseCommand):
             when = now - timedelta(days=days_ago)
             JobApplication.objects.filter(pk=application.pk).update(updated_at=when)
             application.history.filter(status=status).update(changed_at=when)
+
+    def favorite(self, candidate, employer, title, days_ago):
+        """One offer put aside by a candidate, days_ago days before today."""
+        profile = CandidateProfile.objects.get(user__email=candidate)
+        offer = JobOffer.objects.get(employer__user__email=employer, title=title)
+        favorite = Favorite.objects.create(candidate=profile, offer=offer)
+        # Written straight to the row: the model stamps today
+        when = timezone.now() - timedelta(days=days_ago)
+        Favorite.objects.filter(pk=favorite.pk).update(created_at=when)

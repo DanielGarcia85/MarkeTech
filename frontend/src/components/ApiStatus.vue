@@ -4,7 +4,10 @@
   API status — shows whether the backend can be reached
   ───────────────────────────────────────────────────────────────────────────
   Calls the health endpoint once, when the component is displayed, and shows
-  the result in the current language.
+  the result in the current language, as a span: it sits in a line of the
+  header, next to the notice. The state is told by its colour too: a dot
+  and the word in green when the backend answers, in red when it does not,
+  in grey while it is being asked.
 -->
 
 <script setup lang="ts">
@@ -37,8 +40,38 @@ onMounted(async () => {
 </script>
 
 <template>
-  <p>
+  <span>
     {{ t("health.label") }}
-    <strong>{{ t(`health.${status}`) }}</strong>
-  </p>
+    <strong class="state" :class="status">{{ t(`health.${status}`) }}</strong>
+  </span>
 </template>
+
+<style scoped>
+/* The state, preceded by a dot of the same colour */
+.state {
+  white-space: nowrap;
+}
+
+.state::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: 1px;
+}
+
+.checking {
+  color: var(--mt-muted);
+}
+
+.online {
+  color: var(--mt-success);
+}
+
+.offline {
+  color: var(--mt-error);
+}
+</style>

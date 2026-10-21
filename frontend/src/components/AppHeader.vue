@@ -1,10 +1,14 @@
 <!--
   frontend/src/components/AppHeader.vue
 
-  Header — logo, account menu and language selector, on every page
+  Header — logo, notice, account menu and language selector, on every page
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page, and kept at the top of the
-  window while the page scrolls. A logged-in user is shown as a round with
+  window while the page scrolls, in the light blue (the footer has the
+  dark one). Between the logo and the links, a small
+  line centred on the window says what the site is (a demo under
+  construction) and whether the backend answers (ApiStatus, the state in
+  colour). A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
   profile, the way to log out. A visitor gets the links to sign up and to
   log in.
@@ -17,6 +21,7 @@ import { useRouter } from "vue-router";
 
 import logoUrl from "../assets/logo-horizontal.svg";
 import { logout, useSession } from "../session";
+import ApiStatus from "./ApiStatus.vue";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 const { t } = useI18n();
@@ -76,9 +81,12 @@ async function leave(): Promise<void> {
 
 <template>
   <header class="header">
-    <RouterLink :to="{ name: 'home' }">
+    <RouterLink :to="{ name: 'home' }" class="brand">
       <img :src="logoUrl" alt="MarkeTech" class="logo" />
     </RouterLink>
+    <!-- What the site is, in a small line in the middle: a demo under
+         construction, and whether the backend answers -->
+    <p class="about">{{ t("app.notice") }} · <ApiStatus /></p>
     <nav class="nav">
       <div v-if="session.user" ref="account" class="account">
         <!-- The round opens and closes the menu -->
@@ -130,13 +138,41 @@ async function leave(): Promise<void> {
   justify-content: space-between;
   gap: 8px 16px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--mt-border);
-  background: var(--mt-background);
+  border-bottom: 1px solid var(--mt-blue-border);
+  background: var(--mt-blue-surface);
 }
 
 .logo {
   display: block;
   height: 40px;
+}
+
+/* The line about the site (not .notice, the framed message of the
+   pages), centred on the window whoever is logged in: the logo and the
+   links get the same share of the width, so that the line sits in the
+   middle whatever their own widths (the links of a visitor are wider than
+   the round of a user). Hidden below the width where the three no longer
+   fit on one line (the links of a visitor, in French, decide it): the
+   logo and the links then fill the header and share it as they need */
+.about {
+  flex: none;
+  margin: 0;
+  color: var(--mt-text);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+@media (min-width: 1100px) {
+  .brand,
+  .nav {
+    flex: 1 1 0;
+  }
+}
+
+@media (max-width: 1099px) {
+  .about {
+    display: none;
+  }
 }
 
 /* Kept on the right, on its own line too; its own items wrap if needed,

@@ -7,7 +7,8 @@
   cards, newest first, ten by page, with the numbers of the pages. The
   filters and the page live in the address of the page (?title=...&page=2):
   a search can be shared or reloaded, and the back button goes back to the
-  previous search. On a narrow screen the filters fold behind a button.
+  previous search. The filters are kept compact, so that the first offers
+  show without scrolling; on a narrow screen they fold behind a button.
   Each card links to the page of its offer.
 -->
 
@@ -28,6 +29,7 @@ import {
   type OfferPage,
 } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
+import EmptyState from "./EmptyState.vue";
 import OfferCard from "./OfferCard.vue";
 
 const { t, locale } = useI18n();
@@ -234,10 +236,10 @@ onMounted(() => {
 
   <template v-else-if="result">
     <p class="count">{{ t("offers.count", result.count) }}</p>
-    <p v-if="result.count === 0" class="muted">{{ t("offers.none") }}</p>
+    <EmptyState v-if="result.count === 0" icon="search" :text="t('offers.none')" />
     <ul v-else class="cards">
       <li v-for="offer in result.results" :key="offer.id">
-        <OfferCard :offer="offer" :countries="countries" />
+        <OfferCard :offer="offer" :countries="countries" @favorite="offer.favorite = $event" />
       </li>
     </ul>
 
@@ -270,26 +272,39 @@ onMounted(() => {
 
 <style scoped>
 .heading {
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   color: var(--mt-blue);
   font-size: 1.3rem;
 }
 
-/* The filters on a grid: as many fields per line as the width allows */
+/* The filters on a grid: as many fields per line as the width allows.
+   Compact, tighter than the forms of the site (smaller paddings, labels
+   and fields), so that the offers come soon under them */
 .filters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0 16px;
-  padding: 16px 16px 4px;
-  border: 1px solid var(--mt-border);
-  border-radius: 8px;
-  background: var(--mt-surface);
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0 12px;
+  padding: 10px 12px 0;
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 10px;
+  background: var(--mt-blue-surface);
+}
+
+.filters .field {
+  margin-bottom: 10px;
+}
+
+.filters .field label {
+  margin-bottom: 2px;
+  font-size: 0.9rem;
 }
 
 /* The fields of the grid take its whole column */
 .filters .field input,
 .filters .field select {
   max-width: none;
+  padding: 6px 8px;
+  font-size: 0.95rem;
 }
 
 /* An amount, its currency and its period, side by side: the amount takes
@@ -315,15 +330,16 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+}
+
+.actions .primary {
+  padding: 6px 14px;
+  font-size: 0.95rem;
 }
 
 .count {
-  margin: 20px 0 8px;
-  color: var(--mt-muted);
-}
-
-.muted {
+  margin: 14px 0 6px;
   color: var(--mt-muted);
 }
 

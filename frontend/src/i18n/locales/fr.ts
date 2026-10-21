@@ -11,7 +11,7 @@ const fr: typeof en = {
   // Tagline and notice of the application
   app: {
     tagline: "Emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.",
-    notice: "Cette application est en cours de construction.",
+    notice: "Site de démonstration, en construction",
   },
 
   // The two roles, as shown to the logged-in user (header menu, profile)
@@ -36,9 +36,16 @@ const fr: typeof en = {
     allOffers: "Toutes les offres",
     myOffers: "Mes offres",
     myApplications: "Mes candidatures",
+    myFavorites: "Mes favoris",
     receivedApplications: "Candidatures reçues",
     account: "Mon compte",
     profile: "Profil",
+    credentials: "Identifiants",
+  },
+
+  // Empty lists: the way to the place where they get filled
+  empty: {
+    browse: "Voir les offres",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -93,9 +100,9 @@ const fr: typeof en = {
     confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
     changed: "Votre nouvelle adresse e-mail est en vigueur.",
     invalid: "Ce lien n'est pas valable ou a expiré. Connectez-vous : si votre adresse n'est pas encore confirmée, vous recevrez un nouveau lien.",
-    invalidLoggedIn: "Ce lien n'est pas valable ou a expiré. Votre adresse actuelle reste en vigueur ; vous pouvez refaire la demande depuis votre profil.",
+    invalidLoggedIn: "Ce lien n'est pas valable ou a expiré. Votre adresse actuelle reste en vigueur ; vous pouvez refaire la demande depuis vos identifiants.",
     loginLink: "Se connecter",
-    profileLink: "Retour à mon profil",
+    credentialsLink: "Retour à mes identifiants",
   },
 
   // Password reset: the page that asks for the link
@@ -124,7 +131,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 20 octobre 2026",
+    updated: "Dernière mise à jour : 21 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -144,7 +151,7 @@ const fr: typeof en = {
           { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement. Une offre qui a reçu des candidatures ne peut plus être supprimée, seulement clôturée : les candidats gardent la trace de leur candidature." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, les documents de votre profil que vous y joignez (copiés au moment de l'envoi : modifier votre profil ensuite ne change pas ce que l'employeur a reçu), la date, le statut (reçue, en cours, acceptée, refusée) et l'historique de ses changements. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre ; celui-ci voit aussi vos prénom, nom, adresse e-mail, téléphone et ville, lus sur votre compte et votre profil. Vous pouvez la retirer tant que l'employeur n'a pas décidé : elle est alors supprimée avec ses fichiers." },
           { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
-          { term: "Favoris", text: "Les offres qu'un candidat a mises de côté." },
+          { term: "Favoris", text: "Les offres qu'un candidat a mises de côté, avec la date. Lui seul les voit ; l'employeur d'une offre sait combien de candidats l'ont mise de côté, jamais lesquels. Un favori reste en place quand l'offre est clôturée, jusqu'à ce que le candidat le retire." },
           { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature : date et heure, description, réponse du candidat et message qui l'accompagne." },
           { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom et votre nom, visibles par tous les visiteurs." },
           { term: "Données techniques", text: "Le serveur enregistre les requêtes qu'il reçoit : adresse IP, page demandée, date, navigateur. Ces journaux ne servent qu'à la sécurité et au dépannage, et s'effacent automatiquement à mesure que de plus récents les remplacent." },
@@ -259,8 +266,7 @@ const fr: typeof en = {
     },
   },
 
-  // Profile page: names and contact details, company, files and documents,
-  // then the account: e-mail address and password
+  // Profile page: names and contact details, company, files and documents
   profile: {
     title: "Mon profil",
     identity: "Identité",
@@ -302,7 +308,11 @@ const fr: typeof en = {
     loadFailed: "Votre profil ne peut pas être chargé. Veuillez réessayer plus tard.",
     tooBig: "Ce fichier dépasse {size} Mo.",
     wrongType: "Ce type de fichier n'est pas accepté ({types}).",
-    account: "Compte",
+  },
+
+  // Credentials page: the e-mail address and the password of the account
+  credentials: {
+    title: "Mes identifiants",
     email: "Adresse e-mail",
     currentEmail: "Adresse actuelle : {email}",
     newEmail: "Nouvelle adresse e-mail",
@@ -343,7 +353,6 @@ const fr: typeof en = {
     next: "Suivant",
     publishedOn: "Publiée le {date}",
     detailsLink: "Voir l'offre",
-    back: "Toutes les offres",
     notFound: "Cette offre n'existe pas, ou n'est plus publiée.",
     // Applying, under the heading of an offer
     apply: "Postuler",
@@ -404,6 +413,7 @@ const fr: typeof en = {
     needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
     companyLink: "Compléter mon profil",
     applications: "Aucune candidature | {count} candidature | {count} candidatures",
+    favorites: "Aucun favori | {count} favori | {count} favoris",
   },
 
   // The form of an offer, new or changed
@@ -485,14 +495,28 @@ const fr: typeof en = {
     confirmWithdraw: "Retirer votre candidature à « {title} » ? Ses fichiers seront supprimés.",
   },
 
-  // The applications to one offer, for its employer
-  offerApplications: {
-    title: "Candidatures",
-    back: "Mes offres",
-    backToReceived: "Candidatures reçues",
+  // The heart on the offers, and the favorites of a candidate
+  favorites: {
+    add: "Ajouter à mes favoris",
+    remove: "Retirer de mes favoris",
+    loginToSave: "Connectez-vous pour mettre cette offre de côté",
+  },
+  myFavorites: {
+    title: "Mes favoris",
+    none: "Aucune offre mise de côté pour l'instant. Le cœur sur une offre la garde ici.",
+    loadFailed: "Vos favoris n'ont pas pu être chargés.",
+  },
+
+  // The applications received by an employer, all of them or one offer's
+  receivedApplications: {
+    title: "Candidatures reçues",
+    status: "État",
+    allStatuses: "Tous",
+    allApplications: "Toutes les candidatures",
     notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
-    count: "Aucune candidature pour l'instant | {count} candidature | {count} candidatures",
+    none: "Aucune candidature à afficher.",
+    count: "Aucune candidature | {count} candidature | {count} candidatures",
     set: {
       in_progress: "Mettre en cours",
       accepted: "Accepter",
@@ -502,16 +526,6 @@ const fr: typeof en = {
       accepted: "Accepter la candidature de {name} ?",
       rejected: "Refuser la candidature de {name} ?",
     },
-  },
-
-  // All the applications received by an employer, whatever the offer
-  receivedApplications: {
-    title: "Candidatures reçues",
-    status: "État",
-    allStatuses: "Tous",
-    loadFailed: "Les candidatures n'ont pas pu être chargées.",
-    count: "Aucune candidature | {count} candidature | {count} candidatures",
-    forOffer: "Pour",
   },
 
   // Not-found page, for any address the router does not know

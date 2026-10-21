@@ -5,13 +5,17 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by the router for "/offers/<id>", to anyone: the backend serves
   a published offer to all, and an unpublished one to its employer only;
-  anything else is "not found" here, with a way back to the list. The
+  anything else is "not found" here, with a way back to the list (the page
+  itself has none: the logo and the side bar lead to the lists). The
   company, the title, the facts in a list, then the description as it was
   typed, line breaks kept. Under the heading, the way to apply: a button
   for a candidate, an invitation to log in for a visitor, and, once
   applied, the date and the state of the application sent. For the
-  employer of the offer: its state, and the way to its form and to its
-  applications.
+  employer of the offer: its state, its numbers of applications and of
+  favorites, the way to its form and to its applications, and the move of
+  its state (publish, close) without going through "My offers". In the
+  heading, on the right, the heart that puts the offer aside
+  (FavoriteButton).
 -->
 
 <script setup lang="ts">
@@ -20,9 +24,12 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import { listApplications, type Application } from "../api/applications";
-import { getOffer, type Offer } from "../api/offers";
+import { closeOffer, firstErrorOf, getOffer, publishOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
 import { useApplicationText } from "../applications";
+import CompanyMark from "../components/CompanyMark.vue";
+import FavoriteButton from "../components/FavoriteButton.vue";
+import OfferTags from "../components/OfferTags.vue";
 import { useOfferText } from "../offers";
 import { useSession, whenLoaded } from "../session";
 
@@ -41,7 +48,11 @@ const myApplication = ref<Application | null>(null);
 
 const isCandidate = computed(() => session.user?.role === "candidate");
 
-const initial = computed(() => offer.value?.company.name.trim().charAt(0).toUpperCase() || "?");
+// The employer's move in flight, and the reason of a refused one; "company"
+// means the profile has no company name yet, shown with a link to it
+const busy = ref(false);
+const moveError = ref("");
+const needsCompany = ref(false);
 
 async function load(): Promise<void> {
   notFound.value = false;
@@ -64,6 +75,29 @@ async function load(): Promise<void> {
   }
 }
 
+// One move of the state by the employer (publish, close): the answer
+// replaces the offer, or its reason is shown under the box
+async function move(call: typeof publishOffer): Promise<void> {
+  if (!offer.value) return;
+  moveError.value = "";
+  needsCompany.value = false;
+  busy.value = true;
+  try {
+    const answer = await call(offer.value.id);
+    if (answer.status === 200 && answer.data) {
+      offer.value = answer.data;
+    } else {
+      const message = firstErrorOf(answer.data);
+      needsCompany.value = /company/i.test(message);
+      moveError.value = needsCompany.value ? t("myOffers.needsCompany") : message || t("form.failed");
+    }
+  } catch {
+    moveError.value = t("form.unreachable");
+  } finally {
+    busy.value = false;
+  }
+}
+
 async function loadCountries(): Promise<void> {
   try {
     countries.value = await getCountries();
@@ -83,23 +117,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <p class="back">
-    <RouterLink :to="{ name: 'home' }">← {{ t("offers.back") }}</RouterLink>
-  </p>
-
   <p v-if="notFound" class="notice">{{ t("offers.notFound") }}</p>
 
   <article v-else-if="offer" class="offer">
     <header class="head">
-      <div class="logo-box">
-        <img v-if="offer.company.logo" :src="offer.company.logo" alt="" class="logo" />
-        <span v-else class="logo-empty" aria-hidden="true">{{ initial }}</span>
-      </div>
-      <div>
+      <CompanyMark :name="offer.company.name" :logo="offer.company.logo" :size="96" />
+      <div class="heading">
         <p class="company">{{ offer.company.name }}</p>
         <h1 class="title">{{ offer.title }}</h1>
         <p class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
       </div>
+      <!-- The heart, for a published offer: a candidate's, or a visitor's
+           way to the login page; nothing for an employer -->
+      <FavoriteButton
+        v-if="offer.status === 'published'"
+        :offer="offer"
+        @change="offer.favorite = $event"
+      />
     </header>
 
     <!-- The employer of the offer: its state, its form, its applications -->
@@ -113,11 +147,29 @@ onMounted(() => {
       </RouterLink>
       <RouterLink
         v-if="offer.status !== 'draft'"
-        :to="{ name: 'offerApplications', params: { id: offer.id } }"
+        :to="{ name: 'receivedApplications', query: { offer: String(offer.id) } }"
         class="secondary"
       >
         {{ t("myOffers.applications", offer.applications_count ?? 0) }}
       </RouterLink>
+      <span v-if="offer.status !== 'draft'" class="muted">{{ t("myOffers.favorites", offer.favorites_count ?? 0) }}</span>
+      <!-- The move of the state, as on "My offers" -->
+      <button
+        v-if="offer.status !== 'published'"
+        type="button"
+        class="primary"
+        :disabled="busy"
+        @click="move(publishOffer)"
+      >
+        {{ offer.status === "closed" ? t("myOffers.republish") : t("myOffers.publish") }}
+      </button>
+      <button v-else type="button" class="secondary" :disabled="busy" @click="move(closeOffer)">
+        {{ t("myOffers.close") }}
+      </button>
+      <p v-if="moveError" class="error reason">
+        {{ moveError }}
+        <RouterLink v-if="needsCompany" :to="{ name: 'profile' }">{{ t("myOffers.companyLink") }}</RouterLink>
+      </p>
     </div>
     <!-- Applying: the application sent, or the button, or the invitation
          to log in; nothing for an employer, nor once the offer is closed -->
@@ -146,7 +198,7 @@ onMounted(() => {
         <dt>{{ t("offers.place") }}</dt>
         <dd>{{ text.place(offer, countries) }}</dd>
         <dt>{{ t("offers.contractLabel") }}</dt>
-        <dd>{{ text.conditions(offer) }}</dd>
+        <dd><OfferTags :offer="offer" /></dd>
         <template v-if="text.salary(offer)">
           <dt>{{ t("offers.salaryLabel") }}</dt>
           <dd>{{ text.salary(offer) }}</dd>
@@ -166,18 +218,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.back {
-  margin: 0 0 16px;
-}
-
-.back a {
-  text-decoration: none;
-}
-
-.back a:hover {
-  text-decoration: underline;
-}
-
 /* The logo on the left, the company, the title and the date on the right */
 .head {
   display: flex;
@@ -185,32 +225,15 @@ onMounted(() => {
   align-items: flex-start;
 }
 
-.logo-box {
-  flex: 0 0 96px;
+/* The company, the title and the date take the room; the heart stays on
+   the right */
+.heading {
+  flex: 1;
+  min-width: 0;
 }
 
-.logo,
-.logo-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 96px;
-  height: 96px;
-  border: 1px solid var(--mt-border);
-  border-radius: 8px;
-  background: var(--mt-background);
-}
-
-.logo {
-  padding: 8px;
-  object-fit: contain;
-}
-
-.logo-empty {
-  background: var(--mt-surface);
+.muted {
   color: var(--mt-muted);
-  font-size: 2rem;
-  font-weight: 600;
 }
 
 .company {
@@ -248,9 +271,9 @@ onMounted(() => {
   align-items: center;
   gap: 8px 16px;
   padding: 12px 16px;
-  border: 1px solid var(--mt-border);
-  border-radius: 4px;
-  background: var(--mt-surface);
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 8px;
+  background: var(--mt-blue-surface);
 }
 
 .applied p,
@@ -267,11 +290,28 @@ onMounted(() => {
   border-radius: 4px;
   background: var(--mt-background);
   color: var(--mt-text);
+  font: inherit;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .secondary:hover {
   background: var(--mt-border);
+}
+
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* The reason of a refused move takes a whole line under the buttons */
+.reason {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.reason a {
+  margin-left: 6px;
 }
 
 .pill {

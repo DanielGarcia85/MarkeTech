@@ -3,12 +3,12 @@
 
   Application card — one application, as its employer sees it
   ───────────────────────────────────────────────────────────────────────────
-  Used by the page of the applications to one offer and by the page of all
-  the applications received. The candidate and their contact details, the
-  date, the state as a pill and the states gone through, the files as
-  links, and the moves of the state as buttons (all but the current state),
-  which the page carries out: the card only says which one was asked. The
-  page of all the applications asks for the offer to be named too.
+  Used by the page of the applications received, grouped by offer. The
+  candidate and their
+  contact details, the date, the state as a pill and the states gone
+  through, the files as links, and the moves of the state as buttons (all
+  but the current state), which the page carries out: the card only says
+  which one was asked.
 -->
 
 <script setup lang="ts">
@@ -19,9 +19,6 @@ import { useApplicationText } from "../applications";
 
 defineProps<{
   application: Application;
-  // Name the offer applied to, with a link to its applications: the page
-  // of all the applications received
-  showOffer?: boolean;
   // A move is in flight: the buttons are disabled meanwhile
   busy?: boolean;
   // The reason of a refused move, shown under the buttons
@@ -39,13 +36,6 @@ const text = useApplicationText();
     <p class="head">
       <strong class="name">{{ text.name(application) }}</strong>
       <span class="pill" :class="application.status">{{ text.status(application.status) }}</span>
-    </p>
-    <p v-if="showOffer" class="line offer">
-      {{ t("receivedApplications.forOffer") }}
-      <RouterLink :to="{ name: 'offerApplications', params: { id: application.offer.id } }">
-        {{ application.offer.title }}
-      </RouterLink>
-      · {{ application.offer.city }}
     </p>
     <!-- The contact details, read on the profile of the candidate -->
     <p class="line">
@@ -79,7 +69,7 @@ const text = useApplicationText();
         :disabled="busy"
         @click="$emit('move', status)"
       >
-        {{ t("offerApplications.set." + status) }}
+        {{ t("receivedApplications.set." + status) }}
       </button>
       <p v-if="error" class="error reason">{{ error }}</p>
     </div>
@@ -87,10 +77,13 @@ const text = useApplicationText();
 </template>
 
 <style scoped>
-/* One application, a rule under each */
+/* One application in a box, as the offers are shown */
 .card {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--mt-border);
+  margin-bottom: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--mt-border);
+  border-radius: 12px;
+  background: var(--mt-background);
 }
 
 .head {
@@ -136,10 +129,6 @@ const text = useApplicationText();
 
 .line {
   margin: 0 0 2px;
-}
-
-.offer {
-  color: var(--mt-muted);
 }
 
 .history {

@@ -4,7 +4,8 @@
   Footer — who is behind the site, where to find more, how to get in touch
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue under the current page. One band across the whole
-  width: a sentence on the left, the links on two rows in the centre, the
+  width, in the dark blue with light text, under a thin line in the accent
+  colour: a sentence on the left, the links on two rows in the centre, the
   privacy link above the copyright on the right.
 -->
 
@@ -65,10 +66,15 @@ const year = new Date().getFullYear();
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 8px 32px;
-  padding: 10px 16px;
-  border-top: 1px solid var(--mt-border);
-  background: var(--mt-surface);
+  padding: 12px 16px;
+  border-top: 3px solid var(--mt-accent);
+  background: var(--mt-blue-dark);
+  color: #e3edf3;
   font-size: 0.85rem;
+}
+
+.footer a {
+  color: #ffffff;
 }
 
 /* The sentence breaks where its text says so (the "\n" of the translation) */
@@ -76,7 +82,7 @@ const year = new Date().getFullYear();
   justify-self: start;
   margin: 0;
   white-space: pre-line;
-  color: var(--mt-muted);
+  color: #b7cdd9;
 }
 
 /* The links on two rows of two, each one with the name of the profile
@@ -103,7 +109,7 @@ const year = new Date().getFullYear();
 .who {
   margin-left: 4px;
   font-weight: normal;
-  color: var(--mt-muted);
+  color: #b7cdd9;
 }
 
 /* The link above the copyright, both against the right edge */
@@ -116,7 +122,7 @@ const year = new Date().getFullYear();
   margin: 0;
   white-space: nowrap;
   font-size: 0.78rem;
-  color: var(--mt-muted);
+  color: #b7cdd9;
 }
 
 /* One column after the other on a narrow screen, everything on the left.
