@@ -5,11 +5,12 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by the router for "/employer/applications", to an employer only
   (the router sends anyone else away). All the applications to all their
-  offers in one list, newest first, each card naming its offer, so that
-  nothing has to be looked for offer by offer; narrowed by state with a
-  select, kept in the address (?status=) so that the back button and a
-  reload keep it. The moves of the state are the same as on the page of
-  one offer (ApplicationCard, shared composable).
+  offers on one page, grouped by offer under a heading that names it, the
+  offer with the newest application first and, within a group, the newest
+  application first, so that nothing has to be looked for offer by offer;
+  narrowed by state with a select, kept in the address (?status=) so that
+  the back button and a reload keep it. The moves of the state are the same
+  as on the page of one offer (ApplicationCard, shared composable).
 -->
 
 <script setup lang="ts">
@@ -32,6 +33,18 @@ const applications = ref<Application[] | null>(null);
 const loadFailed = ref(false);
 
 const { busy, errors, move } = useApplicationMoves(applications);
+
+// The applications by offer, in the order they come (newest first): an
+// offer appears with its first application met, and keeps its rank
+const groups = computed(() => {
+  const byOffer = new Map<number, { offer: Application["offer"]; items: Application[] }>();
+  for (const application of applications.value ?? []) {
+    const group = byOffer.get(application.offer.id) ?? { offer: application.offer, items: [] };
+    group.items.push(application);
+    byOffer.set(application.offer.id, group);
+  }
+  return [...byOffer.values()];
+});
 
 // The state asked for in the address, or "" for all of them
 const status = computed<ApplicationStatus | "">(() => {
@@ -75,17 +88,28 @@ onMounted(load);
 
   <template v-else-if="applications">
     <p class="count">{{ t("receivedApplications.count", applications.length) }}</p>
-    <ul v-if="applications.length" class="cards">
-      <li v-for="application in applications" :key="application.id">
-        <ApplicationCard
-          :application="application"
-          show-offer
-          :busy="busy === application.id"
-          :error="errors[application.id]"
-          @move="move(application, $event)"
-        />
-      </li>
-    </ul>
+    <!-- One section per offer: its title as a link to its own page of
+         applications, its city, its state, then its applications -->
+    <section v-for="group in groups" :key="group.offer.id" class="group">
+      <h2 class="offer">
+        <RouterLink :to="{ name: 'offerApplications', params: { id: group.offer.id } }">
+          {{ group.offer.title }}
+        </RouterLink>
+        <span class="muted">· {{ group.offer.city }}</span>
+        <span class="pill" :class="group.offer.status">{{ t("offers.status." + group.offer.status) }}</span>
+        <span class="muted">{{ t("offerApplications.count", group.items.length) }}</span>
+      </h2>
+      <ul class="cards">
+        <li v-for="application in group.items" :key="application.id">
+          <ApplicationCard
+            :application="application"
+            :busy="busy === application.id"
+            :error="errors[application.id]"
+            @move="move(application, $event)"
+          />
+        </li>
+      </ul>
+    </section>
   </template>
 </template>
 
@@ -123,9 +147,69 @@ onMounted(load);
   color: var(--mt-muted);
 }
 
+/* The groups, one per offer, each under a heavier rule than the cards */
+.group {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 3px solid var(--mt-border);
+}
+
+.offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.offer a {
+  text-decoration: none;
+}
+
+.offer a:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: var(--mt-muted);
+  font-size: 0.95rem;
+  font-weight: normal;
+}
+
+/* The state of the offer: grey for a draft, green once published, dark
+   grey when closed */
+.pill {
+  display: inline-block;
+  padding: 1px 10px;
+  border: 1px solid var(--mt-border);
+  border-radius: 999px;
+  background: var(--mt-surface);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.pill.published {
+  border-color: var(--mt-success-surface);
+  background: var(--mt-success-surface);
+  color: var(--mt-success);
+}
+
+.pill.closed {
+  background: var(--mt-border);
+  color: var(--mt-text);
+}
+
 .cards {
-  margin: 8px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* The last card of a group needs no rule: the next group brings its own */
+.cards li:last-child :deep(.card) {
+  border-bottom: none;
 }
 </style>

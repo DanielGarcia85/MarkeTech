@@ -525,7 +525,6 @@ const fr: typeof en = {
     allStatuses: "Tous",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
     count: "Aucune candidature | {count} candidature | {count} candidatures",
-    forOffer: "Pour",
   },
 
   // Not-found page, for any address the router does not know

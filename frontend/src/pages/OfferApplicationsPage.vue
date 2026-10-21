@@ -53,11 +53,12 @@ onMounted(load);
 </script>
 
 <template>
-  <!-- Two ways back: the list of the offers, the list of all the applications -->
+  <!-- Two ways back, one arrow: the list of the offers, the list of all
+       the applications -->
   <p class="back">
-    <RouterLink :to="{ name: 'myOffers' }">← {{ t("offerApplications.back") }}</RouterLink>
+    ← <RouterLink :to="{ name: 'myOffers' }">{{ t("offerApplications.back") }}</RouterLink>
     ·
-    <RouterLink :to="{ name: 'receivedApplications' }">← {{ t("offerApplications.backToReceived") }}</RouterLink>
+    <RouterLink :to="{ name: 'receivedApplications' }">{{ t("offerApplications.backToReceived") }}</RouterLink>
   </p>
 
   <p v-if="notFound" class="notice">{{ t("offerApplications.notFound") }}</p>
@@ -90,10 +91,10 @@ onMounted(load);
 </template>
 
 <style scoped>
-/* The two ways back, separated by a dot in the muted colour */
+/* The arrow and the dot in the colour of the links, like the other pages */
 .back {
   margin: 0 0 16px;
-  color: var(--mt-muted);
+  color: var(--mt-blue);
 }
 
 .back a {

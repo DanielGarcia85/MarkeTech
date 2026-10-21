@@ -11,7 +11,8 @@
   for a candidate, an invitation to log in for a visitor, and, once
   applied, the date and the state of the application sent. For the
   employer of the offer: its state, its numbers of applications and of
-  favorites, and the way to its form and to its applications. In the
+  favorites, the way to its form and to its applications, and the move of
+  its state (publish, close) without going through "My offers". In the
   heading, on the right, the heart that puts the offer aside
   (FavoriteButton).
 -->
@@ -22,7 +23,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import { listApplications, type Application } from "../api/applications";
-import { getOffer, type Offer } from "../api/offers";
+import { closeOffer, firstErrorOf, getOffer, publishOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
 import { useApplicationText } from "../applications";
 import FavoriteButton from "../components/FavoriteButton.vue";
@@ -44,6 +45,12 @@ const myApplication = ref<Application | null>(null);
 
 const isCandidate = computed(() => session.user?.role === "candidate");
 
+// The employer's move in flight, and the reason of a refused one; "company"
+// means the profile has no company name yet, shown with a link to it
+const busy = ref(false);
+const moveError = ref("");
+const needsCompany = ref(false);
+
 const initial = computed(() => offer.value?.company.name.trim().charAt(0).toUpperCase() || "?");
 
 async function load(): Promise<void> {
@@ -64,6 +71,29 @@ async function load(): Promise<void> {
     myApplication.value = (await listApplications({ offer: offer.value.id }))[0] ?? null;
   } catch {
     // The button shows; the backend would refuse a second application
+  }
+}
+
+// One move of the state by the employer (publish, close): the answer
+// replaces the offer, or its reason is shown under the box
+async function move(call: typeof publishOffer): Promise<void> {
+  if (!offer.value) return;
+  moveError.value = "";
+  needsCompany.value = false;
+  busy.value = true;
+  try {
+    const answer = await call(offer.value.id);
+    if (answer.status === 200 && answer.data) {
+      offer.value = answer.data;
+    } else {
+      const message = firstErrorOf(answer.data);
+      needsCompany.value = /company/i.test(message);
+      moveError.value = needsCompany.value ? t("myOffers.needsCompany") : message || t("form.failed");
+    }
+  } catch {
+    moveError.value = t("form.unreachable");
+  } finally {
+    busy.value = false;
   }
 }
 
@@ -129,6 +159,23 @@ onMounted(() => {
         {{ t("myOffers.applications", offer.applications_count ?? 0) }}
       </RouterLink>
       <span v-if="offer.status !== 'draft'" class="muted">{{ t("myOffers.favorites", offer.favorites_count ?? 0) }}</span>
+      <!-- The move of the state, as on "My offers" -->
+      <button
+        v-if="offer.status !== 'published'"
+        type="button"
+        class="primary"
+        :disabled="busy"
+        @click="move(publishOffer)"
+      >
+        {{ offer.status === "closed" ? t("myOffers.republish") : t("myOffers.publish") }}
+      </button>
+      <button v-else type="button" class="secondary" :disabled="busy" @click="move(closeOffer)">
+        {{ t("myOffers.close") }}
+      </button>
+      <p v-if="moveError" class="error reason">
+        {{ moveError }}
+        <RouterLink v-if="needsCompany" :to="{ name: 'profile' }">{{ t("myOffers.companyLink") }}</RouterLink>
+      </p>
     </div>
     <!-- Applying: the application sent, or the button, or the invitation
          to log in; nothing for an employer, nor once the offer is closed -->
@@ -289,11 +336,28 @@ onMounted(() => {
   border-radius: 4px;
   background: var(--mt-background);
   color: var(--mt-text);
+  font: inherit;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .secondary:hover {
   background: var(--mt-border);
+}
+
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* The reason of a refused move takes a whole line under the buttons */
+.reason {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.reason a {
+  margin-left: 6px;
 }
 
 .pill {

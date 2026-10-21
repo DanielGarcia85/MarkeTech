@@ -523,7 +523,6 @@ export default {
     allStatuses: "All",
     loadFailed: "The applications could not be loaded.",
     count: "No application | {count} application | {count} applications",
-    forOffer: "For",
   },
 
   // Not-found page, for any address the router does not know
