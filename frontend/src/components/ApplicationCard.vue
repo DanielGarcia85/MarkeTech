@@ -77,10 +77,13 @@ const text = useApplicationText();
 </template>
 
 <style scoped>
-/* One application, a rule under each */
+/* One application in a box, as the offers are shown */
 .card {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--mt-border);
+  margin-bottom: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--mt-border);
+  border-radius: 12px;
+  background: var(--mt-background);
 }
 
 .head {

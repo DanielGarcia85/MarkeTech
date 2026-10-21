@@ -27,6 +27,7 @@ import {
   type Offer,
 } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
+import EmptyState from "../components/EmptyState.vue";
 import OfferCard from "../components/OfferCard.vue";
 import { confirm } from "../confirm";
 
@@ -119,7 +120,9 @@ onMounted(() => {
   <p v-if="loadFailed" class="error">{{ t("myOffers.loadFailed") }}</p>
 
   <template v-else-if="offers">
-    <p v-if="offers.length === 0" class="muted">{{ t("myOffers.none") }}</p>
+    <EmptyState v-if="offers.length === 0" icon="clipboard" :text="t('myOffers.none')">
+      <RouterLink :to="{ name: 'offerNew' }">{{ t("myOffers.new") }}</RouterLink>
+    </EmptyState>
     <ul v-else class="cards">
       <li v-for="offer in offers" :key="offer.id">
         <OfferCard :offer="offer" :countries="countries" show-status>
@@ -192,10 +195,6 @@ onMounted(() => {
 /* A link dressed as the main button */
 .new {
   text-decoration: none;
-}
-
-.muted {
-  color: var(--mt-muted);
 }
 
 .cards {

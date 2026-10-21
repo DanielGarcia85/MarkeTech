@@ -41,6 +41,11 @@ export default {
     credentials: "Login details",
   },
 
+  // Empty lists: the way to the place where they get filled
+  empty: {
+    browse: "See the offers",
+  },
+
   // Footer: who is behind the site, where to find more, how to get in touch
   footer: {
     about: "MarkeTech is a demonstration project, without commercial activity,\nrewritten by Daniel Garcia from a team project of HEG Genève.",
@@ -508,6 +513,7 @@ export default {
     allApplications: "All applications",
     notFound: "This offer does not exist, or is not yours.",
     loadFailed: "The applications could not be loaded.",
+    none: "No application to show.",
     count: "No application | {count} application | {count} applications",
     set: {
       in_progress: "Mark in progress",

@@ -17,6 +17,7 @@ import { useI18n } from "vue-i18n";
 
 import { listFavorites, type Favorite } from "../api/favorites";
 import { getCountries, type Country } from "../api/profile";
+import EmptyState from "../components/EmptyState.vue";
 import OfferCard from "../components/OfferCard.vue";
 
 const { t, locale } = useI18n();
@@ -61,7 +62,9 @@ onMounted(() => {
   <p v-if="loadFailed" class="error">{{ t("myFavorites.loadFailed") }}</p>
 
   <template v-else-if="favorites">
-    <p v-if="favorites.length === 0" class="muted">{{ t("myFavorites.none") }}</p>
+    <EmptyState v-if="favorites.length === 0" icon="heart" :text="t('myFavorites.none')">
+      <RouterLink :to="{ name: 'home' }">{{ t("empty.browse") }}</RouterLink>
+    </EmptyState>
     <ul v-else class="cards">
       <li v-for="favorite in favorites" :key="favorite.id">
         <OfferCard :offer="favorite.offer" :countries="countries" @favorite="changed(favorite, $event)" />
@@ -71,10 +74,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.muted {
-  color: var(--mt-muted);
-}
-
 .cards {
   margin: 16px 0 0;
   padding: 0;

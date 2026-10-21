@@ -43,6 +43,11 @@ const fr: typeof en = {
     credentials: "Identifiants",
   },
 
+  // Empty lists: the way to the place where they get filled
+  empty: {
+    browse: "Voir les offres",
+  },
+
   // Footer: who is behind the site, where to find more, how to get in touch
   footer: {
     about: "MarkeTech est un projet de démonstration, sans activité commerciale,\nréécrit par Daniel Garcia à partir d'un projet d'équipe de la HEG Genève.",
@@ -510,6 +515,7 @@ const fr: typeof en = {
     allApplications: "Toutes les candidatures",
     notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
+    none: "Aucune candidature à afficher.",
     count: "Aucune candidature | {count} candidature | {count} candidatures",
     set: {
       in_progress: "Mettre en cours",

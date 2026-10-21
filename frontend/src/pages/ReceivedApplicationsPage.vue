@@ -27,6 +27,7 @@ import { listApplications, type Application, type ApplicationStatus } from "../a
 import { getOffer, type Offer } from "../api/offers";
 import { useApplicationMoves, useApplicationText } from "../applications";
 import ApplicationCard from "../components/ApplicationCard.vue";
+import EmptyState from "../components/EmptyState.vue";
 
 const STATUSES: ApplicationStatus[] = ["received", "in_progress", "accepted", "rejected"];
 
@@ -135,7 +136,8 @@ onMounted(load);
     <p v-if="loadFailed" class="error">{{ t("receivedApplications.loadFailed") }}</p>
 
     <template v-else-if="applications">
-      <p class="count">{{ t("receivedApplications.count", applications.length) }}</p>
+      <EmptyState v-if="applications.length === 0" icon="inbox" :text="t('receivedApplications.none')" />
+      <p v-else class="count">{{ t("receivedApplications.count", applications.length) }}</p>
       <!-- One section per offer: its title as a link to the offer, its
            city, its state, how many, then its applications; narrowed to
            one offer, the heading would repeat the line above -->
@@ -217,11 +219,12 @@ onMounted(load);
   color: var(--mt-muted);
 }
 
-/* The groups, one per offer, each under a heavier rule than the cards */
+/* The groups, one per offer, each under a rule, its heading above its
+   boxes */
 .group {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 3px solid var(--mt-border);
+  border-top: 1px solid var(--mt-border);
 }
 
 .title {
@@ -229,7 +232,7 @@ onMounted(load);
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  margin: 0;
+  margin: 0 0 12px;
   font-size: 1.15rem;
 }
 
@@ -276,10 +279,5 @@ onMounted(load);
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-/* The last card of a group needs no rule: the next group brings its own */
-.cards li:last-child :deep(.card) {
-  border-bottom: none;
 }
 </style>

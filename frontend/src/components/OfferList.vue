@@ -29,6 +29,7 @@ import {
   type OfferPage,
 } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
+import EmptyState from "./EmptyState.vue";
 import OfferCard from "./OfferCard.vue";
 
 const { t, locale } = useI18n();
@@ -235,7 +236,7 @@ onMounted(() => {
 
   <template v-else-if="result">
     <p class="count">{{ t("offers.count", result.count) }}</p>
-    <p v-if="result.count === 0" class="muted">{{ t("offers.none") }}</p>
+    <EmptyState v-if="result.count === 0" icon="search" :text="t('offers.none')" />
     <ul v-else class="cards">
       <li v-for="offer in result.results" :key="offer.id">
         <OfferCard :offer="offer" :countries="countries" @favorite="offer.favorite = $event" />
@@ -339,10 +340,6 @@ onMounted(() => {
 
 .count {
   margin: 14px 0 6px;
-  color: var(--mt-muted);
-}
-
-.muted {
   color: var(--mt-muted);
 }
 

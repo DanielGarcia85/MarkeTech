@@ -16,6 +16,7 @@ import { useI18n } from "vue-i18n";
 
 import { canWithdraw, listApplications, withdraw, type Application } from "../api/applications";
 import { useApplicationText } from "../applications";
+import EmptyState from "../components/EmptyState.vue";
 import { confirm } from "../confirm";
 
 const { t } = useI18n();
@@ -66,7 +67,9 @@ onMounted(load);
   <p v-if="loadFailed" class="error">{{ t("myApplications.loadFailed") }}</p>
 
   <template v-else-if="applications">
-    <p v-if="applications.length === 0" class="muted">{{ t("myApplications.none") }}</p>
+    <EmptyState v-if="applications.length === 0" icon="send" :text="t('myApplications.none')">
+      <RouterLink :to="{ name: 'home' }">{{ t("empty.browse") }}</RouterLink>
+    </EmptyState>
     <ul v-else class="cards">
       <li v-for="application in applications" :key="application.id" class="card">
         <p class="company">
@@ -130,10 +133,13 @@ onMounted(load);
   list-style: none;
 }
 
-/* One application, a rule under each */
+/* One application in a box, as the offers are shown */
 .card {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--mt-border);
+  margin-bottom: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--mt-border);
+  border-radius: 12px;
+  background: var(--mt-background);
 }
 
 .company {
