@@ -1,10 +1,12 @@
 <!--
   frontend/src/components/AppHeader.vue
 
-  Header — logo, account menu and language selector, on every page
+  Header — logo, notice, account menu and language selector, on every page
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page, and kept at the top of the
-  window while the page scrolls. A logged-in user is shown as a round with
+  window while the page scrolls. Next to the logo, a small line says what
+  the site is (a demo under construction) and whether the backend answers
+  (ApiStatus). A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
   profile, the way to log out. A visitor gets the links to sign up and to
   log in.
@@ -17,6 +19,7 @@ import { useRouter } from "vue-router";
 
 import logoUrl from "../assets/logo-horizontal.svg";
 import { logout, useSession } from "../session";
+import ApiStatus from "./ApiStatus.vue";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 const { t } = useI18n();
@@ -79,6 +82,9 @@ async function leave(): Promise<void> {
     <RouterLink :to="{ name: 'home' }">
       <img :src="logoUrl" alt="MarkeTech" class="logo" />
     </RouterLink>
+    <!-- What the site is, in a small line next to the logo: a demo under
+         construction, and whether the backend answers -->
+    <p class="about">{{ t("app.notice") }} · <ApiStatus /></p>
     <nav class="nav">
       <div v-if="session.user" ref="account" class="account">
         <!-- The round opens and closes the menu -->
@@ -137,6 +143,21 @@ async function leave(): Promise<void> {
 .logo {
   display: block;
   height: 40px;
+}
+
+/* The line about the site: small and muted (not .notice, the framed
+   message of the pages), hidden on a narrow window where the logo and the
+   links already fill the header */
+.about {
+  margin: 0;
+  color: var(--mt-muted);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 700px) {
+  .about {
+    display: none;
+  }
 }
 
 /* Kept on the right, on its own line too; its own items wrap if needed,

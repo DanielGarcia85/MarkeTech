@@ -11,7 +11,7 @@ const fr: typeof en = {
   // Tagline and notice of the application
   app: {
     tagline: "Emplois et jobs d'étudiant en informatique, pour jeunes diplômés et étudiants.",
-    notice: "Cette application est en cours de construction.",
+    notice: "Site de démonstration, en construction",
   },
 
   // The two roles, as shown to the logged-in user (header menu, profile)
