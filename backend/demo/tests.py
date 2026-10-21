@@ -7,8 +7,8 @@ Demo tests — the seed_demo command
 Responsibility
 ──────────────
 Check the seed_demo command, which fills a development database with test
-accounts, offers, applications and favorites: everything it announces is
-there, the files it writes are real PDFs and the logos real PNGs, it runs
+accounts, offers, applications, favorites and messages: everything it
+announces is there, the files it writes are real PDFs and the logos real PNGs, it runs
 once only unless --reset, and it refuses to run with DEBUG off, as on a
 server.
 """
@@ -28,6 +28,7 @@ from accounts.models import User
 from applications.models import Attachment, JobApplication, StatusChange
 from demo.management.commands.seed_demo import APPLICATIONS, FAVORITES
 from favorites.models import Favorite
+from messaging.models import Message
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
@@ -39,8 +40,8 @@ MEDIA = tempfile.mkdtemp(prefix="marketech-tests-")
 class SeedDemoTests(TestCase):
     """The seed_demo command: six accounts able to log in, their profiles
     with their files and logos, thirty offers, most of them in the public
-    list, nine applications with their history, eight favorites; once
-    only, unless --reset; never with DEBUG off."""
+    list, the applications with their history, eight favorites, the
+    conversations; once only, unless --reset; never with DEBUG off."""
 
     @classmethod
     def tearDownClass(cls):
@@ -88,16 +89,18 @@ class SeedDemoTests(TestCase):
         offers = Client().get("/api/offers/").json()["results"]
         self.assertTrue(all(o["company"]["logo"] for o in offers))
         # The applications, their files copied, their states dated
-        self.assertEqual(JobApplication.objects.count(), 9)
-        self.assertEqual(JobApplication.objects.exclude(cover_letter="").count(), 6)
-        self.assertEqual(Attachment.objects.count(), 7)
+        self.assertEqual(JobApplication.objects.count(), len(APPLICATIONS))
+        letters = sum(spec["letter"] for spec in APPLICATIONS)
+        self.assertEqual(JobApplication.objects.exclude(cover_letter="").count(), letters)
+        documents = sum(len(spec["documents"]) for spec in APPLICATIONS)
+        self.assertEqual(Attachment.objects.count(), documents)
         self.assertEqual(
             sorted(set(JobApplication.objects.values_list("status", flat=True))),
             ["accepted", "in_progress", "received", "rejected"],
         )
         # One line of history at the creation, one per move since
         moves = sum(len(spec["moves"]) for spec in APPLICATIONS)
-        self.assertEqual(StatusChange.objects.count(), 9 + moves)
+        self.assertEqual(StatusChange.objects.count(), len(APPLICATIONS) + moves)
         accepted = JobApplication.objects.filter(status="accepted").order_by("created_at").first()
         self.assertLess(accepted.created_at, accepted.history.last().changed_at)
         for application in JobApplication.objects.all():
@@ -105,13 +108,37 @@ class SeedDemoTests(TestCase):
         # The API serves them to their candidate
         client = Client()
         client.force_login(User.objects.get(email="candidat1@test.com"))
-        self.assertEqual(len(client.get("/api/applications/").json()), 3)
+        mine = [spec for spec in APPLICATIONS if spec["candidate"] == "candidat1@test.com"]
+        self.assertEqual(len(client.get("/api/applications/").json()), len(mine))
         # The favorites, dated, one on an offer closed since
         self.assertEqual(Favorite.objects.count(), len(FAVORITES))
         self.assertEqual(Favorite.objects.filter(offer__status="closed").count(), 1)
         self.assertEqual(Favorite.objects.filter(created_at__date=timezone.now().date()).count(), 0)
         self.assertEqual(len(client.get("/api/favorites/").json()), 4)
         self.assertEqual(sum(o["favorite"] for o in client.get("/api/offers/").json()["results"]), 3)
+
+    @override_settings(DEBUG=True)
+    def test_seed_demo_writes_the_conversations(self):
+        call_command("seed_demo", stdout=StringIO())
+        written = sum(len(spec.get("messages", [])) for spec in APPLICATIONS)
+        self.assertEqual(Message.objects.count(), written)
+        # Only on applications taken up: never on one still received
+        self.assertFalse(Message.objects.filter(application__status="received").exists())
+        # Dated in the past, each conversation in its order, read after sent
+        for message in Message.objects.exclude(read_at=None):
+            self.assertLess(message.sent_at, message.read_at)
+        self.assertFalse(Message.objects.filter(sent_at__gt=timezone.now()).exists())
+        # Léa Martin and Lémantech, the pair the site is shown with: open
+        # and closed conversations, unread on both sides
+        candidate, employer = Client(), Client()
+        candidate.force_login(User.objects.get(email="candidat1@test.com"))
+        employer.force_login(User.objects.get(email="employeur1@test.com"))
+        unread = {"count": 2, "open": 2, "closed": 0}
+        self.assertEqual(candidate.get("/api/messages/unread/").json(), unread)
+        self.assertEqual(employer.get("/api/messages/unread/").json(), unread)
+        self.assertEqual(len(candidate.get("/api/messages/?state=open").json()), 2)
+        self.assertEqual(len(candidate.get("/api/messages/?state=closed").json()), 2)
+        self.assertEqual(len(employer.get("/api/messages/").json()), 6)
 
     @override_settings(DEBUG=True)
     def test_seed_demo_runs_once_unless_reset(self):
@@ -122,7 +149,7 @@ class SeedDemoTests(TestCase):
         call_command("seed_demo", "--reset", stdout=StringIO())
         self.assertEqual(User.objects.filter(email__endswith="@test.com").count(), 6)
         self.assertEqual(JobOffer.objects.count(), 30)
-        self.assertEqual(JobApplication.objects.count(), 9)
+        self.assertEqual(JobApplication.objects.count(), len(APPLICATIONS))
         # The files of the first run left the disk with their rows
         self.assertFalse(os.path.exists(os.path.join(MEDIA, cv)))
 
