@@ -7,10 +7,9 @@
   cards, newest first, ten by page, with the numbers of the pages. The
   filters and the page live in the address of the page (?title=...&page=2):
   a search can be shared or reloaded, and the back button goes back to the
-  previous search. The filters fold behind a "Filters" button, so that the
-  offers come first; they are unfolded when the address carries a filter
-  (a search shared or reloaded), and fold again after a search. Each card
-  links to the page of its offer.
+  previous search. The filters are kept compact, so that the first offers
+  show without scrolling; on a narrow screen they fold behind a button.
+  Each card links to the page of its offer.
 -->
 
 <script setup lang="ts">
@@ -65,14 +64,13 @@ const pageItems = computed<number[]>(() => {
   return withGaps;
 });
 
-// How many filters are set (the period and the currency only qualify the
-// amount): shown on the button, which unfolds the form
+// On a narrow screen, the filters are folded until this is true; the
+// button shows how many filters are set (the period and the currency only
+// qualify the amount)
+const filtersOpen = ref(false);
 const activeFilters = computed(
   () => Object.entries(filters).filter(([key, value]) => value && !qualifies(key)).length,
 );
-// The filters are folded until this is true; unfolded from the start when
-// the address carries some, so that a shared search shows what it filters
-const filtersOpen = ref(activeFilters.value > 0);
 
 function qualifies(key: string): boolean {
   return key === "salary_period" || key === "currency";
@@ -165,13 +163,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- The title on the left, the button that unfolds the filters on the right -->
-  <div class="head">
-    <h2 class="heading">{{ t("offers.title") }}</h2>
-    <button type="button" class="toggle" :aria-expanded="filtersOpen" @click="filtersOpen = !filtersOpen">
-      {{ t("offers.filters") }}<span v-if="activeFilters"> ({{ activeFilters }})</span>
-    </button>
-  </div>
+  <h2 class="heading">{{ t("offers.title") }}</h2>
+
+  <!-- Narrow screens only (CSS): unfolds the filters -->
+  <button type="button" class="toggle" :aria-expanded="filtersOpen" @click="filtersOpen = !filtersOpen">
+    {{ t("offers.filters") }}<span v-if="activeFilters"> ({{ activeFilters }})</span>
+  </button>
 
   <!-- The filters: sent on Search, or Enter in a field -->
   <form class="filters" :class="{ open: filtersOpen }" novalidate @submit.prevent="search">
@@ -273,37 +270,40 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 16px;
-  margin-bottom: 12px;
-}
-
 .heading {
-  margin: 0;
+  margin: 0 0 8px;
   color: var(--mt-blue);
   font-size: 1.3rem;
 }
 
-/* The filters on a grid: as many fields per line as the width allows */
+/* The filters on a grid: as many fields per line as the width allows.
+   Compact, tighter than the forms of the site (smaller paddings, labels
+   and fields), so that the offers come soon under them */
 .filters {
   display: grid;
-  margin-bottom: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0 16px;
-  padding: 16px 16px 4px;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0 12px;
+  padding: 10px 12px 0;
   border: 1px solid var(--mt-border);
   border-radius: 8px;
   background: var(--mt-surface);
+}
+
+.filters .field {
+  margin-bottom: 10px;
+}
+
+.filters .field label {
+  margin-bottom: 2px;
+  font-size: 0.9rem;
 }
 
 /* The fields of the grid take its whole column */
 .filters .field input,
 .filters .field select {
   max-width: none;
+  padding: 6px 8px;
+  font-size: 0.95rem;
 }
 
 /* An amount, its currency and its period, side by side: the amount takes
@@ -329,11 +329,16 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
+}
+
+.actions .primary {
+  padding: 6px 14px;
+  font-size: 0.95rem;
 }
 
 .count {
-  margin: 20px 0 8px;
+  margin: 14px 0 6px;
   color: var(--mt-muted);
 }
 
@@ -407,8 +412,9 @@ onMounted(() => {
 }
 
 /* The button that unfolds the filters: narrow screens only */
-/* The button that unfolds the filters; the form is hidden until then */
 .toggle {
+  display: none;
+  margin-bottom: 12px;
   padding: 8px 16px;
   border: 1px solid var(--mt-border);
   border-radius: 4px;
@@ -418,8 +424,14 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.filters:not(.open) {
-  display: none;
+@media (max-width: 720px) {
+  .toggle {
+    display: inline-block;
+  }
+
+  .filters:not(.open) {
+    display: none;
+  }
 }
 
 /* Wide enough for several columns: the salary and its two lists take two */
