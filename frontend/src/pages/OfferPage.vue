@@ -27,7 +27,9 @@ import { listApplications, type Application } from "../api/applications";
 import { closeOffer, firstErrorOf, getOffer, publishOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
 import { useApplicationText } from "../applications";
+import CompanyMark from "../components/CompanyMark.vue";
 import FavoriteButton from "../components/FavoriteButton.vue";
+import OfferTags from "../components/OfferTags.vue";
 import { useOfferText } from "../offers";
 import { useSession, whenLoaded } from "../session";
 
@@ -51,8 +53,6 @@ const isCandidate = computed(() => session.user?.role === "candidate");
 const busy = ref(false);
 const moveError = ref("");
 const needsCompany = ref(false);
-
-const initial = computed(() => offer.value?.company.name.trim().charAt(0).toUpperCase() || "?");
 
 async function load(): Promise<void> {
   notFound.value = false;
@@ -121,10 +121,7 @@ onMounted(() => {
 
   <article v-else-if="offer" class="offer">
     <header class="head">
-      <div class="logo-box">
-        <img v-if="offer.company.logo" :src="offer.company.logo" alt="" class="logo" />
-        <span v-else class="logo-empty" aria-hidden="true">{{ initial }}</span>
-      </div>
+      <CompanyMark :name="offer.company.name" :logo="offer.company.logo" :size="96" />
       <div class="heading">
         <p class="company">{{ offer.company.name }}</p>
         <h1 class="title">{{ offer.title }}</h1>
@@ -201,7 +198,7 @@ onMounted(() => {
         <dt>{{ t("offers.place") }}</dt>
         <dd>{{ text.place(offer, countries) }}</dd>
         <dt>{{ t("offers.contractLabel") }}</dt>
-        <dd>{{ text.conditions(offer) }}</dd>
+        <dd><OfferTags :offer="offer" /></dd>
         <template v-if="text.salary(offer)">
           <dt>{{ t("offers.salaryLabel") }}</dt>
           <dd>{{ text.salary(offer) }}</dd>
@@ -239,34 +236,6 @@ onMounted(() => {
   color: var(--mt-muted);
 }
 
-.logo-box {
-  flex: 0 0 96px;
-}
-
-.logo,
-.logo-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 96px;
-  height: 96px;
-  border: 1px solid var(--mt-border);
-  border-radius: 8px;
-  background: var(--mt-background);
-}
-
-.logo {
-  padding: 8px;
-  object-fit: contain;
-}
-
-.logo-empty {
-  background: var(--mt-surface);
-  color: var(--mt-muted);
-  font-size: 2rem;
-  font-weight: 600;
-}
-
 .company {
   margin: 0;
   color: var(--mt-muted);
@@ -302,9 +271,9 @@ onMounted(() => {
   align-items: center;
   gap: 8px 16px;
   padding: 12px 16px;
-  border: 1px solid var(--mt-border);
-  border-radius: 4px;
-  background: var(--mt-surface);
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 8px;
+  background: var(--mt-blue-surface);
 }
 
 .applied p,

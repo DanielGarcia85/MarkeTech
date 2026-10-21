@@ -4,7 +4,8 @@
   Header — logo, notice, account menu and language selector, on every page
   ───────────────────────────────────────────────────────────────────────────
   Displayed by App.vue above the current page, and kept at the top of the
-  window while the page scrolls. Between the logo and the links, a small
+  window while the page scrolls, in the light blue (the footer has the
+  dark one). Between the logo and the links, a small
   line centred on the window says what the site is (a demo under
   construction) and whether the backend answers (ApiStatus, the state in
   colour). A logged-in user is shown as a round with
@@ -137,8 +138,8 @@ async function leave(): Promise<void> {
   justify-content: space-between;
   gap: 8px 16px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--mt-border);
-  background: var(--mt-background);
+  border-bottom: 1px solid var(--mt-blue-border);
+  background: var(--mt-blue-surface);
 }
 
 .logo {

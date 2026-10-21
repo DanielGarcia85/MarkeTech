@@ -4,12 +4,28 @@
   Base stylesheet — colours, font and layout shared by every page
   ───────────────────────────────────────────────────────────────────────────
   Loaded once by main.ts. Components add their own scoped styles on top.
+  The palette: the blue of the logo for what matters (titles of sections,
+  main buttons, links, the current page of the side bar), its light shades
+  for the boxes (filters, notices, the box of an offer), a warm amber as
+  the accent of a few marks only, and green and red kept for the states
+  (accepted, rejected; the API online or not).
 */
 
 :root {
-  /* Brand colour of MarkeTech: the blue of the logo, and a darker shade */
+  /* Brand colour of MarkeTech: the blue of the logo, a darker shade, and
+     two light shades for the boxes and their borders */
   --mt-blue: #2d6f91;
   --mt-blue-dark: #1f506a;
+  --mt-blue-surface: #eaf2f7;
+  --mt-blue-border: #c9dde8;
+
+  /* The accent: a warm amber against the cool blue, for a few marks only
+     (the rule of the home page, the heart of a favorite, the tag of a
+     student job, the top of the footer); a dark shade for text on its
+     light one */
+  --mt-accent: #e0891f;
+  --mt-accent-dark: #8f4f0b;
+  --mt-accent-surface: #fdf1dd;
 
   /* Text and surfaces */
   --mt-text: #1e293b;
@@ -24,6 +40,12 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* The element reached with the keyboard: a ring in the brand colour */
+:focus-visible {
+  outline: 2px solid var(--mt-blue);
+  outline-offset: 2px;
 }
 
 body {
@@ -67,7 +89,7 @@ main {
   max-width: 420px;
   padding: 8px;
   border: 1px solid var(--mt-border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--mt-background);
   color: var(--mt-text);
   font: inherit;
@@ -94,7 +116,7 @@ main {
 .primary {
   padding: 8px 16px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--mt-blue);
   color: #ffffff;
   font: inherit;
@@ -130,6 +152,7 @@ main {
 
 .notice {
   padding: 12px 16px;
-  border: 1px solid var(--mt-blue);
-  border-radius: 4px;
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 8px;
+  background: var(--mt-blue-surface);
 }

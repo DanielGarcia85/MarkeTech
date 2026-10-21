@@ -284,9 +284,9 @@ onMounted(() => {
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 0 12px;
   padding: 10px 12px 0;
-  border: 1px solid var(--mt-border);
-  border-radius: 8px;
-  background: var(--mt-surface);
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 10px;
+  background: var(--mt-blue-surface);
 }
 
 .filters .field {

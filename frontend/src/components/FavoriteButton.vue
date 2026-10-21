@@ -88,7 +88,7 @@ async function toggle(): Promise<void> {
 
 <style scoped>
 /* A round button holding the heart; the outline in the muted colour,
-   filled in the colour of the errors (a red) when the offer is put aside */
+   filled in the accent colour when the offer is put aside */
 .heart {
   display: inline-flex;
   align-items: center;
@@ -104,7 +104,8 @@ async function toggle(): Promise<void> {
 }
 
 .heart:hover {
-  color: var(--mt-error);
+  border-color: var(--mt-accent);
+  color: var(--mt-accent);
 }
 
 .heart:disabled {
@@ -122,8 +123,9 @@ async function toggle(): Promise<void> {
 }
 
 .heart.on {
-  border-color: var(--mt-error);
-  color: var(--mt-error);
+  border-color: var(--mt-accent);
+  background: var(--mt-accent-surface);
+  color: var(--mt-accent);
 }
 
 .heart.on svg {
