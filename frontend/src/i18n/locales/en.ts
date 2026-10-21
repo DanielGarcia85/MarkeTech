@@ -342,7 +342,6 @@ export default {
     next: "Next",
     publishedOn: "Published on {date}",
     detailsLink: "View the offer",
-    back: "All offers",
     notFound: "This offer does not exist, or is no longer published.",
     // Applying, under the heading of an offer
     apply: "Apply",
@@ -502,7 +501,7 @@ export default {
     title: "Applications received",
     status: "Status",
     allStatuses: "All",
-    allOffers: "Every offer",
+    allApplications: "All applications",
     notFound: "This offer does not exist, or is not yours.",
     loadFailed: "The applications could not be loaded.",
     count: "No application | {count} application | {count} applications",

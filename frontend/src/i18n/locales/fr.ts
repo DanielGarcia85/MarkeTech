@@ -344,7 +344,6 @@ const fr: typeof en = {
     next: "Suivant",
     publishedOn: "Publiée le {date}",
     detailsLink: "Voir l'offre",
-    back: "Toutes les offres",
     notFound: "Cette offre n'existe pas, ou n'est plus publiée.",
     // Applying, under the heading of an offer
     apply: "Postuler",
@@ -504,7 +503,7 @@ const fr: typeof en = {
     title: "Candidatures reçues",
     status: "État",
     allStatuses: "Tous",
-    allOffers: "Toutes les offres",
+    allApplications: "Toutes les candidatures",
     notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
     count: "Aucune candidature | {count} candidature | {count} candidatures",

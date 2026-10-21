@@ -12,8 +12,9 @@
   keep them: the state (?status=, a select) and the offer (?offer=, set by
   the links of "My offers", of the page of an offer and of its form; the
   offer is then named under the title, with its state and the way to its
-  form, and a link clears the filter). Another employer's offer is "not
-  found". The moves of the state are the same for every card
+  form, and a line above the title leads back to every application).
+  Another employer's offer is "not found". The moves of the state are the
+  same for every card
   (ApplicationCard, shared composable).
 -->
 
@@ -102,6 +103,12 @@ onMounted(load);
 </script>
 
 <template>
+  <!-- Narrowed to one offer: the way back to every application, the state
+       chosen kept -->
+  <p v-if="offerId" class="back">
+    <RouterLink :to="{ query: status ? { status } : {} }">← {{ t("receivedApplications.allApplications") }}</RouterLink>
+  </p>
+
   <div class="head">
     <h1>{{ t("receivedApplications.title") }}</h1>
     <label class="filter">
@@ -123,7 +130,6 @@ onMounted(load);
       · {{ offer.city }}
       <span class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
       <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }">{{ t("offers.editLink") }}</RouterLink>
-      <RouterLink :to="{ query: status ? { status } : {} }" class="all">{{ t("receivedApplications.allOffers") }}</RouterLink>
     </p>
 
     <p v-if="loadFailed" class="error">{{ t("receivedApplications.loadFailed") }}</p>
@@ -156,6 +162,18 @@ onMounted(load);
 </template>
 
 <style scoped>
+.back {
+  margin: 0 0 16px;
+}
+
+.back a {
+  text-decoration: none;
+}
+
+.back a:hover {
+  text-decoration: underline;
+}
+
 /* The title on the left, the filter on the right */
 .head {
   display: flex;
@@ -192,11 +210,6 @@ onMounted(load);
   gap: 8px;
   margin: 12px 0 0;
   color: var(--mt-muted);
-}
-
-/* The way back to every offer, pushed to the right */
-.all {
-  margin-left: auto;
 }
 
 .count {

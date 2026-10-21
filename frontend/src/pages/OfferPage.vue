@@ -5,7 +5,8 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by the router for "/offers/<id>", to anyone: the backend serves
   a published offer to all, and an unpublished one to its employer only;
-  anything else is "not found" here, with a way back to the list. The
+  anything else is "not found" here, with a way back to the list (the page
+  itself has none: the logo and the side bar lead to the lists). The
   company, the title, the facts in a list, then the description as it was
   typed, line breaks kept. Under the heading, the way to apply: a button
   for a candidate, an invitation to log in for a visitor, and, once
@@ -116,10 +117,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <p class="back">
-    <RouterLink :to="{ name: 'home' }">← {{ t("offers.back") }}</RouterLink>
-  </p>
-
   <p v-if="notFound" class="notice">{{ t("offers.notFound") }}</p>
 
   <article v-else-if="offer" class="offer">
@@ -224,18 +221,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.back {
-  margin: 0 0 16px;
-}
-
-.back a {
-  text-decoration: none;
-}
-
-.back a:hover {
-  text-decoration: underline;
-}
-
 /* The logo on the left, the company, the title and the date on the right */
 .head {
   display: flex;
