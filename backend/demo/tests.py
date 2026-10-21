@@ -8,9 +8,9 @@ Responsibility
 ──────────────
 Check the seed_demo command, which fills a development database with test
 accounts, offers, applications and favorites: everything it announces is
-there, the
-files it writes are real PDFs, it runs once only unless --reset, and it
-refuses to run with DEBUG off, as on a server.
+there, the files it writes are real PDFs and the logos real PNGs, it runs
+once only unless --reset, and it refuses to run with DEBUG off, as on a
+server.
 """
 
 import os
@@ -38,9 +38,9 @@ MEDIA = tempfile.mkdtemp(prefix="marketech-tests-")
 @override_settings(MEDIA_ROOT=MEDIA)
 class SeedDemoTests(TestCase):
     """The seed_demo command: six accounts able to log in, their profiles
-    with their files, thirty offers, most of them in the public list, nine
-    applications with their history, eight favorites; once only, unless
-    --reset; never with DEBUG off."""
+    with their files and logos, thirty offers, most of them in the public
+    list, nine applications with their history, eight favorites; once
+    only, unless --reset; never with DEBUG off."""
 
     @classmethod
     def tearDownClass(cls):
@@ -80,6 +80,13 @@ class SeedDemoTests(TestCase):
         for profile in CandidateProfile.objects.all():
             with open(os.path.join(MEDIA, profile.cv.name), "rb") as cv:
                 self.assertTrue(cv.read().startswith(b"%PDF-1.4"))
+        # Every company has a logo, a real PNG, that the public list links to
+        self.assertEqual(EmployerProfile.objects.exclude(logo="").count(), 3)
+        for profile in EmployerProfile.objects.all():
+            with open(os.path.join(MEDIA, profile.logo.name), "rb") as logo:
+                self.assertTrue(logo.read().startswith(b"\x89PNG"))
+        offers = Client().get("/api/offers/").json()["results"]
+        self.assertTrue(all(o["company"]["logo"] for o in offers))
         # The applications, their files copied, their states dated
         self.assertEqual(JobApplication.objects.count(), 9)
         self.assertEqual(JobApplication.objects.exclude(cover_letter="").count(), 6)

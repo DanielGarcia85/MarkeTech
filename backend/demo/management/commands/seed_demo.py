@@ -7,13 +7,14 @@ Seed demo — test accounts, offers, applications and favorites for a developmen
 Responsibility
 ──────────────
 Fill a development database with what the pages need to be looked at: three
-candidates with a CV and documents, three employers with their company, ten
-job offers per employer spread over the cities, the contracts, the salaries
-and the last two months — eight published, one draft and one closed each —
-nine applications in every state, with their history, and eight favorites.
-Everything is
-invented, the files included: one-page PDFs written by the command itself
-(no library needed for a page of text). The six accounts share one
+candidates with a CV and documents, three employers with their company and
+its logo, ten job offers per employer spread over the cities, the
+contracts, the salaries and the last two months — eight published, one
+draft and one closed each — nine applications in every state, with their
+history, and eight favorites. Everything is invented, the files included:
+one-page PDFs written by the command itself (no library needed for a page
+of text), and logos drawn with Pillow (the initials of the company on a
+colour), which the image fields need anyway. The six accounts share one
 password, printed at the end.
 
     python manage.py seed_demo          creates everything, once
@@ -36,6 +37,7 @@ off (a server) unless --force is given.
 """
 
 from datetime import timedelta
+from io import BytesIO
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -43,6 +45,7 @@ from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
+from PIL import Image, ImageDraw, ImageFont
 
 from accounts.models import User
 from applications.models import Attachment, JobApplication
@@ -132,6 +135,7 @@ EMPLOYERS = [
         "company_city": "Genève",
         "company_country": "CH",
         "company_phone": "+41 22 000 00 10",
+        "logo": ("LT", "#2d6f91"),
         "offers": [
             {
                 "title": "Développeur·euse Java Spring senior",
@@ -371,6 +375,7 @@ EMPLOYERS = [
         "company_city": "Lausanne",
         "company_country": "CH",
         "company_phone": "+41 21 000 00 20",
+        "logo": ("AD", "#2f855a"),
         "offers": [
             {
                 "title": "Data engineer Python",
@@ -596,6 +601,7 @@ EMPLOYERS = [
         "company_city": "Lyon",
         "company_country": "FR",
         "company_phone": "+33 4 00 00 00 30",
+        "logo": ("RD", "#6b46c1"),
         # The currency of the salaries of its offers (CHF when not given)
         "currency": "EUR",
         "offers": [
@@ -967,6 +973,28 @@ def pdf_file(name, title, lines):
     return ContentFile(pdf(title, lines), name=name)
 
 
+def logo(initials, colour):
+    """A square PNG logo, as bytes: the initials of the company in white on
+    a rounded square of its colour. Pillow's own font, so that nothing has
+    to be installed; the text is measured, then placed in the middle."""
+    side = 256
+    image = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle((0, 0, side - 1, side - 1), radius=48, fill=colour)
+    font = ImageFont.load_default(size=112)
+    left, top, right, bottom = draw.textbbox((0, 0), initials, font=font)
+    position = ((side - (right - left)) / 2 - left, (side - (bottom - top)) / 2 - top)
+    draw.text(position, initials, fill="white", font=font)
+    buffer = BytesIO()
+    image.save(buffer, "PNG")
+    return buffer.getvalue()
+
+
+def logo_file(initials, colour):
+    """The same, as a file Django stores under the path of the logo field."""
+    return ContentFile(logo(initials, colour), name="logo.png")
+
+
 class Command(BaseCommand):
     help = "Create six test accounts (three candidates, three employers), their job offers, applications and favorites."
 
@@ -1060,11 +1088,13 @@ class Command(BaseCommand):
             )
 
     def employer(self, person):
-        """The account, the profile with its company, the offers; returns
-        how many offers were made."""
+        """The account, the profile with its company and its logo, the
+        offers; returns how many offers were made."""
         user = self.user(person, User.Role.EMPLOYER)
         company = {key: person[key] for key in person if key.startswith("company_")}
-        profile = EmployerProfile.objects.create(user=user, **self.contact(person), **company)
+        profile = EmployerProfile.objects.create(
+            user=user, logo=logo_file(*person["logo"]), **self.contact(person), **company
+        )
         for offer in person["offers"]:
             self.offer(profile, offer, person.get("currency", JobOffer.Currency.CHF))
         return len(person["offers"])
