@@ -30,7 +30,7 @@ const { t } = useI18n();
 <style scoped>
 .hero {
   text-align: center;
-  padding: 16px 0 24px;
+  padding: 8px 0 20px;
 }
 
 .logo {
@@ -39,7 +39,7 @@ const { t } = useI18n();
 }
 
 .tagline {
-  margin: 24px 0 0;
+  margin: 10px 0 0;
   font-size: 1.4rem;
   font-weight: 600;
   color: var(--mt-blue);

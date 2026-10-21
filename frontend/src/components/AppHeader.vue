@@ -145,13 +145,15 @@ async function leave(): Promise<void> {
   height: 40px;
 }
 
-/* The line about the site: small and muted (not .notice, the framed
-   message of the pages), hidden on a narrow window where the logo and the
-   links already fill the header */
+/* The line about the site, centred between the logo and the links (not
+   .notice, the framed message of the pages), hidden on a narrow window
+   where the logo and the links already fill the header */
 .about {
+  flex: 1;
   margin: 0;
-  color: var(--mt-muted);
-  font-size: 0.8rem;
+  color: var(--mt-text);
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 @media (max-width: 700px) {
