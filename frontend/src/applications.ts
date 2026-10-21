@@ -3,9 +3,9 @@
 // Application texts and moves — what the pages of the applications share
 // ─────────────────────────────────────────────────────────────────────────────
 // The lines that the page of a candidate and the pages of an employer
-// share: a date, the state, the history as one line. And, for the two
-// pages of an employer, the move of an application from one state to the
-// next, with its confirmation and its errors. Composables, because the
+// share: a date, the state, the history as one line. And, for the page of
+// an employer, the move of an application from one state to the next,
+// with its confirmation and its errors. Composables, because the
 // words and the date formats depend on the language displayed.
 
 import { ref, type Ref } from "vue";
@@ -59,8 +59,8 @@ export function useApplicationMoves(applications: Ref<Application[] | null>) {
 
   async function move(application: Application, status: ApplicationStatus): Promise<void> {
     if (status !== "in_progress") {
-      const question = t(`offerApplications.confirm.${status}`, { name: text.name(application) });
-      if (!(await confirm(question, t(`offerApplications.set.${status}`)))) return;
+      const question = t(`receivedApplications.confirm.${status}`, { name: text.name(application) });
+      if (!(await confirm(question, t(`receivedApplications.set.${status}`)))) return;
     }
     delete errors.value[application.id];
     busy.value = application.id;

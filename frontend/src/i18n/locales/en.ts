@@ -485,25 +485,6 @@ export default {
     confirmWithdraw: "Withdraw your application to \"{title}\"? Its files will be deleted.",
   },
 
-  // The applications to one offer, for its employer
-  offerApplications: {
-    title: "Applications",
-    back: "My offers",
-    backToReceived: "Applications received",
-    notFound: "This offer does not exist, or is not yours.",
-    loadFailed: "The applications could not be loaded.",
-    count: "No application yet | {count} application | {count} applications",
-    set: {
-      in_progress: "Mark in progress",
-      accepted: "Accept",
-      rejected: "Reject",
-    },
-    confirm: {
-      accepted: "Accept the application of {name}?",
-      rejected: "Reject the application of {name}?",
-    },
-  },
-
   // The heart on the offers, and the favorites of a candidate
   favorites: {
     add: "Add to my favourites",
@@ -516,13 +497,24 @@ export default {
     loadFailed: "Your favourites could not be loaded.",
   },
 
-  // All the applications received by an employer, whatever the offer
+  // The applications received by an employer, all of them or one offer's
   receivedApplications: {
     title: "Applications received",
     status: "Status",
     allStatuses: "All",
+    allOffers: "Every offer",
+    notFound: "This offer does not exist, or is not yours.",
     loadFailed: "The applications could not be loaded.",
     count: "No application | {count} application | {count} applications",
+    set: {
+      in_progress: "Mark in progress",
+      accepted: "Accept",
+      rejected: "Reject",
+    },
+    confirm: {
+      accepted: "Accept the application of {name}?",
+      rejected: "Reject the application of {name}?",
+    },
   },
 
   // Not-found page, for any address the router does not know

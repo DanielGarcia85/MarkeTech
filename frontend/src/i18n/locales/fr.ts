@@ -487,25 +487,6 @@ const fr: typeof en = {
     confirmWithdraw: "Retirer votre candidature à « {title} » ? Ses fichiers seront supprimés.",
   },
 
-  // The applications to one offer, for its employer
-  offerApplications: {
-    title: "Candidatures",
-    back: "Mes offres",
-    backToReceived: "Candidatures reçues",
-    notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
-    loadFailed: "Les candidatures n'ont pas pu être chargées.",
-    count: "Aucune candidature pour l'instant | {count} candidature | {count} candidatures",
-    set: {
-      in_progress: "Mettre en cours",
-      accepted: "Accepter",
-      rejected: "Refuser",
-    },
-    confirm: {
-      accepted: "Accepter la candidature de {name} ?",
-      rejected: "Refuser la candidature de {name} ?",
-    },
-  },
-
   // The heart on the offers, and the favorites of a candidate
   favorites: {
     add: "Ajouter à mes favoris",
@@ -518,13 +499,24 @@ const fr: typeof en = {
     loadFailed: "Vos favoris n'ont pas pu être chargés.",
   },
 
-  // All the applications received by an employer, whatever the offer
+  // The applications received by an employer, all of them or one offer's
   receivedApplications: {
     title: "Candidatures reçues",
     status: "État",
     allStatuses: "Tous",
+    allOffers: "Toutes les offres",
+    notFound: "Cette offre n'existe pas, ou n'est pas la vôtre.",
     loadFailed: "Les candidatures n'ont pas pu être chargées.",
     count: "Aucune candidature | {count} candidature | {count} candidatures",
+    set: {
+      in_progress: "Mettre en cours",
+      accepted: "Accepter",
+      rejected: "Refuser",
+    },
+    confirm: {
+      accepted: "Accepter la candidature de {name} ?",
+      rejected: "Refuser la candidature de {name} ?",
+    },
   },
 
   // Not-found page, for any address the router does not know

@@ -3,8 +3,8 @@
 
   Application card — one application, as its employer sees it
   ───────────────────────────────────────────────────────────────────────────
-  Used by the page of the applications to one offer and by the page of all
-  the applications received, grouped by offer. The candidate and their
+  Used by the page of the applications received, grouped by offer. The
+  candidate and their
   contact details, the date, the state as a pill and the states gone
   through, the files as links, and the moves of the state as buttons (all
   but the current state), which the page carries out: the card only says
@@ -69,7 +69,7 @@ const text = useApplicationText();
         :disabled="busy"
         @click="$emit('move', status)"
       >
-        {{ t("offerApplications.set." + status) }}
+        {{ t("receivedApplications.set." + status) }}
       </button>
       <p v-if="error" class="error reason">{{ error }}</p>
     </div>

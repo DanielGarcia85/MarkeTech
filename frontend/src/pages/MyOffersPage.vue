@@ -127,7 +127,7 @@ onMounted(() => {
                word when none; a draft cannot have any -->
           <RouterLink
             v-if="offer.applications_count"
-            :to="{ name: 'offerApplications', params: { id: offer.id } }"
+            :to="{ name: 'receivedApplications', query: { offer: String(offer.id) } }"
             class="secondary"
           >
             {{ t("myOffers.applications", offer.applications_count) }}

@@ -7,10 +7,14 @@
   (the router sends anyone else away). All the applications to all their
   offers on one page, grouped by offer under a heading that names it, the
   offer with the newest application first and, within a group, the newest
-  application first, so that nothing has to be looked for offer by offer;
-  narrowed by state with a select, kept in the address (?status=) so that
-  the back button and a reload keep it. The moves of the state are the same
-  as on the page of one offer (ApplicationCard, shared composable).
+  application first, so that nothing has to be looked for offer by offer.
+  Two filters, kept in the address so that the back button and a reload
+  keep them: the state (?status=, a select) and the offer (?offer=, set by
+  the links of "My offers", of the page of an offer and of its form; the
+  offer is then named under the title, with its state and the way to its
+  form, and a link clears the filter). Another employer's offer is "not
+  found". The moves of the state are the same for every card
+  (ApplicationCard, shared composable).
 -->
 
 <script setup lang="ts">
@@ -19,6 +23,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import { listApplications, type Application, type ApplicationStatus } from "../api/applications";
+import { getOffer, type Offer } from "../api/offers";
 import { useApplicationMoves, useApplicationText } from "../applications";
 import ApplicationCard from "../components/ApplicationCard.vue";
 
@@ -31,8 +36,23 @@ const text = useApplicationText();
 
 const applications = ref<Application[] | null>(null);
 const loadFailed = ref(false);
+// The offer asked for in the address, once read; "not found" when it is
+// not one of the employer's
+const offer = ref<Offer | null>(null);
+const notFound = ref(false);
 
 const { busy, errors, move } = useApplicationMoves(applications);
+
+// The filters, as the address says them: a state among the four or "" for
+// all, an offer by its number or 0 for all
+const status = computed<ApplicationStatus | "">(() => {
+  const asked = route.query.status;
+  return typeof asked === "string" && (STATUSES as string[]).includes(asked) ? (asked as ApplicationStatus) : "";
+});
+const offerId = computed(() => {
+  const asked = route.query.offer;
+  return typeof asked === "string" && /^\d+$/.test(asked) ? Number(asked) : 0;
+});
 
 // The applications by offer, in the order they come (newest first): an
 // offer appears with its first application met, and keeps its rank
@@ -46,28 +66,37 @@ const groups = computed(() => {
   return [...byOffer.values()];
 });
 
-// The state asked for in the address, or "" for all of them
-const status = computed<ApplicationStatus | "">(() => {
-  const asked = route.query.status;
-  return typeof asked === "string" && (STATUSES as string[]).includes(asked) ? (asked as ApplicationStatus) : "";
-});
-
 async function load(): Promise<void> {
   loadFailed.value = false;
+  notFound.value = false;
+  offer.value = null;
+  if (offerId.value) {
+    try {
+      offer.value = await getOffer(offerId.value);
+    } catch {
+      // 404 for another employer's offer, or no such offer
+      notFound.value = true;
+      return;
+    }
+  }
   try {
-    applications.value = await listApplications(status.value ? { status: status.value } : {});
+    applications.value = await listApplications({
+      ...(offerId.value ? { offer: offerId.value } : {}),
+      ...(status.value ? { status: status.value } : {}),
+    });
   } catch {
     loadFailed.value = true;
   }
 }
 
-// A new state chosen: into the address, which reloads the list
+// A new state chosen: into the address, next to the offer if any, which
+// reloads the list
 function choose(event: Event): void {
   const value = (event.target as HTMLSelectElement).value;
-  router.replace({ query: value ? { status: value } : {} });
+  router.replace({ query: { ...(offerId.value ? { offer: String(offerId.value) } : {}), ...(value ? { status: value } : {}) } });
 }
 
-watch(() => route.query.status, load);
+watch(() => [route.query.status, route.query.offer], load);
 
 onMounted(load);
 </script>
@@ -84,32 +113,45 @@ onMounted(load);
     </label>
   </div>
 
-  <p v-if="loadFailed" class="error">{{ t("receivedApplications.loadFailed") }}</p>
+  <p v-if="notFound" class="notice">{{ t("receivedApplications.notFound") }}</p>
 
-  <template v-else-if="applications">
-    <p class="count">{{ t("receivedApplications.count", applications.length) }}</p>
-    <!-- One section per offer: its title as a link to its own page of
-         applications, its city, its state, then its applications -->
-    <section v-for="group in groups" :key="group.offer.id" class="group">
-      <h2 class="offer">
-        <RouterLink :to="{ name: 'offerApplications', params: { id: group.offer.id } }">
-          {{ group.offer.title }}
-        </RouterLink>
-        <span class="muted">· {{ group.offer.city }}</span>
-        <span class="pill" :class="group.offer.status">{{ t("offers.status." + group.offer.status) }}</span>
-        <span class="muted">{{ t("offerApplications.count", group.items.length) }}</span>
-      </h2>
-      <ul class="cards">
-        <li v-for="application in group.items" :key="application.id">
-          <ApplicationCard
-            :application="application"
-            :busy="busy === application.id"
-            :error="errors[application.id]"
-            @move="move(application, $event)"
-          />
-        </li>
-      </ul>
-    </section>
+  <template v-else>
+    <!-- Narrowed to one offer: the offer named, its state, its form, and
+         the way back to every offer -->
+    <p v-if="offer" class="offer">
+      <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
+      · {{ offer.city }}
+      <span class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+      <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }">{{ t("offers.editLink") }}</RouterLink>
+      <RouterLink :to="{ query: status ? { status } : {} }" class="all">{{ t("receivedApplications.allOffers") }}</RouterLink>
+    </p>
+
+    <p v-if="loadFailed" class="error">{{ t("receivedApplications.loadFailed") }}</p>
+
+    <template v-else-if="applications">
+      <p class="count">{{ t("receivedApplications.count", applications.length) }}</p>
+      <!-- One section per offer: its title as a link to the offer, its
+           city, its state, how many, then its applications; narrowed to
+           one offer, the heading would repeat the line above -->
+      <section v-for="group in groups" :key="group.offer.id" class="group">
+        <h2 v-if="!offerId" class="title">
+          <RouterLink :to="{ name: 'offer', params: { id: group.offer.id } }">{{ group.offer.title }}</RouterLink>
+          <span class="muted">· {{ group.offer.city }}</span>
+          <span class="pill" :class="group.offer.status">{{ t("offers.status." + group.offer.status) }}</span>
+          <span class="muted">{{ t("receivedApplications.count", group.items.length) }}</span>
+        </h2>
+        <ul class="cards">
+          <li v-for="application in group.items" :key="application.id">
+            <ApplicationCard
+              :application="application"
+              :busy="busy === application.id"
+              :error="errors[application.id]"
+              @move="move(application, $event)"
+            />
+          </li>
+        </ul>
+      </section>
+    </template>
   </template>
 </template>
 
@@ -142,6 +184,21 @@ onMounted(load);
   font: inherit;
 }
 
+/* The offer the page is narrowed to, under the title */
+.offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  color: var(--mt-muted);
+}
+
+/* The way back to every offer, pushed to the right */
+.all {
+  margin-left: auto;
+}
+
 .count {
   margin: 16px 0 0;
   color: var(--mt-muted);
@@ -154,7 +211,7 @@ onMounted(load);
   border-top: 3px solid var(--mt-border);
 }
 
-.offer {
+.title {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -163,11 +220,11 @@ onMounted(load);
   font-size: 1.15rem;
 }
 
-.offer a {
+.title a {
   text-decoration: none;
 }
 
-.offer a:hover {
+.title a:hover {
   text-decoration: underline;
 }
 
