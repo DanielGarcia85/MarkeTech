@@ -342,7 +342,6 @@ export default {
     next: "Next",
     publishedOn: "Published on {date}",
     detailsLink: "View the offer",
-    back: "All offers",
     notFound: "This offer does not exist, or is no longer published.",
     // Applying, under the heading of an offer
     apply: "Apply",

@@ -1,12 +1,14 @@
 <!--
   frontend/src/components/AppSidebar.vue
 
-  Side bar — the navigation of a logged-in user, on every page
+  Side bar — the navigation, on every page
   ───────────────────────────────────────────────────────────────────────────
-  Displayed by App.vue on the left of the page, for a logged-in user only.
-  One group of links per area of the application; a group gets its links
-  when the pages exist, never before, and a link of one role shows for that
-  role only. On a narrow window, the bar becomes a strip under the header.
+  Displayed by App.vue on the left of the page, for everyone: a visitor
+  gets the list of the offers only, so that the pages keep the same layout
+  before and after logging in; a logged-in user gets the links of their
+  role and their account. One group of links per area of the application;
+  a group gets its links when the pages exist, never before. On a narrow
+  window, the bar becomes a strip under the header.
 -->
 
 <script setup lang="ts">
@@ -34,8 +36,10 @@ const session = useSession();
     <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
       {{ t("nav.myFavorites") }}
     </RouterLink>
-    <p class="group">{{ t("nav.account") }}</p>
-    <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
+    <template v-if="session.user">
+      <p class="group">{{ t("nav.account") }}</p>
+      <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
+    </template>
   </nav>
 </template>
 
