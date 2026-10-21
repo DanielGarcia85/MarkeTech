@@ -129,7 +129,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 20 October 2026",
+    updated: "Last updated: 21 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -149,7 +149,7 @@ export default {
           { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
           { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
-          { term: "Favourites", text: "The offers a candidate has set aside." },
+          { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
           { term: "Appointments", text: "Proposed by an employer about an application: date and time, description, the candidate's answer and the message that goes with it." },
           { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name and last name, visible to every visitor." },
           { term: "Technical data", text: "The server logs the requests it receives: IP address, page requested, date, browser. These logs serve for security and troubleshooting only, and are erased automatically as newer ones replace them." },
