@@ -8,7 +8,8 @@
   before and after logging in; a logged-in user gets the links of their
   role and their account. One group of links per area of the application;
   a group gets its links when the pages exist, never before. On a narrow
-  window, the bar becomes a strip under the header.
+  window, the bar becomes a strip under the header, where each group keeps
+  its title and its links on one line, and wraps as a whole.
 -->
 
 <script setup lang="ts">
@@ -22,24 +23,26 @@ const session = useSession();
 
 <template>
   <nav class="sidebar" :aria-label="t('nav.label')">
-    <p class="group">{{ t("nav.offers") }}</p>
-    <RouterLink :to="{ name: 'home' }">{{ t("nav.allOffers") }}</RouterLink>
-    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
-      {{ t("nav.myOffers") }}
-    </RouterLink>
-    <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
-      {{ t("nav.receivedApplications") }}
-    </RouterLink>
-    <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
-      {{ t("nav.myApplications") }}
-    </RouterLink>
-    <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
-      {{ t("nav.myFavorites") }}
-    </RouterLink>
-    <template v-if="session.user">
+    <div class="block">
+      <p class="group">{{ t("nav.offers") }}</p>
+      <RouterLink :to="{ name: 'home' }">{{ t("nav.allOffers") }}</RouterLink>
+      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
+        {{ t("nav.myOffers") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
+        {{ t("nav.receivedApplications") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
+        {{ t("nav.myApplications") }}
+      </RouterLink>
+      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
+        {{ t("nav.myFavorites") }}
+      </RouterLink>
+    </div>
+    <div v-if="session.user" class="block">
       <p class="group">{{ t("nav.account") }}</p>
       <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
-    </template>
+    </div>
   </nav>
 </template>
 
@@ -63,7 +66,7 @@ const session = useSession();
 }
 
 /* A gap above every group but the first */
-.sidebar a + .group {
+.block + .block {
   margin-top: 20px;
 }
 
@@ -86,21 +89,34 @@ const session = useSession();
   color: #ffffff;
 }
 
-/* Narrow window: a strip under the header, the links side by side */
+/* Narrow window: a strip under the header; each group is a line of its
+   own title and links, the groups side by side while the width allows,
+   then one under the other, aligned on the left */
 @media (max-width: 900px) {
   .sidebar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 8px;
+    gap: 4px 24px;
     width: auto;
     padding: 8px 16px;
     border-right: none;
     border-bottom: 1px solid var(--mt-border);
   }
 
+  .block {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .block + .block {
+    margin-top: 0;
+  }
+
   .group {
-    margin: 0 8px 0 0;
+    margin: 0 4px 0 0;
   }
 
   .sidebar a {
