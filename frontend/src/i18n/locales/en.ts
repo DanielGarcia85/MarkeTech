@@ -38,6 +38,7 @@ export default {
     receivedApplications: "Applications received",
     account: "My account",
     profile: "Profile",
+    credentials: "Login details",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -92,9 +93,9 @@ export default {
     confirmed: "Your e-mail address is confirmed. You can now log in.",
     changed: "Your new e-mail address is now in force.",
     invalid: "This link is invalid or has expired. Log in: if your address is still unconfirmed, you will receive a new link.",
-    invalidLoggedIn: "This link is invalid or has expired. Your current address stays in force; you can ask again from your profile.",
+    invalidLoggedIn: "This link is invalid or has expired. Your current address stays in force; you can ask again from your login details.",
     loginLink: "Log in",
-    profileLink: "Back to my profile",
+    credentialsLink: "Back to my login details",
   },
 
   // Password reset: the page that asks for the link
@@ -258,8 +259,7 @@ export default {
     },
   },
 
-  // Profile page: names and contact details, company, files and documents,
-  // then the account: e-mail address and password
+  // Profile page: names and contact details, company, files and documents
   profile: {
     title: "My profile",
     identity: "Identity",
@@ -301,7 +301,11 @@ export default {
     loadFailed: "Your profile cannot be loaded. Please try again later.",
     tooBig: "This file is bigger than {size} MB.",
     wrongType: "This type of file is not accepted ({types}).",
-    account: "Account",
+  },
+
+  // Credentials page: the e-mail address and the password of the account
+  credentials: {
+    title: "My login details",
     email: "E-mail address",
     currentEmail: "Current address: {email}",
     newEmail: "New e-mail address",

@@ -22,6 +22,7 @@ import PasswordResetPage from "./pages/PasswordResetPage.vue";
 import PrivacyPage from "./pages/PrivacyPage.vue";
 import TermsPage from "./pages/TermsPage.vue";
 import ProfilePage from "./pages/ProfilePage.vue";
+import CredentialsPage from "./pages/CredentialsPage.vue";
 import OfferPage from "./pages/OfferPage.vue";
 import MyOffersPage from "./pages/MyOffersPage.vue";
 import OfferFormPage from "./pages/OfferFormPage.vue";
@@ -56,6 +57,8 @@ export const router = createRouter({
     { path: "/account/password/reset", name: "passwordReset", component: PasswordResetPage },
     { path: "/account/password/reset/:key", name: "newPassword", component: NewPasswordPage },
     { path: "/account/profile", name: "profile", component: ProfilePage, meta: { requiresAuth: true } },
+    // The e-mail address and the password, kept apart from the profile
+    { path: "/account/credentials", name: "credentials", component: CredentialsPage, meta: { requiresAuth: true } },
     // The job offers: the list is the home page; one offer by its number
     { path: "/offers", redirect: (to) => ({ name: "home", query: to.query }) },
     { path: "/offers/:id(\\d+)", name: "offer", component: OfferPage },

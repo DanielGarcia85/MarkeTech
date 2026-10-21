@@ -6,7 +6,8 @@
   Displayed by App.vue on the left of the page, for everyone: a visitor
   gets the list of the offers only, so that the pages keep the same layout
   before and after logging in; a logged-in user gets the links of their
-  role and their account. One group of links per area of the application;
+  role and their account (the profile, then the e-mail address and the
+  password). One group of links per area of the application;
   a group gets its links when the pages exist, never before. On a narrow
   window, the bar becomes a strip under the header, where each group keeps
   its title and its links on one line, and wraps as a whole.
@@ -42,6 +43,7 @@ const session = useSession();
     <div v-if="session.user" class="block">
       <p class="group">{{ t("nav.account") }}</p>
       <RouterLink :to="{ name: 'profile' }">{{ t("nav.profile") }}</RouterLink>
+      <RouterLink :to="{ name: 'credentials' }">{{ t("nav.credentials") }}</RouterLink>
     </div>
   </nav>
 </template>

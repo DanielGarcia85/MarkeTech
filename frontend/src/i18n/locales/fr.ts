@@ -40,6 +40,7 @@ const fr: typeof en = {
     receivedApplications: "Candidatures reçues",
     account: "Mon compte",
     profile: "Profil",
+    credentials: "Identifiants",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -94,9 +95,9 @@ const fr: typeof en = {
     confirmed: "Votre adresse e-mail est confirmée. Vous pouvez maintenant vous connecter.",
     changed: "Votre nouvelle adresse e-mail est en vigueur.",
     invalid: "Ce lien n'est pas valable ou a expiré. Connectez-vous : si votre adresse n'est pas encore confirmée, vous recevrez un nouveau lien.",
-    invalidLoggedIn: "Ce lien n'est pas valable ou a expiré. Votre adresse actuelle reste en vigueur ; vous pouvez refaire la demande depuis votre profil.",
+    invalidLoggedIn: "Ce lien n'est pas valable ou a expiré. Votre adresse actuelle reste en vigueur ; vous pouvez refaire la demande depuis vos identifiants.",
     loginLink: "Se connecter",
-    profileLink: "Retour à mon profil",
+    credentialsLink: "Retour à mes identifiants",
   },
 
   // Password reset: the page that asks for the link
@@ -260,8 +261,7 @@ const fr: typeof en = {
     },
   },
 
-  // Profile page: names and contact details, company, files and documents,
-  // then the account: e-mail address and password
+  // Profile page: names and contact details, company, files and documents
   profile: {
     title: "Mon profil",
     identity: "Identité",
@@ -303,7 +303,11 @@ const fr: typeof en = {
     loadFailed: "Votre profil ne peut pas être chargé. Veuillez réessayer plus tard.",
     tooBig: "Ce fichier dépasse {size} Mo.",
     wrongType: "Ce type de fichier n'est pas accepté ({types}).",
-    account: "Compte",
+  },
+
+  // Credentials page: the e-mail address and the password of the account
+  credentials: {
+    title: "Mes identifiants",
     email: "Adresse e-mail",
     currentEmail: "Adresse actuelle : {email}",
     newEmail: "Nouvelle adresse e-mail",

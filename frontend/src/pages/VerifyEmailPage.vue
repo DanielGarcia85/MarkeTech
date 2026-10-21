@@ -70,7 +70,7 @@ watch(
   <p v-else-if="state === 'confirmed'" class="notice">
     <template v-if="loggedIn">
       {{ t("verify.changed") }}
-      <RouterLink :to="{ name: 'profile' }">{{ t("verify.profileLink") }}</RouterLink>
+      <RouterLink :to="{ name: 'credentials' }">{{ t("verify.credentialsLink") }}</RouterLink>
     </template>
     <template v-else>
       {{ t("verify.confirmed") }}
@@ -80,7 +80,7 @@ watch(
   <p v-else-if="state === 'invalid'" class="error">
     <template v-if="loggedIn">
       {{ t("verify.invalidLoggedIn") }} {{ reason }}
-      <RouterLink :to="{ name: 'profile' }">{{ t("verify.profileLink") }}</RouterLink>
+      <RouterLink :to="{ name: 'credentials' }">{{ t("verify.credentialsLink") }}</RouterLink>
     </template>
     <template v-else>
       {{ t("verify.invalid") }} {{ reason }}
