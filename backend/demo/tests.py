@@ -7,7 +7,8 @@ Demo tests — the seed_demo command
 Responsibility
 ──────────────
 Check the seed_demo command, which fills a development database with test
-accounts, offers and applications: everything it announces is there, the
+accounts, offers, applications and favorites: everything it announces is
+there, the
 files it writes are real PDFs, it runs once only unless --reset, and it
 refuses to run with DEBUG off, as on a server.
 """
@@ -21,10 +22,12 @@ from allauth.account.models import EmailAddress
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, TestCase, override_settings
+from django.utils import timezone
 
 from accounts.models import User
 from applications.models import Attachment, JobApplication, StatusChange
-from demo.management.commands.seed_demo import APPLICATIONS
+from demo.management.commands.seed_demo import APPLICATIONS, FAVORITES
+from favorites.models import Favorite
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
@@ -36,8 +39,8 @@ MEDIA = tempfile.mkdtemp(prefix="marketech-tests-")
 class SeedDemoTests(TestCase):
     """The seed_demo command: six accounts able to log in, their profiles
     with their files, thirty offers, most of them in the public list, nine
-    applications with their history; once only, unless --reset; never with
-    DEBUG off."""
+    applications with their history, eight favorites; once only, unless
+    --reset; never with DEBUG off."""
 
     @classmethod
     def tearDownClass(cls):
@@ -96,6 +99,12 @@ class SeedDemoTests(TestCase):
         client = Client()
         client.force_login(User.objects.get(email="candidat1@test.com"))
         self.assertEqual(len(client.get("/api/applications/").json()), 3)
+        # The favorites, dated, one on an offer closed since
+        self.assertEqual(Favorite.objects.count(), len(FAVORITES))
+        self.assertEqual(Favorite.objects.filter(offer__status="closed").count(), 1)
+        self.assertEqual(Favorite.objects.filter(created_at__date=timezone.now().date()).count(), 0)
+        self.assertEqual(len(client.get("/api/favorites/").json()), 4)
+        self.assertEqual(sum(o["favorite"] for o in client.get("/api/offers/").json()["results"]), 3)
 
     @override_settings(DEBUG=True)
     def test_seed_demo_runs_once_unless_reset(self):

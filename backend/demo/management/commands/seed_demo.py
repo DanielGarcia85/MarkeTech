@@ -1,7 +1,7 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts, job offers and applications for a development database
+Seed demo — test accounts, offers, applications and favorites for a development database
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
@@ -10,15 +10,16 @@ Fill a development database with what the pages need to be looked at: three
 candidates with a CV and documents, three employers with their company, ten
 job offers per employer spread over the cities, the contracts, the salaries
 and the last two months — eight published, one draft and one closed each —
-and nine applications in every state, with their history. Everything is
+nine applications in every state, with their history, and eight favorites.
+Everything is
 invented, the files included: one-page PDFs written by the command itself
 (no library needed for a page of text). The six accounts share one
 password, printed at the end.
 
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
-                                        profiles, offers, applications and
-                                        files go with them)
+                                        profiles, offers, applications,
+                                        favorites and files go with them)
 
 Why a command and not a fixture
 ───────────────────────────────
@@ -46,6 +47,7 @@ from django.utils import timezone
 from accounts.models import User
 from applications.models import Attachment, JobApplication
 from applications.serializers import copy_of
+from favorites.models import Favorite
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
@@ -895,6 +897,22 @@ APPLICATIONS = [
     },
 ]
 
+# ── The favorites ─────────────────────────────────────────────────────
+# Who put which offer aside (the employer and the title name it), how many
+# days ago. One is on an offer closed since: a favorite stays until the
+# candidate takes it back.
+
+FAVORITES = [
+    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse Full Stack Vue / Django", 4),
+    ("candidat1@test.com", "employeur2@test.com", "Data engineer Python", 1),
+    ("candidat1@test.com", "employeur3@test.com", "Développeur·euse front-end Vue.js", 2),
+    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse PHP Symfony", 53),
+    ("candidat2@test.com", "employeur2@test.com", "Ingénieur·e cloud AWS", 3),
+    ("candidat2@test.com", "employeur1@test.com", "Administrateur·trice systèmes Linux", 21),
+    ("candidat3@test.com", "employeur2@test.com", "Data scientist junior", 10),
+    ("candidat3@test.com", "employeur3@test.com", "Développeur·euse Python Django", 5),
+]
+
 EMAILS = [person["email"] for person in CANDIDATES + EMPLOYERS]
 
 
@@ -950,13 +968,13 @@ def pdf_file(name, title, lines):
 
 
 class Command(BaseCommand):
-    help = "Create six test accounts (three candidates, three employers), their job offers and applications."
+    help = "Create six test accounts (three candidates, three employers), their job offers, applications and favorites."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help="Delete the six test accounts first, with their profiles, offers and applications.",
+            help="Delete the six test accounts first, with their profiles, offers, applications and favorites.",
         )
         parser.add_argument(
             "--force",
@@ -979,8 +997,8 @@ class Command(BaseCommand):
                 raise CommandError(
                     "The test accounts already exist: run again with --reset to replace them."
                 )
-            # The profiles, the offers, the applications, the addresses of
-            # allauth and the files (signals) go with the users
+            # The profiles, the offers, the applications, the favorites, the
+            # addresses of allauth and the files (signals) go with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -991,10 +1009,13 @@ class Command(BaseCommand):
             offers = sum(self.employer(person) for person in EMPLOYERS)
             for spec in APPLICATIONS:
                 self.application(spec)
+            for candidate, employer, title, days_ago in FAVORITES:
+                self.favorite(candidate, employer, title, days_ago)
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Created {len(EMAILS)} accounts, {offers} offers and {len(APPLICATIONS)} applications."
+                f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications "
+                f"and {len(FAVORITES)} favorites."
             )
         )
         self.stdout.write(f"Password of every account: {PASSWORD}")
@@ -1100,3 +1121,12 @@ class Command(BaseCommand):
             when = now - timedelta(days=days_ago)
             JobApplication.objects.filter(pk=application.pk).update(updated_at=when)
             application.history.filter(status=status).update(changed_at=when)
+
+    def favorite(self, candidate, employer, title, days_ago):
+        """One offer put aside by a candidate, days_ago days before today."""
+        profile = CandidateProfile.objects.get(user__email=candidate)
+        offer = JobOffer.objects.get(employer__user__email=employer, title=title)
+        favorite = Favorite.objects.create(candidate=profile, offer=offer)
+        # Written straight to the row: the model stamps today
+        when = timezone.now() - timedelta(days=days_ago)
+        Favorite.objects.filter(pk=favorite.pk).update(created_at=when)
