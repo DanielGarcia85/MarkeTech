@@ -10,8 +10,10 @@
   typed, line breaks kept. Under the heading, the way to apply: a button
   for a candidate, an invitation to log in for a visitor, and, once
   applied, the date and the state of the application sent. For the
-  employer of the offer: its state, and the way to its form and to its
-  applications.
+  employer of the offer: its state, its numbers of applications and of
+  favorites, and the way to its form and to its applications. In the
+  heading, on the right, the heart that puts the offer aside
+  (FavoriteButton).
 -->
 
 <script setup lang="ts">
@@ -23,6 +25,7 @@ import { listApplications, type Application } from "../api/applications";
 import { getOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
 import { useApplicationText } from "../applications";
+import FavoriteButton from "../components/FavoriteButton.vue";
 import { useOfferText } from "../offers";
 import { useSession, whenLoaded } from "../session";
 
@@ -95,11 +98,18 @@ onMounted(() => {
         <img v-if="offer.company.logo" :src="offer.company.logo" alt="" class="logo" />
         <span v-else class="logo-empty" aria-hidden="true">{{ initial }}</span>
       </div>
-      <div>
+      <div class="heading">
         <p class="company">{{ offer.company.name }}</p>
         <h1 class="title">{{ offer.title }}</h1>
         <p class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
       </div>
+      <!-- The heart, for a published offer: a candidate's, or a visitor's
+           way to the login page; nothing for an employer -->
+      <FavoriteButton
+        v-if="offer.status === 'published'"
+        :offer="offer"
+        @change="offer.favorite = $event"
+      />
     </header>
 
     <!-- The employer of the offer: its state, its form, its applications -->
@@ -118,6 +128,7 @@ onMounted(() => {
       >
         {{ t("myOffers.applications", offer.applications_count ?? 0) }}
       </RouterLink>
+      <span v-if="offer.status !== 'draft'" class="muted">{{ t("myOffers.favorites", offer.favorites_count ?? 0) }}</span>
     </div>
     <!-- Applying: the application sent, or the button, or the invitation
          to log in; nothing for an employer, nor once the offer is closed -->
@@ -183,6 +194,17 @@ onMounted(() => {
   display: flex;
   gap: 24px;
   align-items: flex-start;
+}
+
+/* The company, the title and the date take the room; the heart stays on
+   the right */
+.heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.muted {
+  color: var(--mt-muted);
 }
 
 .logo-box {

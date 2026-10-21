@@ -29,6 +29,7 @@ import OfferApplicationsPage from "./pages/OfferApplicationsPage.vue";
 import ReceivedApplicationsPage from "./pages/ReceivedApplicationsPage.vue";
 import ApplyPage from "./pages/ApplyPage.vue";
 import MyApplicationsPage from "./pages/MyApplicationsPage.vue";
+import MyFavoritesPage from "./pages/MyFavoritesPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import type { Role } from "./api/account";
 import { useSession, whenLoaded } from "./session";
@@ -62,6 +63,8 @@ export const router = createRouter({
     // Applying to an offer, and the applications of a candidate
     { path: "/offers/:id(\\d+)/apply", name: "apply", component: ApplyPage, meta: { requiresRole: "candidate" } },
     { path: "/candidate/applications", name: "myApplications", component: MyApplicationsPage, meta: { requiresRole: "candidate" } },
+    // The offers a candidate put aside
+    { path: "/candidate/favorites", name: "myFavorites", component: MyFavoritesPage, meta: { requiresRole: "candidate" } },
     // The offers of an employer: their list, a new one, one to change
     { path: "/employer/offers", name: "myOffers", component: MyOffersPage, meta: { requiresRole: "employer" } },
     { path: "/employer/offers/new", name: "offerNew", component: OfferFormPage, meta: { requiresRole: "employer" } },

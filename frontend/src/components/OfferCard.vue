@@ -3,11 +3,14 @@
 
   Offer card — one job offer in a list
   ───────────────────────────────────────────────────────────────────────────
-  Used by the public list and by the list of an employer. The logo of the
-  company (or its initial), the company, the title as a link to the page of
-  the offer, the place and the conditions, the salary when given, the date
-  of publication. The list of an employer asks for the state of the offer
-  as a pill, and puts its buttons in the slot under the text.
+  Used by the public list, by the favorites of a candidate and by the list
+  of an employer. The logo of the company (or its initial), the company, the
+  title as a link to the page of the offer, the place and the conditions,
+  the salary when given, the date of publication; on the right, the heart
+  (FavoriteButton), which tells the parent when the offer is put aside or
+  taken back. The list of an employer asks for the state of the offer as a
+  pill (a closed offer shows it anyway: it may sit among the favorites),
+  and puts its buttons in the slot under the text.
 -->
 
 <script setup lang="ts">
@@ -17,6 +20,7 @@ import { useI18n } from "vue-i18n";
 import type { Offer } from "../api/offers";
 import type { Country } from "../api/profile";
 import { useOfferText } from "../offers";
+import FavoriteButton from "./FavoriteButton.vue";
 
 const props = defineProps<{
   offer: Offer;
@@ -25,6 +29,9 @@ const props = defineProps<{
   // Show the state (draft, published, closed): the employer's list only
   showStatus?: boolean;
 }>();
+
+// The offer was put aside or taken back: the parent updates its copy
+defineEmits<{ favorite: [favorite: boolean] }>();
 
 const { t } = useI18n();
 const text = useOfferText();
@@ -42,7 +49,9 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
     <div class="body">
       <p class="company">
         {{ offer.company.name }}
-        <span v-if="showStatus" class="pill" :class="offer.status">{{ t("offers.status." + offer.status) }}</span>
+        <span v-if="showStatus || offer.status === 'closed'" class="pill" :class="offer.status">
+          {{ t("offers.status." + offer.status) }}
+        </span>
       </p>
       <h2 class="title">
         <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">{{ offer.title }}</RouterLink>
@@ -52,6 +61,10 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
       <p v-if="offer.published_at" class="date">{{ t("offers.publishedOn", { date: text.published(offer) }) }}</p>
       <!-- The buttons of the employer's list, when there are some -->
       <div v-if="$slots.default" class="actions"><slot /></div>
+    </div>
+    <!-- The heart: a candidate's, or a visitor's way to the login page -->
+    <div class="aside">
+      <FavoriteButton :offer="offer" @change="$emit('favorite', $event)" />
     </div>
   </article>
 </template>
@@ -97,6 +110,10 @@ const initial = computed(() => props.offer.company.name.trim().charAt(0).toUpper
 .body {
   flex: 1;
   min-width: 0;
+}
+
+.aside {
+  flex: none;
 }
 
 .company {

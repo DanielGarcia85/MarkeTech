@@ -133,6 +133,8 @@ onMounted(() => {
             {{ t("myOffers.applications", offer.applications_count) }}
           </RouterLink>
           <span v-else-if="offer.status !== 'draft'" class="none">{{ t("myOffers.applications", 0) }}</span>
+          <!-- How many candidates put the offer aside: a number, nothing to open -->
+          <span v-if="offer.status !== 'draft'" class="none">{{ t("myOffers.favorites", offer.favorites_count ?? 0) }}</span>
           <RouterLink :to="{ name: 'offerEdit', params: { id: offer.id } }" class="secondary">
             {{ t("myOffers.edit") }}
           </RouterLink>
@@ -227,7 +229,7 @@ onMounted(() => {
   color: var(--mt-error);
 }
 
-/* No application yet: a word in the place of the link */
+/* No application yet, and the number of favorites: words, not links */
 .none {
   color: var(--mt-muted);
 }

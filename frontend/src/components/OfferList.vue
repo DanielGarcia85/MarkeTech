@@ -237,7 +237,7 @@ onMounted(() => {
     <p v-if="result.count === 0" class="muted">{{ t("offers.none") }}</p>
     <ul v-else class="cards">
       <li v-for="offer in result.results" :key="offer.id">
-        <OfferCard :offer="offer" :countries="countries" />
+        <OfferCard :offer="offer" :countries="countries" @favorite="offer.favorite = $event" />
       </li>
     </ul>
 

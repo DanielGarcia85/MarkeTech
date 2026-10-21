@@ -36,6 +36,7 @@ const fr: typeof en = {
     allOffers: "Toutes les offres",
     myOffers: "Mes offres",
     myApplications: "Mes candidatures",
+    myFavorites: "Mes favoris",
     receivedApplications: "Candidatures reçues",
     account: "Mon compte",
     profile: "Profil",
@@ -404,6 +405,7 @@ const fr: typeof en = {
     needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
     companyLink: "Compléter mon profil",
     applications: "Aucune candidature | {count} candidature | {count} candidatures",
+    favorites: "Aucun favori | {count} favori | {count} favoris",
   },
 
   // The form of an offer, new or changed
@@ -502,6 +504,18 @@ const fr: typeof en = {
       accepted: "Accepter la candidature de {name} ?",
       rejected: "Refuser la candidature de {name} ?",
     },
+  },
+
+  // The heart on the offers, and the favorites of a candidate
+  favorites: {
+    add: "Ajouter à mes favoris",
+    remove: "Retirer de mes favoris",
+    loginToSave: "Connectez-vous pour mettre cette offre de côté",
+  },
+  myFavorites: {
+    title: "Mes favoris",
+    none: "Aucune offre mise de côté pour l'instant. Le cœur sur une offre la garde ici.",
+    loadFailed: "Vos favoris n'ont pas pu être chargés.",
   },
 
   // All the applications received by an employer, whatever the offer

@@ -34,6 +34,7 @@ export default {
     allOffers: "All the offers",
     myOffers: "My offers",
     myApplications: "My applications",
+    myFavorites: "My favourites",
     receivedApplications: "Applications received",
     account: "My account",
     profile: "Profile",
@@ -402,6 +403,7 @@ export default {
     needsCompany: "Give the name of your company in your profile before publishing.",
     companyLink: "Complete my profile",
     applications: "No application | {count} application | {count} applications",
+    favorites: "No favourite | {count} favourite | {count} favourites",
   },
 
   // The form of an offer, new or changed
@@ -500,6 +502,18 @@ export default {
       accepted: "Accept the application of {name}?",
       rejected: "Reject the application of {name}?",
     },
+  },
+
+  // The heart on the offers, and the favorites of a candidate
+  favorites: {
+    add: "Add to my favourites",
+    remove: "Remove from my favourites",
+    loginToSave: "Log in to put this offer aside",
+  },
+  myFavorites: {
+    title: "My favourites",
+    none: "No offer put aside yet. The heart on an offer keeps it here.",
+    loadFailed: "Your favourites could not be loaded.",
   },
 
   // All the applications received by an employer, whatever the offer
