@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     "applications",
     # Favorites: the offers a candidate puts aside
     "favorites",
+    # Messaging: the messages between a candidate and an employer on an application
+    "messaging",
     # Demo: the seed_demo command only, test data for a development database
     "demo",
 ]
