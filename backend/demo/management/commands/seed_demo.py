@@ -51,7 +51,8 @@ Safety
 ──────
 With DEBUG off (a server), the command runs only with --force, given on
 purpose: it deletes and makes again the six accounts and all that hangs on
-them. The accounts get no usable password there.
+them. The accounts get no usable password there, and the output lists no
+address: it goes to the journal of the server.
 """
 
 from datetime import timedelta
@@ -1348,12 +1349,15 @@ class Command(BaseCommand):
                 f"{len(FAVORITES)} favorites and {messages} messages."
             )
         )
+        # The addresses are listed in development only: on a server, the
+        # output goes to the journal of the nightly timer, and the logs hold
+        # no e-mail address (fictitious ones included)
         if settings.DEBUG:
             self.stdout.write(f"Password of every account: {PASSWORD}")
+            for email in EMAILS:
+                self.stdout.write(f"  {email}")
         else:
             self.stdout.write("No usable password: the demo accounts open from the login page.")
-        for email in EMAILS:
-            self.stdout.write(f"  {email}")
 
     # ── The rows ──────────────────────────────────────────────────────
 
