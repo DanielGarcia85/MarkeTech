@@ -9,7 +9,8 @@
   contact details, the date, the state as a pill and the states gone
   through, the files as links, the way to the conversation with the
   candidate (while the application is in progress, or once a conversation
-  exists, with its unread messages), and the moves of the state as buttons
+  exists, with its unread messages and its appointments that bring news),
+  and the moves of the state as buttons
   (all but the current state), which the page carries out: the card only
   says which one was asked.
 -->
@@ -26,7 +27,8 @@ defineProps<{
   busy?: boolean;
   // The reason of a refused move, shown under the buttons
   error?: string;
-  // The unread messages of its conversation; undefined when it has none
+  // The unread messages of its conversation and its appointments that
+  // bring news; undefined when it has neither
   unread?: number;
 }>();
 

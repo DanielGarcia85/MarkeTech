@@ -8,7 +8,8 @@
   before and after logging in; a logged-in user gets the links of their
   role (with the number of applications that bring news: arrived for an
   employer, moved for a candidate), their conversations (open and closed,
-  each with the number of unread messages) and their account (the
+  each with the number of unread messages) and their appointments (with
+  the number that bring news), and their account (the
   profile, then the e-mail address and the password), each link with a
   small drawing before it (Icon). The counts are kept fresh by
   notifications.ts. One group
@@ -63,6 +64,10 @@ watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { i
       <RouterLink :to="{ name: 'closedConversations' }">
         <Icon name="archive" />{{ t("nav.closedConversations") }}
         <span v-if="counts.closed" class="count">{{ counts.closed }}</span>
+      </RouterLink>
+      <RouterLink :to="{ name: 'appointments' }">
+        <Icon name="calendar" />{{ t("nav.appointments") }}
+        <span v-if="counts.appointments" class="count">{{ counts.appointments }}</span>
       </RouterLink>
     </div>
     <div v-if="session.user" class="block">

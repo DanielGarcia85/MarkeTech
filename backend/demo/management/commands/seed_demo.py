@@ -1,7 +1,7 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts, offers, applications, favorites and messages for a development database
+Seed demo — test accounts, offers, applications, favorites, messages and appointments
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
@@ -11,8 +11,9 @@ candidates with a CV and documents, three employers with their company and
 its logo, ten job offers per employer spread over the cities, the
 contracts, the salaries and the last two months — eight published, one
 draft and one closed each — thirteen applications in every state, with
-their history, eight favorites, and conversations on the applications that
-were taken up: open ones, closed ones, some with unread messages. The two
+their history, eight favorites, conversations on the applications that
+were taken up: open ones, closed ones, some with unread messages, and six
+appointments in every state, past and to come. The two
 accounts to show the site with are candidat1@example.com (Léa Martin) and
 employeur1@example.com (Marc Rochat, Quorvane SA), between whom most of it
 happens (decision of 21.10.2026). Everything is invented, the files included:
@@ -35,8 +36,9 @@ other accounts are there to be seen, not to be opened.
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
                                         profiles, offers, applications,
-                                        favorites, messages and files go
-                                        with them; the other accounts stay)
+                                        favorites, messages, appointments
+                                        and files go with them; the other
+                                        accounts stay)
     python manage.py seed_demo --force  on a server (DEBUG off)
 
 Why a command and not a fixture
@@ -71,6 +73,7 @@ from PIL import Image, ImageDraw, ImageFont
 from accounts.models import User
 from applications.models import Attachment, JobApplication
 from applications.serializers import copy_of
+from appointments.models import Appointment
 from favorites.models import Favorite
 from messaging.models import Message
 from offers.models import JobOffer
@@ -856,6 +859,12 @@ EMPLOYERS = [
 # when it happened, except the last one of an application marked "unseen":
 # still news for its recipient, the employer for an application just
 # received, the candidate for a move.
+#
+# Its appointments (decisions of 22.10.2026): proposed (days ago, time),
+# starting (days ago, time; negative for days to come), their length,
+# place and note, their state, the answer and when it came. Each is seen by
+# its recipient an hour after its last change, except those marked
+# "unseen": a proposal for the candidate, an answer for the employer.
 
 APPLICATIONS = [
     {
@@ -914,6 +923,19 @@ APPLICATIONS = [
             ),
         ],
         "unread": 0,
+        "appointments": [
+            {
+                # The interview of that Tuesday, past
+                "created": (6, "09:02"),
+                "starts": (4, "10:00"),
+                "duration": 60,
+                "place": "Quorvane SA, Rue de Lausanne 45, 1201 Genève",
+                "note": "Entretien avec moi et la responsable de l'équipe plateforme.",
+                "status": "accepted",
+                "response": "Avec plaisir, je serai là mardi à 10 h.",
+                "answered": (6, "09:46"),
+            },
+        ],
     },
     {
         # The liveliest conversation, open, its last two messages unread by
@@ -981,6 +1003,33 @@ APPLICATIONS = [
             ),
         ],
         "unread": 2,
+        "appointments": [
+            {
+                # The first video call, past
+                "created": (3, "09:00"),
+                "starts": (2, "14:30"),
+                "duration": 30,
+                "place": "Visioconférence, lien envoyé la veille",
+                "note": "Premier échange : votre parcours et le poste.",
+                "status": "accepted",
+                "response": "Parfait, à jeudi 14 h 30.",
+                "answered": (3, "09:30"),
+            },
+            {
+                # The meeting with the team, to come, not answered yet:
+                # news for the candidate
+                "created": (1, "18:10"),
+                "starts": (-4, "10:00"),
+                "duration": 90,
+                "place": "Quorvane SA, Rue de Lausanne 45, 1201 Genève",
+                "note": (
+                    "Rencontre avec l'équipe et retour sur votre exercice technique. Prévoyez "
+                    "votre ordinateur portable."
+                ),
+                "status": "pending",
+                "unseen": True,
+            },
+        ],
     },
     {
         # Open, the last two messages of the candidate unread by the employer
@@ -1028,6 +1077,36 @@ APPLICATIONS = [
             ),
         ],
         "unread": 2,
+        "appointments": [
+            {
+                # Declined: the candidate is not free at that time
+                "created": (4, "16:00"),
+                "starts": (-6, "09:30"),
+                "duration": 45,
+                "place": "Par téléphone, je vous appelle",
+                "status": "declined",
+                "response": (
+                    "Merci pour la proposition. Je suis en formation ce matin-là ; l'après-midi du "
+                    "même jour me conviendrait très bien."
+                ),
+                "answered": (3, "09:30"),
+            },
+            {
+                # Proposed again for the afternoon, accepted: news for the employer
+                "created": (3, "11:00"),
+                "starts": (-6, "16:00"),
+                "duration": 45,
+                "place": "Par téléphone, je vous appelle",
+                "note": "Échange avec le responsable QA sur vos parcours Playwright.",
+                "status": "accepted",
+                "response": (
+                    "16 h me convient très bien, merci. Je reste joignable au numéro de mon "
+                    "profil."
+                ),
+                "answered": (1, "12:05"),
+                "unseen": True,
+            },
+        ],
     },
     {
         # Taken up, nobody has written yet: the conversation is open, empty
@@ -1073,6 +1152,21 @@ APPLICATIONS = [
             ),
         ],
         "unread": 0,
+        "appointments": [
+            {
+                # Accepted, then cancelled by the employer before the decision
+                "created": (14, "19:30"),
+                "starts": (11, "14:00"),
+                "duration": 60,
+                "place": "Quorvane SA, Rue de Lausanne 45, 1201 Genève",
+                "status": "cancelled",
+                "response": (
+                    "Je dois malheureusement annuler notre rendez-vous de jeudi : nous avançons "
+                    "avec un autre profil. Je vous écris plus en détail rapidement."
+                ),
+                "answered": (12, "08:30"),
+            },
+        ],
     },
     {
         "candidate": "candidat1@example.com",
@@ -1259,6 +1353,19 @@ def pdf_file(name, title, lines):
 GENEVA = ZoneInfo("Europe/Zurich")
 
 
+def at(days_ago, time):
+    """The time "HH:MM" in Geneva of the day days_ago days before today,
+    or after it when days_ago is negative: the start of an appointment.
+    Always on a working day, the seed being made again every night: a
+    Saturday or a Sunday moves back to the Friday for a day past, on to the
+    Monday for a day to come."""
+    hour, minute = (int(part) for part in time.split(":"))
+    day = timezone.localtime(timezone=GENEVA) - timedelta(days=days_ago)
+    while day.weekday() >= 5:
+        day += timedelta(days=1 if days_ago < 0 else -1)
+    return day.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+
 def moment(days_ago, time):
     """The time "HH:MM" in Geneva of the day days_ago days before today,
     never later than a few minutes ago."""
@@ -1293,7 +1400,7 @@ def logo_file(initials, colour):
 class Command(BaseCommand):
     help = (
         "Create six test accounts (three candidates, three employers), their job offers, "
-        "applications, favorites and conversations."
+        "applications, favorites, conversations and appointments."
     )
 
     def add_arguments(self, parser):
@@ -1302,7 +1409,7 @@ class Command(BaseCommand):
             action="store_true",
             help=(
                 "Delete the six test accounts first, with their profiles, offers, applications, "
-                "favorites and messages."
+                "favorites, messages and appointments."
             ),
         )
         parser.add_argument(
@@ -1327,8 +1434,8 @@ class Command(BaseCommand):
                     "The test accounts already exist: run again with --reset to replace them."
                 )
             # The profiles, the offers, the applications, the favorites, the
-            # messages, the addresses of allauth and the files (signals) go
-            # with the users
+            # messages, the appointments, the addresses of allauth and the
+            # files (signals) go with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -1343,10 +1450,11 @@ class Command(BaseCommand):
                 self.favorite(candidate, employer, title, days_ago)
 
         messages = sum(len(spec.get("messages", [])) for spec in APPLICATIONS)
+        appointments = sum(len(spec.get("appointments", [])) for spec in APPLICATIONS)
         self.stdout.write(
             self.style.SUCCESS(
                 f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications, "
-                f"{len(FAVORITES)} favorites and {messages} messages."
+                f"{len(FAVORITES)} favorites, {messages} messages and {appointments} appointments."
             )
         )
         # The addresses are listed in development only: on a server, the
@@ -1471,6 +1579,8 @@ class Command(BaseCommand):
         if spec.get("unseen"):
             application.history.filter(pk=application.history.last().pk).update(seen_at=None)
         self.conversation(application, spec.get("messages", []), spec.get("unread", 0))
+        for appointment in spec.get("appointments", []):
+            self.appointment(application, appointment)
 
     def conversation(self, application, messages, unread):
         """The messages of an application, dated, read an hour after they
@@ -1488,6 +1598,27 @@ class Command(BaseCommand):
             read = None if index >= len(messages) - unread else min(sent + timedelta(hours=1), now)
             # Written straight to the row: the model stamps today
             Message.objects.filter(pk=message.pk).update(sent_at=sent, read_at=read)
+
+    def appointment(self, application, spec):
+        """One appointment of an application, dated, seen by its recipient an
+        hour after its last change unless it is to stay unseen."""
+        now = timezone.now()
+        created = moment(*spec["created"])
+        answered = moment(*spec["answered"]) if spec.get("answered") else None
+        seen = None if spec.get("unseen") else min((answered or created) + timedelta(hours=1), now)
+        appointment = Appointment.objects.create(
+            application=application,
+            starts_at=at(*spec["starts"]),
+            duration=spec["duration"],
+            place=spec["place"],
+            note=spec.get("note", ""),
+            status=spec["status"],
+            response=spec.get("response", ""),
+            answered_at=answered,
+            seen_at=seen,
+        )
+        # Written straight to the row: the model stamps today
+        Appointment.objects.filter(pk=appointment.pk).update(created_at=created)
 
     def favorite(self, candidate, employer, title, days_ago):
         """One offer put aside by a candidate, days_ago days before today."""

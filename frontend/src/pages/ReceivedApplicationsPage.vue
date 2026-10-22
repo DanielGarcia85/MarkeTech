@@ -15,7 +15,8 @@
   form, and a line above the title leads back to every application).
   Another employer's offer is "not found". The moves of the state are the
   same for every card (ApplicationCard, shared composable); each card leads
-  to its conversation, with its unread messages, read with the list.
+  to its conversation, with its unread messages, read with the list, and
+  its appointments that bring news.
 -->
 
 <script setup lang="ts">
@@ -27,7 +28,7 @@ import { listApplications, type Application, type ApplicationStatus } from "../a
 import { listConversations } from "../api/messaging";
 import { getOffer, type Offer } from "../api/offers";
 import { useApplicationMoves, useApplicationText } from "../applications";
-import { refreshNotifications } from "../notifications";
+import { newsOf, refreshNotifications } from "../notifications";
 import ApplicationCard from "../components/ApplicationCard.vue";
 import EmptyState from "../components/EmptyState.vue";
 
@@ -171,7 +172,7 @@ onMounted(load);
               :application="application"
               :busy="busy === application.id"
               :error="errors[application.id]"
-              :unread="unread[application.id]"
+              :unread="newsOf(unread[application.id], application.id)"
               @move="move(application, $event)"
             />
           </li>

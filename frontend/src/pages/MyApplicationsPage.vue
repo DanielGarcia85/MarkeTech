@@ -9,7 +9,8 @@
   offer and its company, the date sent, the state as a pill and
   the states gone through, the files sent, a link to the offer, the way to
   the conversation with the employer (while the application is in
-  progress, or once a conversation exists, with its unread messages), and
+  progress, or once a conversation exists, with its unread messages and
+  its appointments that bring news), and
   the withdrawal while the employer has not decided, after a confirmation.
 -->
 
@@ -21,7 +22,7 @@ import { canWithdraw, listApplications, withdraw, type Application } from "../ap
 import { listConversations } from "../api/messaging";
 import { useApplicationText } from "../applications";
 import EmptyState from "../components/EmptyState.vue";
-import { refreshNotifications } from "../notifications";
+import { newsOf, refreshNotifications } from "../notifications";
 import { confirm } from "../confirm";
 
 const { t } = useI18n();
@@ -123,12 +124,14 @@ onMounted(load);
             {{ t("myApplications.offerLink") }}
           </RouterLink>
           <RouterLink
-            v-if="application.status === 'in_progress' || unread[application.id] !== undefined"
+            v-if="application.status === 'in_progress' || newsOf(unread[application.id], application.id) !== undefined"
             :to="{ name: 'conversation', params: { id: application.id } }"
             class="secondary messages"
           >
             {{ t("messaging.button") }}
-            <span v-if="unread[application.id]" class="count">{{ unread[application.id] }}</span>
+            <span v-if="newsOf(unread[application.id], application.id)" class="count">
+              {{ newsOf(unread[application.id], application.id) }}
+            </span>
           </RouterLink>
           <button
             v-if="canWithdraw(application)"

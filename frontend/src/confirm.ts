@@ -6,8 +6,9 @@
 // confirm(message, action) and awaits the answer; ConfirmDialog.vue, placed
 // once in App.vue, shows the question and gives the answer. One question at
 // a time: the state below holds the one being asked, or nothing. A question
-// may also ask for a text, optional (confirmWithText): the message of the
-// employer that goes with a move of an application.
+// may also ask for a text (confirmWithText): optional, the message of the
+// employer that goes with a move of an application; or required, the
+// answer of a candidate to an appointment, the action waiting for it.
 
 import { reactive, readonly, ref } from "vue";
 
@@ -15,8 +16,10 @@ type Question = {
   // What is asked, and the label of the button that says yes
   message: string;
   action: string;
-  // The label of the text asked for, when one is
+  // The label of the text asked for, when one is, and whether the action
+  // waits for it
   textLabel?: string;
+  required?: boolean;
   // Settles the promise given to the caller
   resolve: (yes: boolean) => void;
 };
@@ -40,14 +43,20 @@ export function confirm(message: string, action: string): Promise<boolean> {
 }
 
 // Asks the question with a text field under it; resolves with the text
-// (possibly empty) for the action, null for cancel
-export function confirmWithText(message: string, action: string, textLabel: string): Promise<string | null> {
+// (possibly empty, unless required) for the action, null for cancel
+export function confirmWithText(
+  message: string,
+  action: string,
+  textLabel: string,
+  required = false,
+): Promise<string | null> {
   draft.value = "";
   return new Promise((resolve) => {
     state.question = {
       message,
       action,
       textLabel,
+      required,
       resolve: (yes) => resolve(yes ? draft.value.trim() : null),
     };
   });

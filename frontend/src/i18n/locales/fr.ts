@@ -45,6 +45,7 @@ const fr: typeof en = {
     messaging: "Messagerie",
     openConversations: "Ouvertes",
     closedConversations: "Closes",
+    appointments: "Rendez-vous",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -168,7 +169,7 @@ const fr: typeof en = {
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, les documents de votre profil que vous y joignez (copiés au moment de l'envoi : modifier votre profil ensuite ne change pas ce que l'employeur a reçu), la date, le statut (reçue, en cours, acceptée, refusée) et l'historique de ses changements. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre ; celui-ci voit aussi vos prénom, nom, adresse e-mail, téléphone et ville, lus sur votre compte et votre profil. Vous pouvez la retirer tant que l'employeur n'a pas décidé : elle est alors supprimée avec ses fichiers." },
           { term: "Messages", text: "Échangés entre un candidat et l'employeur de l'offre au sujet d'une candidature : le texte, la date d'envoi et celle de la lecture par l'autre. La conversation s'ouvre quand l'employeur met la candidature en cours ; elle reste lisible, sans plus pouvoir écrire, une fois la candidature acceptée ou refusée. Les deux participants peuvent la lire, personne d'autre. Elle est supprimée avec la candidature (retrait par le candidat, suppression d'un compte ou d'une offre). Aucun e-mail ne signale un nouveau message : le site l'indique quand vous vous connectez." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté, avec la date. Lui seul les voit ; l'employeur d'une offre sait combien de candidats l'ont mise de côté, jamais lesquels. Un favori reste en place quand l'offre est clôturée, jusqu'à ce que le candidat le retire." },
-          { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature : date et heure, description, réponse du candidat et message qui l'accompagne." },
+          { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature en cours : date, heure et durée, lieu, précisions éventuelles ; puis la réponse du candidat et son message, ou l'annulation par l'employeur et son message éventuel." },
           { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom et votre nom, visibles par tous les visiteurs." },
           { term: "Données techniques", text: "Le serveur enregistre les requêtes qu'il reçoit : adresse IP, page demandée, date, navigateur. Ces journaux ne servent qu'à la sécurité et au dépannage, et s'effacent automatiquement à mesure que de plus récents les remplacent." },
         ],
@@ -571,6 +572,65 @@ const fr: typeof en = {
       received: "La conversation s'ouvrira quand l'employeur prendra la candidature en charge.",
       accepted: "Conversation close : la candidature a été acceptée.",
       rejected: "Conversation close : la candidature a été refusée.",
+    },
+  },
+
+  // Appointments: the cards in the conversation, the proposal, the calendar
+  appointments: {
+    title: "Rendez-vous",
+    new: "Nouveau",
+    pageTitle: "Mes rendez-vous",
+    intro: {
+      candidate: "Les rendez-vous proposés par les employeurs, à accepter ou refuser depuis la conversation ou ici.",
+      employer: "Les rendez-vous proposés à vos candidats. Proposez-en un depuis la conversation d'une candidature en cours.",
+    },
+    loadFailed: "Les rendez-vous n'ont pas pu être chargés.",
+    coming: "À venir",
+    noneComing: "Aucun rendez-vous à venir.",
+    clickHint: "Cliquez sur un rendez-vous du calendrier pour en voir le détail.",
+    openConversation: "Ouvrir la conversation",
+    proposed: "Proposé le {date}",
+    propose: "Proposer un rendez-vous",
+    accept: "Accepter",
+    decline: "Refuser",
+    cancel: "Annuler le rendez-vous",
+    answerLabel: "Votre message (obligatoire)",
+    cancelLabel: "Un mot pour le candidat (facultatif)",
+    confirm: {
+      accept: "Accepter le rendez-vous du {when} ?",
+      decline: "Refuser le rendez-vous du {when} ?",
+      cancel: "Annuler le rendez-vous du {when} ?",
+    },
+    answer: {
+      candidate: "Votre réponse",
+      employer: "Réponse du candidat",
+    },
+    cancellation: {
+      candidate: "Message de l'employeur",
+      employer: "Votre message",
+    },
+    state: {
+      pending: "En attente",
+      accepted: "Accepté",
+      declined: "Refusé",
+      cancelled: "Annulé",
+      expired: "Expiré",
+    },
+    duration: {
+      30: "30 minutes",
+      45: "45 minutes",
+      60: "1 heure",
+      90: "1 heure 30",
+    },
+    form: {
+      title: "Proposer un rendez-vous",
+      when: "Date et heure",
+      whenMissing: "Indiquez une date et une heure.",
+      duration: "Durée",
+      place: "Lieu",
+      placeHint: "Adresse, lien de visio ou « par téléphone »",
+      note: "Précisions (facultatif)",
+      send: "Proposer",
     },
   },
 
