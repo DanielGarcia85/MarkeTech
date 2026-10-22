@@ -9,7 +9,7 @@ export default {
   // Tagline and notice of the application
   app: {
     tagline: "Tech jobs and student jobs for recent graduates and students.",
-    notice: "Demo site, under construction",
+    notice: "Demo site",
   },
 
   // The two roles, as shown to the logged-in user (header menu, profile)

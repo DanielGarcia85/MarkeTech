@@ -174,6 +174,8 @@ class SeedDemoTests(TestCase):
         out = StringIO()
         call_command("seed_demo", "--force", stdout=out)
         self.assertNotIn("Demo-1234", out.getvalue())
+        # Nor any address: the output goes to the journal of the server
+        self.assertNotIn("@", out.getvalue())
         self.assertFalse(any(user.has_usable_password() for user in User.objects.all()))
         # The two demo accounts, the ones with the data
         demo = sorted(User.objects.filter(is_demo=True).values_list("email", flat=True))
