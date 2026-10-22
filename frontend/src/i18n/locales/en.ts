@@ -20,7 +20,7 @@ export default {
 
   // Header: session state and links of the account
   header: {
-    demo: "Demo",
+    demo: "Try the demo",
     signup: "Sign up",
     login: "Log in",
     profile: "My profile",

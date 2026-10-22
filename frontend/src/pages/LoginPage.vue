@@ -13,7 +13,7 @@
   home). Beside the form, on its right, a box to try the site without an
   account (above it on a narrow window): two buttons open the demo
   candidate or the demo employer (api/demo.ts), shared accounts made again
-  every night. The link "Demo" of the header leads here.
+  every night. The link "Try the demo" of the header leads here.
 -->
 
 <script setup lang="ts">
