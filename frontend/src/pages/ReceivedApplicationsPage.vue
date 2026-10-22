@@ -27,6 +27,7 @@ import { listApplications, type Application, type ApplicationStatus } from "../a
 import { listConversations } from "../api/messaging";
 import { getOffer, type Offer } from "../api/offers";
 import { useApplicationMoves, useApplicationText } from "../applications";
+import { refreshNotifications } from "../notifications";
 import ApplicationCard from "../components/ApplicationCard.vue";
 import EmptyState from "../components/EmptyState.vue";
 
@@ -100,6 +101,8 @@ async function load(): Promise<void> {
       ...(offerId.value ? { offer: offerId.value } : {}),
       ...(status.value ? { status: status.value } : {}),
     });
+    // The news listed are seen now: the side bar counts again
+    refreshNotifications();
   } catch {
     loadFailed.value = true;
   }

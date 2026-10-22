@@ -447,6 +447,8 @@ export default {
 
   // Job applications: what the candidate's and the employer's pages share
   applications: {
+    new: "New",
+    updated: "Updated",
     status: {
       received: "Received",
       in_progress: "In progress",
