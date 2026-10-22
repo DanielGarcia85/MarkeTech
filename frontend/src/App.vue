@@ -9,7 +9,8 @@
   confirmation dialog that any page may open. The body stretches so that
   the footer stays at the bottom of the window, even on a short page. A
   demo account sees a band under the header (shared, made again every
-  night). Every page is declared in router.ts.
+  night), kept at the top of the window with it. Every page is declared
+  in router.ts.
 -->
 
 <script setup lang="ts">
@@ -30,8 +31,12 @@ loadSession();
 
 <template>
   <div class="shell">
-    <AppHeader />
-    <p v-if="session.user?.is_demo" class="demo-band">{{ t("demo.band") }}</p>
+    <!-- The header and the band of a demo account stay at the top of the
+         window together while the page scrolls -->
+    <div class="top">
+      <AppHeader />
+      <p v-if="session.user?.is_demo" class="demo-band">{{ t("demo.band") }}</p>
+    </div>
     <div class="body">
       <!-- The navigation, before the page: the offers for everyone, more
            for a logged-in user -->
@@ -47,6 +52,14 @@ loadSession();
 </template>
 
 <style scoped>
+/* The header and the band, fixed together at the top of the window while
+   the page scrolls under them: drawn above the page */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 /* A demo account: a thin band of the accent under the header */
 .demo-band {
   margin: 0;
