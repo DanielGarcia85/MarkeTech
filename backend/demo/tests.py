@@ -30,6 +30,7 @@ from django.utils import timezone
 
 from accounts.models import User
 from applications.models import Attachment, JobApplication, StatusChange
+from appointments.models import Appointment
 from demo.management.commands.seed_demo import APPLICATIONS, FAVORITES
 from favorites.models import Favorite
 from messaging.models import Message
@@ -155,6 +156,34 @@ class SeedDemoTests(TestCase):
         employer.force_login(User.objects.get(email="employeur1@example.com"))
         self.assertEqual(employer.get("/api/applications/unseen/").json(), {"count": 2})
         self.assertEqual(candidate.get("/api/applications/unseen/").json(), {"count": 1})
+
+    @override_settings(DEBUG=True)
+    def test_seed_demo_writes_the_appointments(self):
+        call_command("seed_demo", stdout=StringIO())
+        proposed = sum(len(spec.get("appointments", [])) for spec in APPLICATIONS)
+        self.assertEqual(Appointment.objects.count(), proposed)
+        # Every state, past and to come, never proposed in the future
+        self.assertEqual(
+            sorted(set(Appointment.objects.values_list("status", flat=True))),
+            ["accepted", "cancelled", "declined", "pending"],
+        )
+        now = timezone.now()
+        self.assertTrue(Appointment.objects.filter(starts_at__lt=now).exists())
+        self.assertTrue(Appointment.objects.filter(starts_at__gt=now).exists())
+        self.assertFalse(Appointment.objects.filter(created_at__gt=now).exists())
+        # Only on applications taken up, answered after proposed
+        self.assertFalse(Appointment.objects.filter(application__status="received").exists())
+        for appointment in Appointment.objects.exclude(answered_at=None):
+            self.assertLess(appointment.created_at, appointment.answered_at)
+        # A proposal waiting for Léa, an answer waiting for Quorvane
+        candidate, employer = Client(), Client()
+        candidate.force_login(User.objects.get(email="candidat1@example.com"))
+        employer.force_login(User.objects.get(email="employeur1@example.com"))
+        self.assertEqual(candidate.get("/api/appointments/unseen/").json()["count"], 1)
+        self.assertEqual(employer.get("/api/appointments/unseen/").json()["count"], 1)
+        states = [a["state"] for a in candidate.get("/api/appointments/").json()]
+        self.assertEqual(len(states), proposed)
+        self.assertNotIn("expired", states)
 
     @override_settings(DEBUG=True)
     def test_seed_demo_runs_once_unless_reset(self):
