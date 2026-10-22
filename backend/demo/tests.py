@@ -141,6 +141,18 @@ class SeedDemoTests(TestCase):
         self.assertEqual(len(employer.get("/api/messages/").json()), 6)
 
     @override_settings(DEBUG=True)
+    def test_seed_demo_leaves_some_news_unseen(self):
+        call_command("seed_demo", stdout=StringIO())
+        # Two applications just received for Lémantech, one move for Léa
+        unseen = [spec for spec in APPLICATIONS if spec.get("unseen")]
+        self.assertEqual(StatusChange.objects.filter(seen_at=None).count(), len(unseen))
+        candidate, employer = Client(), Client()
+        candidate.force_login(User.objects.get(email="candidat1@test.com"))
+        employer.force_login(User.objects.get(email="employeur1@test.com"))
+        self.assertEqual(employer.get("/api/applications/unseen/").json(), {"count": 2})
+        self.assertEqual(candidate.get("/api/applications/unseen/").json(), {"count": 1})
+
+    @override_settings(DEBUG=True)
     def test_seed_demo_runs_once_unless_reset(self):
         call_command("seed_demo", stdout=StringIO())
         with self.assertRaises(CommandError):

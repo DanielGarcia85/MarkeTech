@@ -50,6 +50,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
 from PIL import Image, ImageDraw, ImageFont
 
@@ -831,6 +832,11 @@ EMPLOYERS = [
 # the decision, as the API writes them. The last "unread" messages are left
 # unread by the other participant, the others read an hour after they were
 # sent.
+#
+# Its news (decisions of 22.10.2026): every line of its history is seen
+# when it happened, except the last one of an application marked "unseen":
+# still news for its recipient, the employer for an application just
+# received, the candidate for a move.
 
 APPLICATIONS = [
     {
@@ -841,6 +847,7 @@ APPLICATIONS = [
         "letter": True,
         "documents": ["Diplome_HEG.pdf"],
         "moves": [],
+        "unseen": True,
     },
     {
         "candidate": "candidat1@test.com",
@@ -1012,6 +1019,7 @@ APPLICATIONS = [
         "letter": True,
         "documents": ["Certificat_travail.pdf"],
         "moves": [("in_progress", 1)],
+        "unseen": True,
     },
     {
         # Rejected with a last message: closed, read only
@@ -1064,6 +1072,7 @@ APPLICATIONS = [
         "letter": True,
         "documents": ["Certificat_CFC.pdf"],
         "moves": [],
+        "unseen": True,
     },
     {
         "candidate": "candidat2@test.com",
@@ -1392,8 +1401,9 @@ class Command(BaseCommand):
     def application(self, spec):
         """One application, its files copied from the profile like the API
         does (the letter written here), dated days_ago days before today,
-        then moved through its states, each dated too, then its
-        conversation, if any."""
+        then moved through its states, each dated too, its news seen but
+        the last one when it is to stay unseen, then its conversation, if
+        any."""
         profile = CandidateProfile.objects.get(user__email=spec["candidate"])
         offer = JobOffer.objects.get(employer__user__email=spec["employer"], title=spec["offer"])
         name = profile.user.get_full_name()
@@ -1427,6 +1437,11 @@ class Command(BaseCommand):
             when = now - timedelta(days=days_ago)
             JobApplication.objects.filter(pk=application.pk).update(updated_at=when)
             application.history.filter(status=status).update(changed_at=when)
+        # The news: seen when they happened, the last one left unseen when
+        # the spec says so
+        application.history.update(seen_at=F("changed_at"))
+        if spec.get("unseen"):
+            application.history.filter(pk=application.history.last().pk).update(seen_at=None)
         self.conversation(application, spec.get("messages", []), spec.get("unread", 0))
 
     def conversation(self, application, messages, unread):
