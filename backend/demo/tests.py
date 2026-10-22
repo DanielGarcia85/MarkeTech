@@ -216,7 +216,11 @@ class DemoAccountTests(TestCase):
 
     def test_a_visitor_opens_a_demo_account_by_its_role(self):
         client = self.client_with_token()
+        # Not without the terms accepted
         response = self.post(client, "/api/demo/login/", {"role": "employer"})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(list(response.json()), ["terms"])
+        response = self.post(client, "/api/demo/login/", {"role": "employer", "terms": True})
         self.assertEqual(response.json(), {"email": "employeur1@example.com", "role": "employer"})
         session = client.get("/_allauth/browser/v1/auth/session").json()
         self.assertEqual(session["data"]["user"]["email"], "employeur1@example.com")
@@ -226,9 +230,11 @@ class DemoAccountTests(TestCase):
         # it again from the cookie at each request (api/http.ts)
         client.defaults["HTTP_X_CSRFTOKEN"] = client.cookies["csrftoken"].value
         # Another role, or no demo account of that role: not found
-        self.assertEqual(self.post(client, "/api/demo/login/", {"role": "admin"}).status_code, 404)
+        admin = {"role": "admin", "terms": True}
+        self.assertEqual(self.post(client, "/api/demo/login/", admin).status_code, 404)
         User.objects.filter(pk=self.candidate.pk).update(is_demo=False)
-        self.assertEqual(self.post(client, "/api/demo/login/", {"role": "candidate"}).status_code, 404)
+        candidate = {"role": "candidate", "terms": True}
+        self.assertEqual(self.post(client, "/api/demo/login/", candidate).status_code, 404)
 
     def test_a_demo_account_keeps_its_address_and_password(self):
         client = self.client_with_token(self.candidate)

@@ -14,15 +14,18 @@ them, and it reaches nothing else.
 
 Route (demo/urls.py, under /api/)
 ─────────────────────────────────
-  POST  demo/login/   {role: "candidate" or "employer"}: the session is
-                      opened on the demo account of that role, 200 with its
-                      address and role; 404 when there is none (a database
-                      without the demo, or another role)
+  POST  demo/login/   {role: "candidate" or "employer", terms: true}: the
+                      session is opened on the demo account of that role,
+                      200 with its address and role; 400 without the terms
+                      accepted (the box of the login page); 404 when there
+                      is no such account (a database without the demo, or
+                      another role)
 """
 
 from django.contrib.auth import login
 from django.http import Http404
 from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -35,6 +38,12 @@ class DemoLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        # Trying the demo is using the site: its terms are accepted first,
+        # as at sign-up (decision of 22.10.2026). Nothing is recorded: the
+        # account is shared, the acceptance belongs to no one in particular
+        if request.data.get("terms") is not True:
+            message = "Accept the terms of use to try the demo."
+            raise ValidationError({"terms": [message]})
         role = request.data.get("role")
         account = User.objects.filter(is_demo=True, is_active=True, role=role).first()
         if role not in User.Role.values or account is None:
