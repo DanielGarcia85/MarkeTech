@@ -594,6 +594,7 @@ const fr: typeof en = {
     accept: "Accepter",
     decline: "Refuser",
     cancel: "Annuler le rendez-vous",
+    addToCalendar: "Ajouter à mon agenda",
     answerLabel: "Votre message (obligatoire)",
     cancelLabel: "Un mot pour le candidat (facultatif)",
     confirm: {
