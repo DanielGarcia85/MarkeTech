@@ -45,6 +45,12 @@ class User(AbstractUser):
     # for an account created before the terms existed, or in the admin site
     terms_accepted_at = models.DateTimeField(null=True, blank=True)
 
+    # An account of the public demonstration, made by seed_demo: anyone may
+    # open it with a button of the login page (demo/views.py), it cannot
+    # change its address nor its password (demo/middleware.py), and it is
+    # made again every night (decisions of 22.10.2026)
+    is_demo = models.BooleanField(default=False)
+
     # Field Django uses as the login, in the admin site and at authentication
     USERNAME_FIELD = "email"
 

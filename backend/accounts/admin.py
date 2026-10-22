@@ -29,7 +29,7 @@ class UserAdmin(DjangoUserAdmin):
     # Screen that edits an existing user
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "role")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "role", "is_demo")}),
         (
             "Permissions",
             {
@@ -71,6 +71,7 @@ class UserAdmin(DjangoUserAdmin):
         "first_name",
         "last_name",
         "role",
+        "is_demo",
         "is_active",
         "is_staff",
         "is_superuser",
@@ -79,7 +80,7 @@ class UserAdmin(DjangoUserAdmin):
     )
     # Both id and e-mail open the user's page, not only the first column
     list_display_links = ("id", "email")
-    list_filter = ("role", "is_staff", "is_superuser", "is_active", "groups")
+    list_filter = ("role", "is_demo", "is_staff", "is_superuser", "is_active", "groups")
     search_fields = ("email", "first_name", "last_name")
     ordering = ("email",)
     date_hierarchy = "date_joined"

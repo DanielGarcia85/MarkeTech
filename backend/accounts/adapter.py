@@ -7,7 +7,8 @@ Account adapter — what the authentication API says about a user
 Responsibility
 ──────────────
 Adjust django-allauth to this project: the name shown for a user, and the
-role added to the user data that the headless API returns to the frontend.
+role and the demo mark added to the user data that the headless API returns
+to the frontend.
 Nothing else is customised here.
 """
 
@@ -22,11 +23,14 @@ def display_name(user):
 
 
 class HeadlessAdapter(DefaultHeadlessAdapter):
-    """User data returned by the API, with the role of the account."""
+    """User data returned by the API, with the role of the account and
+    whether it is a demo account."""
 
     def serialize_user(self, user):
-        """Return allauth's user data plus the role."""
+        """Return allauth's user data plus the role and the demo mark."""
         data = super().serialize_user(user)
         # The frontend chooses its screens from the role
         data["role"] = user.role
+        # A demo account shows a band and keeps its address and password
+        data["is_demo"] = user.is_demo
         return data

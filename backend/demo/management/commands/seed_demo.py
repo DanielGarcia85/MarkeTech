@@ -13,19 +13,31 @@ contracts, the salaries and the last two months — eight published, one
 draft and one closed each — thirteen applications in every state, with
 their history, eight favorites, and conversations on the applications that
 were taken up: open ones, closed ones, some with unread messages. The two
-accounts to show the site with are candidat1@test.com (Léa Martin) and
-employeur1@test.com (Marc Rochat, Lémantech SA), between whom most of it
+accounts to show the site with are candidat1@example.com (Léa Martin) and
+employeur1@example.com (Marc Rochat, Quorvane SA), between whom most of it
 happens (decision of 21.10.2026). Everything is invented, the files included:
 one-page PDFs written by the command itself (no library needed for a page
 of text), and logos drawn with Pillow (the initials of the company on a
-colour), which the image fields need anyway. The six accounts share one
-password, printed at the end.
+colour), which the image fields need anyway. The addresses are in
+example.com, a domain reserved for examples that receives no e-mail, and
+the companies have invented names, checked to belong to nobody (decisions
+of 22.10.2026).
+
+The public demonstration
+────────────────────────
+candidat1 and employeur1 are the two demo accounts (is_demo): any visitor
+opens them with the buttons of the login page, without password
+(demo/views.py), and the server runs this command again every night with
+--reset. In development (DEBUG), the six accounts share one password,
+printed at the end; elsewhere, none has a usable password, and the four
+other accounts are there to be seen, not to be opened.
 
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
                                         profiles, offers, applications,
                                         favorites, messages and files go
-                                        with them)
+                                        with them; the other accounts stay)
+    python manage.py seed_demo --force  on a server (DEBUG off)
 
 Why a command and not a fixture
 ───────────────────────────────
@@ -37,8 +49,9 @@ the code of the application and dates them relative to today.
 
 Safety
 ──────
-The accounts have a known password: the command refuses to run with DEBUG
-off (a server) unless --force is given.
+With DEBUG off (a server), the command runs only with --force, given on
+purpose: it deletes and makes again the six accounts and all that hangs on
+them. The accounts get no usable password there.
 """
 
 from datetime import timedelta
@@ -62,6 +75,7 @@ from messaging.models import Message
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
+# The password of the six accounts in development; none on a server
 PASSWORD = "Demo-1234"
 
 # ── The candidates ────────────────────────────────────────────────────
@@ -70,7 +84,9 @@ PASSWORD = "Demo-1234"
 
 CANDIDATES = [
     {
-        "email": "candidat1@test.com",
+        "email": "candidat1@example.com",
+        # Open to every visitor, from the login page
+        "demo": True,
         "first_name": "Léa",
         "last_name": "Martin",
         "phone": "+41 79 000 00 01",
@@ -87,7 +103,7 @@ CANDIDATES = [
         "documents": ["Diplome_HEG.pdf", "Certificat_travail.pdf"],
     },
     {
-        "email": "candidat2@test.com",
+        "email": "candidat2@example.com",
         "first_name": "Nicolas",
         "last_name": "Favre",
         "phone": "+41 79 000 00 02",
@@ -104,7 +120,7 @@ CANDIDATES = [
         "documents": ["Certificat_CFC.pdf"],
     },
     {
-        "email": "candidat3@test.com",
+        "email": "candidat3@example.com",
         "first_name": "Inès",
         "last_name": "Dupont",
         "phone": "+33 6 00 00 00 03",
@@ -129,7 +145,9 @@ CANDIDATES = [
 
 EMPLOYERS = [
     {
-        "email": "employeur1@test.com",
+        "email": "employeur1@example.com",
+        # Open to every visitor, from the login page
+        "demo": True,
         "first_name": "Marc",
         "last_name": "Rochat",
         "phone": "+41 22 000 00 01",
@@ -137,13 +155,13 @@ EMPLOYERS = [
         "postal_code": "1201",
         "city": "Genève",
         "country": "CH",
-        "company_name": "Lémantech SA",
+        "company_name": "Quorvane SA",
         "company_address": "Rue de Lausanne 45",
         "company_postal_code": "1201",
         "company_city": "Genève",
         "company_country": "CH",
         "company_phone": "+41 22 000 00 10",
-        "logo": ("LT", "#2d6f91"),
+        "logo": ("QV", "#2d6f91"),
         "offers": [
             {
                 "title": "Développeur·euse Java Spring senior",
@@ -369,7 +387,7 @@ EMPLOYERS = [
         ],
     },
     {
-        "email": "employeur2@test.com",
+        "email": "employeur2@example.com",
         "first_name": "Sophie",
         "last_name": "Bianchi",
         "phone": "+41 21 000 00 02",
@@ -377,13 +395,13 @@ EMPLOYERS = [
         "postal_code": "1007",
         "city": "Lausanne",
         "country": "CH",
-        "company_name": "Alpine Data Sàrl",
+        "company_name": "Talmivo Sàrl",
         "company_address": "Avenue de Rhodanie 30",
         "company_postal_code": "1007",
         "company_city": "Lausanne",
         "company_country": "CH",
         "company_phone": "+41 21 000 00 20",
-        "logo": ("AD", "#2f855a"),
+        "logo": ("TM", "#2f855a"),
         "offers": [
             {
                 "title": "Data engineer Python",
@@ -595,7 +613,7 @@ EMPLOYERS = [
         ],
     },
     {
-        "email": "employeur3@test.com",
+        "email": "employeur3@example.com",
         "first_name": "Julien",
         "last_name": "Perrin",
         "phone": "+33 4 00 00 00 03",
@@ -603,13 +621,13 @@ EMPLOYERS = [
         "postal_code": "69003",
         "city": "Lyon",
         "country": "FR",
-        "company_name": "Rhône Digital SAS",
+        "company_name": "Ostrelia SAS",
         "company_address": "Cours Lafayette 112",
         "company_postal_code": "69003",
         "company_city": "Lyon",
         "company_country": "FR",
         "company_phone": "+33 4 00 00 00 30",
-        "logo": ("RD", "#6b46c1"),
+        "logo": ("OS", "#6b46c1"),
         # The currency of the salaries of its offers (CHF when not given)
         "currency": "EUR",
         "offers": [
@@ -840,8 +858,8 @@ EMPLOYERS = [
 
 APPLICATIONS = [
     {
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Développeur·euse Java Spring senior",
         "days_ago": 1,
         "letter": True,
@@ -850,8 +868,8 @@ APPLICATIONS = [
         "unseen": True,
     },
     {
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Ingénieur·e DevOps",
         "days_ago": 8,
         "letter": True,
@@ -899,8 +917,8 @@ APPLICATIONS = [
     {
         # The liveliest conversation, open, its last two messages unread by
         # the candidate
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Développeur·euse Full Stack Vue / Django",
         "days_ago": 5,
         "letter": True,
@@ -965,8 +983,8 @@ APPLICATIONS = [
     },
     {
         # Open, the last two messages of the candidate unread by the employer
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Testeur·euse QA automatisation",
         "days_ago": 10,
         "letter": False,
@@ -1012,8 +1030,8 @@ APPLICATIONS = [
     },
     {
         # Taken up, nobody has written yet: the conversation is open, empty
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Développeur·euse mobile Android",
         "days_ago": 4,
         "letter": True,
@@ -1023,8 +1041,8 @@ APPLICATIONS = [
     },
     {
         # Rejected with a last message: closed, read only
-        "candidate": "candidat1@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Administrateur·trice systèmes Linux",
         "days_ago": 18,
         "letter": False,
@@ -1056,8 +1074,8 @@ APPLICATIONS = [
         "unread": 0,
     },
     {
-        "candidate": "candidat1@test.com",
-        "employer": "employeur3@test.com",
+        "candidate": "candidat1@example.com",
+        "employer": "employeur3@example.com",
         "offer": "Développeur·euse Java Spring",
         "days_ago": 13,
         "letter": False,
@@ -1065,8 +1083,8 @@ APPLICATIONS = [
         "moves": [("rejected", 9)],
     },
     {
-        "candidate": "candidat2@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat2@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Développeur·euse Java Spring senior",
         "days_ago": 2,
         "letter": True,
@@ -1075,8 +1093,8 @@ APPLICATIONS = [
         "unseen": True,
     },
     {
-        "candidate": "candidat2@test.com",
-        "employer": "employeur2@test.com",
+        "candidate": "candidat2@example.com",
+        "employer": "employeur2@example.com",
         "offer": "Ingénieur·e cloud AWS",
         "days_ago": 3,
         "letter": False,
@@ -1094,8 +1112,8 @@ APPLICATIONS = [
         "unread": 1,
     },
     {
-        "candidate": "candidat2@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat2@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Administrateur·trice systèmes Linux",
         "days_ago": 20,
         "letter": True,
@@ -1120,8 +1138,8 @@ APPLICATIONS = [
         "unread": 1,
     },
     {
-        "candidate": "candidat3@test.com",
-        "employer": "employeur3@test.com",
+        "candidate": "candidat3@example.com",
+        "employer": "employeur3@example.com",
         "offer": "Développeur·euse Python Django",
         "days_ago": 4,
         "letter": True,
@@ -1129,8 +1147,8 @@ APPLICATIONS = [
         "moves": [],
     },
     {
-        "candidate": "candidat3@test.com",
-        "employer": "employeur2@test.com",
+        "candidate": "candidat3@example.com",
+        "employer": "employeur2@example.com",
         "offer": "Data scientist junior",
         "days_ago": 10,
         "letter": False,
@@ -1139,8 +1157,8 @@ APPLICATIONS = [
     },
     {
         # An application accepted on an offer closed since
-        "candidate": "candidat3@test.com",
-        "employer": "employeur1@test.com",
+        "candidate": "candidat3@example.com",
+        "employer": "employeur1@example.com",
         "offer": "Développeur·euse PHP Symfony",
         "days_ago": 52,
         "letter": True,
@@ -1158,7 +1176,7 @@ APPLICATIONS = [
                 "employer",
                 45,
                 "14:30",
-                "Parfait : bienvenue chez Lémantech ! Le contrat part demain par courrier.",
+                "Parfait : bienvenue chez Quorvane ! Le contrat part demain par courrier.",
             ),
         ],
         "unread": 0,
@@ -1171,14 +1189,14 @@ APPLICATIONS = [
 # candidate takes it back.
 
 FAVORITES = [
-    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse Full Stack Vue / Django", 4),
-    ("candidat1@test.com", "employeur2@test.com", "Data engineer Python", 1),
-    ("candidat1@test.com", "employeur3@test.com", "Développeur·euse front-end Vue.js", 2),
-    ("candidat1@test.com", "employeur1@test.com", "Développeur·euse PHP Symfony", 53),
-    ("candidat2@test.com", "employeur2@test.com", "Ingénieur·e cloud AWS", 3),
-    ("candidat2@test.com", "employeur1@test.com", "Administrateur·trice systèmes Linux", 21),
-    ("candidat3@test.com", "employeur2@test.com", "Data scientist junior", 10),
-    ("candidat3@test.com", "employeur3@test.com", "Développeur·euse Python Django", 5),
+    ("candidat1@example.com", "employeur1@example.com", "Développeur·euse Full Stack Vue / Django", 4),
+    ("candidat1@example.com", "employeur2@example.com", "Data engineer Python", 1),
+    ("candidat1@example.com", "employeur3@example.com", "Développeur·euse front-end Vue.js", 2),
+    ("candidat1@example.com", "employeur1@example.com", "Développeur·euse PHP Symfony", 53),
+    ("candidat2@example.com", "employeur2@example.com", "Ingénieur·e cloud AWS", 3),
+    ("candidat2@example.com", "employeur1@example.com", "Administrateur·trice systèmes Linux", 21),
+    ("candidat3@example.com", "employeur2@example.com", "Data scientist junior", 10),
+    ("candidat3@example.com", "employeur3@example.com", "Développeur·euse Python Django", 5),
 ]
 
 EMAILS = [person["email"] for person in CANDIDATES + EMPLOYERS]
@@ -1289,13 +1307,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--force",
             action="store_true",
-            help="Run even with DEBUG off (the accounts have a known password).",
+            help="Run with DEBUG off, on a server: the accounts then get no usable password.",
         )
 
     def handle(self, *args, **options):
         if not settings.DEBUG and not options["force"]:
             raise CommandError(
-                "DEBUG is off: refusing to create accounts with a known password (--force to go on)."
+                "DEBUG is off: this is a server; run with --force to replace the demo data."
             )
 
         # The documents made for the candidates, by address and name, for
@@ -1330,7 +1348,10 @@ class Command(BaseCommand):
                 f"{len(FAVORITES)} favorites and {messages} messages."
             )
         )
-        self.stdout.write(f"Password of every account: {PASSWORD}")
+        if settings.DEBUG:
+            self.stdout.write(f"Password of every account: {PASSWORD}")
+        else:
+            self.stdout.write("No usable password: the demo accounts open from the login page.")
         for email in EMAILS:
             self.stdout.write(f"  {email}")
 
@@ -1339,11 +1360,14 @@ class Command(BaseCommand):
     def user(self, person, role):
         """The account, with its address verified (allauth lets nobody log
         in before the address is confirmed) and the terms accepted, as a
-        sign-up would have left it."""
+        sign-up would have left it; marked as a demo account when it is one.
+        The password: the known one in development, an unusable one
+        elsewhere (None)."""
         user = User.objects.create_user(
             email=person["email"],
-            password=PASSWORD,
+            password=PASSWORD if settings.DEBUG else None,
             role=role,
+            is_demo=person.get("demo", False),
             first_name=person["first_name"],
             last_name=person["last_name"],
             terms_accepted_at=timezone.now(),
