@@ -53,7 +53,8 @@ export default {
   // Public demonstration: the demo accounts of the login page
   demo: {
     title: "Try the demo",
-    text: "Discover the site without an account, with a shared demo account made again every night:",
+    text: "Discover the site without an account, with a shared demo account made again every night.",
+    terms: "By trying the demo, you accept the {terms} and have read the {privacy}.",
     candidate: "Candidate",
     employer: "Employer",
     unavailable: "The demo is not available at the moment.",
@@ -229,7 +230,7 @@ export default {
         title: "What MarkeTech is",
         intro: [
           "MarkeTech is a demonstration project built by Daniel Garcia, in Geneva, to show his work: a job board for students and young graduates in computer science. It has no commercial activity: no offer commits anyone, nobody is hired through it, and nothing is sold on it.",
-          "By creating an account, you accept these terms. If you do not accept them, do not use the site.",
+          "By creating an account, or by trying a demo account, you accept these terms. If you do not accept them, do not use the site.",
         ],
       },
       account: {

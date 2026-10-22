@@ -55,7 +55,8 @@ const fr: typeof en = {
   // Public demonstration: the demo accounts of the login page
   demo: {
     title: "Essayer la démo",
-    text: "Découvrez le site sans créer de compte, avec un compte de démonstration partagé et remis à zéro chaque nuit :",
+    text: "Découvrez le site sans créer de compte, avec un compte de démonstration partagé et remis à zéro chaque nuit.",
+    terms: "En essayant la démo, vous acceptez les {terms} et avez lu la {privacy}.",
     candidate: "Candidat·e",
     employer: "Employeur",
     unavailable: "La démo n'est pas disponible pour l'instant.",
@@ -231,7 +232,7 @@ const fr: typeof en = {
         title: "Ce qu'est MarkeTech",
         intro: [
           "MarkeTech est un projet de démonstration réalisé par Daniel Garcia, à Genève, pour montrer son travail : une plateforme d'offres d'emploi pour les étudiants et les jeunes diplômés en informatique. Il n'a aucune activité commerciale : aucune offre n'engage qui que ce soit, personne n'est recruté par son intermédiaire, et rien n'y est vendu.",
-          "En créant un compte, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le site.",
+          "En créant un compte, ou en essayant un compte de démonstration, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le site.",
         ],
       },
       account: {

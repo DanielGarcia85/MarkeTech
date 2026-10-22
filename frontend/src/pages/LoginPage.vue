@@ -11,9 +11,9 @@
   the address as ?next= by the router or by a link, or to the home page (a
   user already logged in never reaches this page: the router sends them
   home). Beside the form, on its right, a box to try the site without an
-  account (above it on a narrow window): two buttons open the demo
-  candidate or the demo employer (api/demo.ts), shared accounts made again
-  every night. The link "Try the demo" of the header leads here.
+  account (above it on a narrow window): a box to accept the terms of use,
+  then two buttons, active once it is ticked, open the demo candidate or
+  the demo employer (api/demo.ts), shared accounts made again every night. The link "Try the demo" of the header leads here.
 -->
 
 <script setup lang="ts">
@@ -48,7 +48,9 @@ const errors = ref<Record<string, string>>({});
 const sending = ref(false);
 const unverified = ref(false);
 
-// The demo account being opened, and the reason it could not be
+// The terms accepted for the demo; the demo account being opened, and the
+// reason it could not be
+const demoTerms = ref(false);
 const demoSending = ref(false);
 const demoError = ref("");
 
@@ -148,11 +150,23 @@ async function submit(): Promise<void> {
     <section class="demo">
       <h2>{{ t("demo.title") }}</h2>
       <p>{{ t("demo.text") }}</p>
+      <!-- The terms first, with their links in the text, as at sign-up -->
+      <label class="consent">
+        <input v-model="demoTerms" type="checkbox" />
+        <i18n-t keypath="demo.terms" tag="span">
+          <template #terms>
+            <RouterLink :to="{ name: 'terms' }" target="_blank">{{ t("signup.termsLink") }}</RouterLink>
+          </template>
+          <template #privacy>
+            <RouterLink :to="{ name: 'privacy' }" target="_blank">{{ t("signup.privacyLink") }}</RouterLink>
+          </template>
+        </i18n-t>
+      </label>
       <p class="buttons">
-        <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('candidate')">
+        <button type="button" class="primary" :disabled="demoSending || !demoTerms" @click="tryDemo('candidate')">
           {{ t("demo.candidate") }}
         </button>
-        <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('employer')">
+        <button type="button" class="primary" :disabled="demoSending || !demoTerms" @click="tryDemo('employer')">
           {{ t("demo.employer") }}
         </button>
       </p>
@@ -187,6 +201,20 @@ async function submit(): Promise<void> {
 
 .demo p {
   margin: 0;
+}
+
+/* The box of the terms and its sentence, side by side */
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.consent input {
+  flex: none;
+  margin-top: 5px;
 }
 
 .buttons {
