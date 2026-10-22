@@ -115,7 +115,7 @@ async function leave(): Promise<void> {
         </div>
       </div>
       <!-- A visitor: the two links of the account, then the way to the
-           demo, smaller, which is on the login page, beside the form -->
+           demo, which is on the login page, beside the form -->
       <div v-else class="visitor">
         <p class="links">
           <RouterLink :to="{ name: 'signup' }">{{ t("header.signup") }}</RouterLink>
@@ -158,7 +158,7 @@ async function leave(): Promise<void> {
    middle whatever their own widths (the links of a visitor are wider than
    the round of a user). Hidden below the width where the three no longer
    fit on one line (the links of a visitor, in French, with the demo,
-   decide it: 1340 px, measured on 22.10.2026): the logo and the links
+   decide it: 1380 px, measured on 22.10.2026): the logo and the links
    then fill the header and share it as they need */
 .about {
   flex: none;
@@ -168,14 +168,14 @@ async function leave(): Promise<void> {
   text-align: center;
 }
 
-@media (min-width: 1340px) {
+@media (min-width: 1380px) {
   .brand,
   .nav {
     flex: 1 1 0;
   }
 }
 
-@media (max-width: 1339px) {
+@media (max-width: 1379px) {
   .about {
     display: none;
   }
@@ -205,11 +205,9 @@ async function leave(): Promise<void> {
   margin: 0;
 }
 
-/* The way to the demo: a link like the others, smaller, in the dark of
-   the accent */
+/* The way to the demo: a link like the others, in the dark of the accent */
 .nav a.demo {
   color: var(--mt-accent-dark);
-  font-size: 0.85rem;
 }
 
 /* The round and its menu: the menu is placed from the round */
