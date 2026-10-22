@@ -43,6 +43,7 @@ off (a server) unless --force is given.
 
 from datetime import timedelta
 from io import BytesIO
+from zoneinfo import ZoneInfo
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -1225,11 +1226,16 @@ def pdf_file(name, title, lines):
     return ContentFile(pdf(title, lines), name=name)
 
 
+# The times of the messages are those of Geneva: the server counts in UTC
+# (TIME_ZONE), the pages show the time of the browser
+GENEVA = ZoneInfo("Europe/Zurich")
+
+
 def moment(days_ago, time):
-    """The local time "HH:MM" of the day days_ago days before today, never
-    later than a few minutes ago."""
+    """The time "HH:MM" in Geneva of the day days_ago days before today,
+    never later than a few minutes ago."""
     hour, minute = (int(part) for part in time.split(":"))
-    day = timezone.localtime() - timedelta(days=days_ago)
+    day = timezone.localtime(timezone=GENEVA) - timedelta(days=days_ago)
     when = day.replace(hour=hour, minute=minute, second=0, microsecond=0)
     return min(when, timezone.now() - timedelta(minutes=5))
 
