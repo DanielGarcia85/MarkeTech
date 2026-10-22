@@ -45,6 +45,7 @@ const fr: typeof en = {
     messaging: "Messagerie",
     openConversations: "Ouvertes",
     closedConversations: "Closes",
+    appointments: "Rendez-vous",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -571,6 +572,65 @@ const fr: typeof en = {
       received: "La conversation s'ouvrira quand l'employeur prendra la candidature en charge.",
       accepted: "Conversation close : la candidature a été acceptée.",
       rejected: "Conversation close : la candidature a été refusée.",
+    },
+  },
+
+  // Appointments: the cards in the conversation, the proposal, the calendar
+  appointments: {
+    title: "Rendez-vous",
+    new: "Nouveau",
+    pageTitle: "Mes rendez-vous",
+    intro: {
+      candidate: "Les rendez-vous proposés par les employeurs, à accepter ou refuser depuis la conversation ou ici.",
+      employer: "Les rendez-vous proposés à vos candidats. Proposez-en un depuis la conversation d'une candidature en cours.",
+    },
+    loadFailed: "Les rendez-vous n'ont pas pu être chargés.",
+    coming: "À venir",
+    noneComing: "Aucun rendez-vous à venir.",
+    clickHint: "Cliquez sur un rendez-vous du calendrier pour en voir le détail.",
+    openConversation: "Ouvrir la conversation",
+    proposed: "Proposé le {date}",
+    propose: "Proposer un rendez-vous",
+    accept: "Accepter",
+    decline: "Refuser",
+    cancel: "Annuler le rendez-vous",
+    answerLabel: "Votre message (obligatoire)",
+    cancelLabel: "Un mot pour le candidat (facultatif)",
+    confirm: {
+      accept: "Accepter le rendez-vous du {when} ?",
+      decline: "Refuser le rendez-vous du {when} ?",
+      cancel: "Annuler le rendez-vous du {when} ?",
+    },
+    answer: {
+      candidate: "Votre réponse",
+      employer: "Réponse du candidat",
+    },
+    cancellation: {
+      candidate: "Message de l'employeur",
+      employer: "Votre message",
+    },
+    state: {
+      pending: "En attente",
+      accepted: "Accepté",
+      declined: "Refusé",
+      cancelled: "Annulé",
+      expired: "Expiré",
+    },
+    duration: {
+      30: "30 minutes",
+      45: "45 minutes",
+      60: "1 heure",
+      90: "1 heure 30",
+    },
+    form: {
+      title: "Proposer un rendez-vous",
+      when: "Date et heure",
+      whenMissing: "Indiquez une date et une heure.",
+      duration: "Durée",
+      place: "Lieu",
+      placeHint: "Adresse, lien de visio ou « par téléphone »",
+      note: "Précisions (facultatif)",
+      send: "Proposer",
     },
   },
 

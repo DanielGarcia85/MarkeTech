@@ -8,7 +8,8 @@
   greyed and cannot be clicked, the focus stays in the box, and Escape
   closes it. The box itself is styled like the rest of the site. When the
   question asks for a text (confirmWithText), a text area under it, the
-  focus in it; the box is then wider.
+  focus in it; the box is then wider. A text required keeps the action
+  disabled until something is typed.
 -->
 
 <script setup lang="ts">
@@ -62,7 +63,13 @@ function clickOutside(event: MouseEvent): void {
         <button type="button" class="secondary" @click="answer(false)">
           {{ t("dialog.cancel") }}
         </button>
-        <button type="button" class="primary" :autofocus="!state.question.textLabel" @click="answer(true)">
+        <button
+          type="button"
+          class="primary"
+          :autofocus="!state.question.textLabel"
+          :disabled="state.question.required && !draft.trim()"
+          @click="answer(true)"
+        >
           {{ state.question.action }}
         </button>
       </p>

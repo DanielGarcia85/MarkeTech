@@ -43,6 +43,7 @@ export default {
     messaging: "Messaging",
     openConversations: "Open",
     closedConversations: "Closed",
+    appointments: "Appointments",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -569,6 +570,65 @@ export default {
       received: "The conversation will open when the employer takes up the application.",
       accepted: "Conversation closed: the application was accepted.",
       rejected: "Conversation closed: the application was rejected.",
+    },
+  },
+
+  // Appointments: the cards in the conversation, the proposal, the calendar
+  appointments: {
+    title: "Appointment",
+    new: "New",
+    pageTitle: "My appointments",
+    intro: {
+      candidate: "The appointments employers propose to you, to accept or decline from the conversation or here.",
+      employer: "The appointments proposed to your candidates. Propose one from the conversation of an application in progress.",
+    },
+    loadFailed: "The appointments could not be loaded.",
+    coming: "Coming up",
+    noneComing: "No appointment coming up.",
+    clickHint: "Click an appointment in the calendar to see its details.",
+    openConversation: "Open the conversation",
+    proposed: "Proposed on {date}",
+    propose: "Propose an appointment",
+    accept: "Accept",
+    decline: "Decline",
+    cancel: "Cancel the appointment",
+    answerLabel: "Your message (required)",
+    cancelLabel: "A word for the candidate (optional)",
+    confirm: {
+      accept: "Accept the appointment of {when}?",
+      decline: "Decline the appointment of {when}?",
+      cancel: "Cancel the appointment of {when}?",
+    },
+    answer: {
+      candidate: "Your answer",
+      employer: "The candidate's answer",
+    },
+    cancellation: {
+      candidate: "The employer's message",
+      employer: "Your message",
+    },
+    state: {
+      pending: "Pending",
+      accepted: "Accepted",
+      declined: "Declined",
+      cancelled: "Cancelled",
+      expired: "Expired",
+    },
+    duration: {
+      30: "30 minutes",
+      45: "45 minutes",
+      60: "1 hour",
+      90: "1 hour 30",
+    },
+    form: {
+      title: "Propose an appointment",
+      when: "Date and time",
+      whenMissing: "Give a date and a time.",
+      duration: "Length",
+      place: "Place",
+      placeHint: "Address, video link or \"by phone\"",
+      note: "Details (optional)",
+      send: "Propose",
     },
   },
 

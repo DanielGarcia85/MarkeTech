@@ -79,6 +79,9 @@ export const router = createRouter({
     { path: "/messages", name: "conversations", component: ConversationsPage, props: { closed: false }, meta: { requiresAuth: true } },
     { path: "/messages/closed", name: "closedConversations", component: ConversationsPage, props: { closed: true }, meta: { requiresAuth: true } },
     { path: "/messages/:id(\\d+)", name: "conversation", component: ConversationPage, meta: { requiresAuth: true } },
+    // The appointments of the user, in a calendar. Loaded only when opened:
+    // the calendar (vue-cal) weighs about a quarter of the rest of the site
+    { path: "/appointments", name: "appointments", component: () => import("./pages/AppointmentsPage.vue"), meta: { requiresAuth: true } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed

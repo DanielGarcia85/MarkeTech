@@ -21,7 +21,8 @@ export type IconName =
   | "key"
   | "search"
   | "chat"
-  | "archive";
+  | "archive"
+  | "calendar";
 </script>
 
 <script setup lang="ts">
@@ -90,6 +91,11 @@ withDefaults(
       <rect x="3" y="4" width="18" height="4" rx="1" />
       <path d="M5 8v11h14V8" />
       <path d="M10 12h4" />
+    </g>
+    <!-- A leaf of a calendar: the appointments -->
+    <g v-else-if="name === 'calendar'">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M3 10h18M8 3v4M16 3v4" />
     </g>
     <!-- A magnifying glass: a search without result -->
     <g v-else-if="name === 'search'">

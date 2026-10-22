@@ -10,10 +10,16 @@
   messages, oldest first, as bubbles: one's own on the right in the light
   blue, the other's on the left. At the bottom, the text area and the Send
   button while the application is in progress; once decided, a line says
-  the conversation is closed, and the messages stay readable. Reading the
-  page marks the other's messages read (the API does it), after which the
-  counts of the side bar are read again (notifications.ts). Read again every ten seconds
-  (phase 2: no WebSocket yet).
+  the conversation is closed, and the messages stay readable. The
+  appointments of the application sit among the messages as cards, at the
+  time they were proposed (decisions of 22.10.2026): the candidate answers
+  from the card, the employer cancels from it and proposes a new one with
+  the button next to Send (ProposeDialog), while the application is in
+  progress and no appointment waits for an answer. Reading the page marks
+  the other's messages read and the appointments seen (the API does it),
+  after which the counts of the side bar are read again
+  (notifications.ts). Read again every ten seconds (phase 2: no WebSocket
+  yet).
 -->
 
 <script setup lang="ts">
@@ -21,10 +27,15 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
+import { listAppointments, type Appointment } from "../api/appointments";
 import { firstErrors } from "../api/http";
-import { getThread, writeMessage, type Thread } from "../api/messaging";
+import { getThread, writeMessage, type Message, type Thread } from "../api/messaging";
 import { useApplicationText } from "../applications";
+import { useAppointmentMoves } from "../appointments";
+import AppointmentCard from "../components/AppointmentCard.vue";
 import CompanyMark from "../components/CompanyMark.vue";
+import Icon from "../components/Icon.vue";
+import ProposeDialog from "../components/ProposeDialog.vue";
 import { refreshNotifications } from "../notifications";
 import { useSession } from "../session";
 
@@ -34,7 +45,10 @@ const session = useSession();
 const text = useApplicationText();
 
 const thread = ref<Thread | null>(null);
+const appointments = ref<Appointment[]>([]);
 const notFound = ref(false);
+// The proposal form of the employer, open or not
+const proposing = ref(false);
 
 // What the user types, a message in flight, the reason of a refusal
 const body = ref("");
@@ -47,21 +61,73 @@ const list = ref<HTMLElement | null>(null);
 const applicationId = computed(() => Number(route.params.id));
 const isCandidate = computed(() => session.user?.role === "candidate");
 
+// The messages and the appointments in one column, in the order they came:
+// a message when it was sent, an appointment when it was proposed
+type Item =
+  | { kind: "message"; key: string; at: string; message: Message }
+  | { kind: "appointment"; key: string; at: string; appointment: Appointment };
+const items = computed<Item[]>(() => {
+  const messages: Item[] = (thread.value?.messages ?? []).map((message) => ({
+    kind: "message",
+    key: "m" + message.id,
+    at: message.sent_at,
+    message,
+  }));
+  const meetings: Item[] = appointments.value.map((appointment) => ({
+    kind: "appointment",
+    key: "a" + appointment.id,
+    at: appointment.created_at,
+    appointment,
+  }));
+  return [...messages, ...meetings].sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+});
+
+// The employer may propose while the conversation is open and no
+// appointment waits for an answer
+const canPropose = computed(
+  () =>
+    !isCandidate.value &&
+    thread.value?.open === true &&
+    !appointments.value.some((appointment) => appointment.state === "pending"),
+);
+
+// An answer or a cancellation: the card takes the new state
+const moves = useAppointmentMoves((moved) => {
+  appointments.value = appointments.value.map((item) => (item.id === moved.id ? moved : item));
+  refreshNotifications();
+});
+
 // The way back: to the list the conversation belongs to
 const back = computed(() => (thread.value?.open === false ? "closedConversations" : "conversations"));
 
 async function load(): Promise<void> {
-  const count = thread.value?.messages.length ?? 0;
+  const count = items.value.length;
   try {
-    thread.value = await getThread(applicationId.value);
+    const [read, meetings] = await Promise.all([
+      getThread(applicationId.value),
+      listAppointments(applicationId.value),
+    ]);
+    // A card keeps "new" for the visit that saw it: a second reading says
+    // it is seen already
+    const shown = new Set(appointments.value.filter((item) => item.new).map((item) => item.id));
+    appointments.value = meetings.map((item) => (shown.has(item.id) ? { ...item, new: true } : item));
+    thread.value = read;
   } catch {
     // 404: not a conversation of the user, or no such application
     notFound.value = true;
     return;
   }
-  // The other's messages are read now: the side bar counts again
+  // The other's messages are read, the appointments seen: the side bar
+  // counts again
   refreshNotifications();
-  if (thread.value.messages.length !== count) scrollDown();
+  if (items.value.length !== count) scrollDown();
+}
+
+// The employer's proposal, made: its card at the end of the thread
+function proposed(appointment: Appointment): void {
+  proposing.value = false;
+  appointments.value.push(appointment);
+  scrollDown();
 }
 
 async function scrollDown(): Promise<void> {
@@ -110,6 +176,7 @@ function when(iso: string): string {
 // Another conversation opened from this one: start again
 watch(applicationId, () => {
   thread.value = null;
+  appointments.value = [];
   notFound.value = false;
   load();
 });
@@ -145,16 +212,28 @@ onUnmounted(() => window.clearInterval(timer));
     </header>
 
     <div ref="list" class="messages">
-      <p v-if="thread.messages.length === 0" class="empty">
+      <p v-if="items.length === 0" class="empty">
         {{ thread.open ? t("messaging.emptyOpen") : t("messaging.emptyClosed") }}
       </p>
-      <div v-for="message in thread.messages" :key="message.id" class="message" :class="{ mine: message.mine }">
-        <p class="bubble">{{ message.body }}</p>
-        <p class="meta">
-          {{ when(message.sent_at) }}
-          <template v-if="message.mine && message.read_at"> · {{ t("messaging.read") }}</template>
-        </p>
-      </div>
+      <template v-for="item in items" :key="item.key">
+        <AppointmentCard
+          v-if="item.kind === 'appointment'"
+          class="card"
+          :appointment="item.appointment"
+          :role="isCandidate ? 'candidate' : 'employer'"
+          :busy="moves.busy.value === item.appointment.id"
+          :error="moves.errors.value[item.appointment.id]"
+          @answer="(accept) => moves.answer(item.appointment, accept)"
+          @cancel="moves.cancel(item.appointment)"
+        />
+        <div v-else class="message" :class="{ mine: item.message.mine }">
+          <p class="bubble">{{ item.message.body }}</p>
+          <p class="meta">
+            {{ when(item.message.sent_at) }}
+            <template v-if="item.message.mine && item.message.read_at"> · {{ t("messaging.read") }}</template>
+          </p>
+        </div>
+      </template>
     </div>
 
     <form v-if="thread.open" class="composer" novalidate @submit.prevent="send">
@@ -168,12 +247,22 @@ onUnmounted(() => window.clearInterval(timer));
         @keydown="keydown"
       ></textarea>
       <p class="actions">
+        <button v-if="canPropose" type="button" class="secondary propose" @click="proposing = true">
+          <Icon name="calendar" />{{ t("appointments.propose") }}
+        </button>
         <span class="muted hint">{{ t("messaging.hint") }}</span>
         <button type="submit" class="primary" :disabled="sending || !body.trim()">{{ t("messaging.send") }}</button>
       </p>
       <p v-if="error" class="error">{{ error }}</p>
     </form>
     <p v-else class="closed">{{ t("messaging.closed." + thread.status) }}</p>
+
+    <ProposeDialog
+      v-if="proposing"
+      :application-id="thread.application"
+      @proposed="proposed"
+      @close="proposing = false"
+    />
   </template>
 </template>
 
@@ -230,6 +319,12 @@ onUnmounted(() => window.clearInterval(timer));
   margin: 24px 0;
   color: var(--mt-muted);
   text-align: center;
+}
+
+/* An appointment: a card across the column, between the messages */
+.card {
+  align-self: stretch;
+  margin: 4px 0;
 }
 
 /* A message: the other's on the left, one's own on the right */
@@ -295,6 +390,25 @@ onUnmounted(() => window.clearInterval(timer));
 
 .hint {
   font-size: 0.85rem;
+}
+
+/* The proposal of an appointment, on the left of the row, away from Send */
+.propose {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  padding: 8px 16px;
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 6px;
+  background: var(--mt-blue-surface);
+  color: var(--mt-blue-dark);
+  font: inherit;
+  cursor: pointer;
+}
+
+.propose:hover {
+  border-color: var(--mt-blue);
 }
 
 /* Read only: the closing line in a box of the light blue */
