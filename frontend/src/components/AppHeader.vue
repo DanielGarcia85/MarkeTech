@@ -10,8 +10,8 @@
   construction) and whether the backend answers (ApiStatus, the state in
   colour). A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
-  profile, the way to log out. A visitor gets the links to sign up and to
-  log in.
+  profile, the way to log out. A visitor gets the way to the demo and the
+  links to sign up and to log in.
 -->
 
 <script setup lang="ts">
@@ -115,6 +115,8 @@ async function leave(): Promise<void> {
         </div>
       </div>
       <template v-else>
+        <!-- The demo is on the login page, beside the form -->
+        <RouterLink :to="{ name: 'login' }" class="demo">{{ t("header.demo") }}</RouterLink>
         <RouterLink :to="{ name: 'signup' }">{{ t("header.signup") }}</RouterLink>
         <RouterLink :to="{ name: 'login' }">{{ t("header.login") }}</RouterLink>
       </template>
@@ -152,8 +154,9 @@ async function leave(): Promise<void> {
    links get the same share of the width, so that the line sits in the
    middle whatever their own widths (the links of a visitor are wider than
    the round of a user). Hidden below the width where the three no longer
-   fit on one line (the links of a visitor, in French, decide it): the
-   logo and the links then fill the header and share it as they need */
+   fit on one line (the links of a visitor, in French, decide it: 1270 px
+   since the link to the demo, measured on 22.10.2026): the logo and the
+   links then fill the header and share it as they need */
 .about {
   flex: none;
   margin: 0;
@@ -162,14 +165,14 @@ async function leave(): Promise<void> {
   text-align: center;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .brand,
   .nav {
     flex: 1 1 0;
   }
 }
 
-@media (max-width: 1099px) {
+@media (max-width: 1279px) {
   .about {
     display: none;
   }
@@ -184,6 +187,23 @@ async function leave(): Promise<void> {
   justify-content: flex-end;
   gap: 8px 16px;
   margin-left: auto;
+}
+
+/* The way to the demo, for a visitor: a small pill of the accent, set
+   apart from the two links of the account */
+.nav a.demo {
+  padding: 3px 12px;
+  border: 1px solid var(--mt-accent);
+  border-radius: 999px;
+  background: var(--mt-accent-surface);
+  color: var(--mt-accent-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a.demo:hover {
+  background: var(--mt-accent);
+  color: #ffffff;
 }
 
 /* The round and its menu: the menu is placed from the round */

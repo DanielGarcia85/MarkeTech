@@ -22,6 +22,7 @@ const fr: typeof en = {
 
   // Header: session state and links of the account
   header: {
+    demo: "Démo",
     signup: "S'inscrire",
     login: "Se connecter",
     profile: "Mon profil",

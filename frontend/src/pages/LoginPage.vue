@@ -10,9 +10,10 @@
   logged in, the visitor goes to the page they were asking for, given in
   the address as ?next= by the router or by a link, or to the home page (a
   user already logged in never reaches this page: the router sends them
-  home). Above the form, a box to try the site without an account: two
-  buttons open the demo candidate or the demo employer (api/demo.ts), shared
-  accounts made again every night.
+  home). Beside the form, on its right, a box to try the site without an
+  account (above it on a narrow window): two buttons open the demo
+  candidate or the demo employer (api/demo.ts), shared accounts made again
+  every night. The link "Demo" of the header leads here.
 -->
 
 <script setup lang="ts">
@@ -103,45 +104,34 @@ async function submit(): Promise<void> {
 
   <p v-if="unverified" class="notice">{{ t("login.unverified") }}</p>
 
-  <!-- Trying the site without an account: the two demo accounts -->
-  <section class="demo">
-    <h2>{{ t("demo.title") }}</h2>
-    <p>{{ t("demo.text") }}</p>
-    <p class="buttons">
-      <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('candidate')">
-        {{ t("demo.candidate") }}
-      </button>
-      <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('employer')">
-        {{ t("demo.employer") }}
-      </button>
-    </p>
-    <p v-if="demoError" class="error">{{ demoError }}</p>
-  </section>
+  <!-- The form on the left, the demo on the right; one under the other
+       on a narrow window, the demo first -->
+  <div class="layout">
+    <div class="login">
+      <!-- novalidate: the backend checks the fields and answers in the language
+           of the interface, so the browser's own messages are not wanted -->
+      <form novalidate @submit.prevent="submit">
+        <p v-if="errors['']" class="error">{{ errors[""] }}</p>
 
-  <!-- novalidate: the backend checks the fields and answers in the language
-       of the interface, so the browser's own messages are not wanted -->
-  <form novalidate @submit.prevent="submit">
-    <p v-if="errors['']" class="error">{{ errors[""] }}</p>
-
-    <div class="field">
-      <label for="email">{{ t("login.email") }}</label>
-      <input id="email" v-model="email" type="email" autocomplete="email" />
-      <p v-if="errors.email" class="error">{{ errors.email }}</p>
+        <div class="field">
+          <label for="email">{{ t("login.email") }}</label>
+          <input id="email" v-model="email" type="email" autocomplete="email" />
+          <p v-if="errors.email" class="error">{{ errors.email }}</p>
     </div>
 
     <div class="field">
-      <label for="password">{{ t("login.password") }}</label>
-      <input
-        id="password"
-        v-model="password"
-        type="password"
-        autocomplete="current-password"
-      />
-      <p v-if="errors.password" class="error">{{ errors.password }}</p>
+    <label for="password">{{ t("login.password") }}</label>
+    <input
+      id="password"
+      v-model="password"
+      type="password"
+      autocomplete="current-password"
+    />
+    <p v-if="errors.password" class="error">{{ errors.password }}</p>
     </div>
 
     <button type="submit" class="primary" :disabled="sending">
-      {{ t("login.submit") }}
+    {{ t("login.submit") }}
     </button>
   </form>
 
@@ -152,13 +142,37 @@ async function submit(): Promise<void> {
     {{ t("login.noAccount") }}
     <RouterLink :to="{ name: 'signup' }">{{ t("login.signupLink") }}</RouterLink>
   </p>
+    </div>
+
+    <!-- Trying the site without an account: the two demo accounts -->
+    <section class="demo">
+      <h2>{{ t("demo.title") }}</h2>
+      <p>{{ t("demo.text") }}</p>
+      <p class="buttons">
+        <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('candidate')">
+          {{ t("demo.candidate") }}
+        </button>
+        <button type="button" class="primary" :disabled="demoSending" @click="tryDemo('employer')">
+          {{ t("demo.employer") }}
+        </button>
+      </p>
+      <p v-if="demoError" class="error">{{ demoError }}</p>
+    </section>
+  </div>
 </template>
 
 <style scoped>
-/* The demo, in a box of the light blue above the form */
+/* The form and the demo side by side, the form on the left */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 440px);
+  gap: 24px 64px;
+  align-items: start;
+}
+
+/* The demo, in a box of the light blue */
 .demo {
-  max-width: 560px;
-  margin: 0 0 24px;
+  margin: 0;
   padding: 16px 20px;
   border: 1px solid var(--mt-blue-border);
   border-radius: 12px;
@@ -180,5 +194,17 @@ async function submit(): Promise<void> {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 12px !important;
+}
+
+/* Narrow window: one column, the demo first, above the form. Last, so
+   that it wins over the rules above */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo {
+    order: -1;
+  }
 }
 </style>
