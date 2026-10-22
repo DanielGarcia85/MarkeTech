@@ -109,6 +109,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Required by allauth: gives it access to the current request
     "allauth.account.middleware.AccountMiddleware",
+    # Refuses the changes of address and password to a demo account
+    "demo.middleware.DemoGuardMiddleware",
 ]
 
 # ── Authentication ────────────────────────────────────────────────────
@@ -273,6 +275,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+    # A demo account, open to anyone, writes 60 times an hour at most;
+    # nobody else is limited (demo/throttles.py)
+    "DEFAULT_THROTTLE_CLASSES": [
+        "demo.throttles.DemoWriteThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "demo": "60/hour",
+    },
 }
 
 # ── Email ─────────────────────────────────────────────────────────────

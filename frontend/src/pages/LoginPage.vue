@@ -10,7 +10,10 @@
   logged in, the visitor goes to the page they were asking for, given in
   the address as ?next= by the router or by a link, or to the home page (a
   user already logged in never reaches this page: the router sends them
-  home).
+  home). Beside the form, on its right, a box to try the site without an
+  account (above it on a narrow window): a box to accept the terms of use,
+  then two buttons, active once it is ticked, open the demo candidate or
+  the demo employer (api/demo.ts), shared accounts made again every night. The link "Try the demo" of the header leads here.
 -->
 
 <script setup lang="ts">
@@ -18,8 +21,10 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import type { Role } from "../api/account";
+import { demoLogin } from "../api/demo";
 import { errorsByParam } from "../api/http";
-import { login } from "../session";
+import { loadSession, login } from "../session";
 
 const { t } = useI18n();
 const route = useRoute();
@@ -42,6 +47,32 @@ const password = ref("");
 const errors = ref<Record<string, string>>({});
 const sending = ref(false);
 const unverified = ref(false);
+
+// The terms accepted for the demo; the demo account being opened, and the
+// reason it could not be
+const demoTerms = ref(false);
+const demoSending = ref(false);
+const demoError = ref("");
+
+async function tryDemo(role: Role): Promise<void> {
+  demoSending.value = true;
+  demoError.value = "";
+  try {
+    const answer = await demoLogin(role);
+    if (answer.status === 200) {
+      // The session is open on the server: the header and the side bar
+      // learn who is logged in
+      await loadSession();
+      router.replace(next());
+    } else {
+      demoError.value = t("demo.unavailable");
+    }
+  } catch {
+    demoError.value = t("form.unreachable");
+  } finally {
+    demoSending.value = false;
+  }
+}
 
 async function submit(): Promise<void> {
   sending.value = true;
@@ -75,30 +106,34 @@ async function submit(): Promise<void> {
 
   <p v-if="unverified" class="notice">{{ t("login.unverified") }}</p>
 
-  <!-- novalidate: the backend checks the fields and answers in the language
-       of the interface, so the browser's own messages are not wanted -->
-  <form novalidate @submit.prevent="submit">
-    <p v-if="errors['']" class="error">{{ errors[""] }}</p>
+  <!-- The form on the left, the demo on the right; one under the other
+       on a narrow window, the demo first -->
+  <div class="layout">
+    <div class="login">
+      <!-- novalidate: the backend checks the fields and answers in the language
+           of the interface, so the browser's own messages are not wanted -->
+      <form novalidate @submit.prevent="submit">
+        <p v-if="errors['']" class="error">{{ errors[""] }}</p>
 
-    <div class="field">
-      <label for="email">{{ t("login.email") }}</label>
-      <input id="email" v-model="email" type="email" autocomplete="email" />
-      <p v-if="errors.email" class="error">{{ errors.email }}</p>
+        <div class="field">
+          <label for="email">{{ t("login.email") }}</label>
+          <input id="email" v-model="email" type="email" autocomplete="email" />
+          <p v-if="errors.email" class="error">{{ errors.email }}</p>
     </div>
 
     <div class="field">
-      <label for="password">{{ t("login.password") }}</label>
-      <input
-        id="password"
-        v-model="password"
-        type="password"
-        autocomplete="current-password"
-      />
-      <p v-if="errors.password" class="error">{{ errors.password }}</p>
+    <label for="password">{{ t("login.password") }}</label>
+    <input
+      id="password"
+      v-model="password"
+      type="password"
+      autocomplete="current-password"
+    />
+    <p v-if="errors.password" class="error">{{ errors.password }}</p>
     </div>
 
     <button type="submit" class="primary" :disabled="sending">
-      {{ t("login.submit") }}
+    {{ t("login.submit") }}
     </button>
   </form>
 
@@ -109,4 +144,95 @@ async function submit(): Promise<void> {
     {{ t("login.noAccount") }}
     <RouterLink :to="{ name: 'signup' }">{{ t("login.signupLink") }}</RouterLink>
   </p>
+    </div>
+
+    <!-- Trying the site without an account: the two demo accounts -->
+    <section class="demo">
+      <h2>{{ t("demo.title") }}</h2>
+      <p>{{ t("demo.text") }}</p>
+      <!-- The terms first, with their links in the text, as at sign-up -->
+      <label class="consent">
+        <input v-model="demoTerms" type="checkbox" />
+        <i18n-t keypath="demo.terms" tag="span">
+          <template #terms>
+            <RouterLink :to="{ name: 'terms' }" target="_blank">{{ t("signup.termsLink") }}</RouterLink>
+          </template>
+          <template #privacy>
+            <RouterLink :to="{ name: 'privacy' }" target="_blank">{{ t("signup.privacyLink") }}</RouterLink>
+          </template>
+        </i18n-t>
+      </label>
+      <p class="buttons">
+        <button type="button" class="primary" :disabled="demoSending || !demoTerms" @click="tryDemo('candidate')">
+          {{ t("demo.candidate") }}
+        </button>
+        <button type="button" class="primary" :disabled="demoSending || !demoTerms" @click="tryDemo('employer')">
+          {{ t("demo.employer") }}
+        </button>
+      </p>
+      <p v-if="demoError" class="error">{{ demoError }}</p>
+    </section>
+  </div>
 </template>
+
+<style scoped>
+/* The form and the demo side by side, the form on the left */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 440px);
+  gap: 24px 64px;
+  align-items: start;
+}
+
+/* The demo, in a box of the light blue */
+.demo {
+  margin: 0;
+  padding: 16px 20px;
+  border: 1px solid var(--mt-blue-border);
+  border-radius: 12px;
+  background: var(--mt-blue-surface);
+}
+
+.demo h2 {
+  margin: 0 0 6px;
+  color: var(--mt-blue-dark);
+  font-size: 1.15rem;
+}
+
+.demo p {
+  margin: 0;
+}
+
+/* The box of the terms and its sentence, side by side */
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.consent input {
+  flex: none;
+  margin-top: 5px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px !important;
+}
+
+/* Narrow window: one column, the demo first, above the form. Last, so
+   that it wins over the rules above */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .demo {
+    order: -1;
+  }
+}
+</style>

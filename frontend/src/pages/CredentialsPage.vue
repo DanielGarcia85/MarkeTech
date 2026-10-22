@@ -10,11 +10,13 @@
   in force until then and the pending one shown with the way to give it
   up; and a new password, given with the current one. Two forms side by
   side on a wide window, one under the other on a narrow one. The
-  password changed shows a short confirmation next to its button.
+  password changed shows a short confirmation next to its button. On a
+  demo account, both forms are shown disabled (the server refuses the
+  changes anyway: demo/middleware.py).
 -->
 
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import {
@@ -29,6 +31,9 @@ import { useSession } from "../session";
 
 const { t } = useI18n();
 const session = useSession();
+
+// A demo account keeps its address and its password
+const locked = computed(() => session.user?.is_demo === true);
 
 // ── The e-mail address ────────────────────────────────────────────────
 
@@ -160,9 +165,12 @@ async function submitPassword(): Promise<void> {
 <template>
   <h1>{{ t("credentials.title") }}</h1>
 
+  <p v-if="locked" class="notice">{{ t("demo.locked") }}</p>
+
   <div v-if="session.user" class="columns">
     <!-- The address, changed through a confirmation link -->
     <form novalidate class="section" @submit.prevent="submitEmail">
+      <fieldset :disabled="locked">
       <h2>{{ t("credentials.email") }}</h2>
       <p>{{ t("credentials.currentEmail", { email: session.user.email }) }}</p>
       <p v-if="emailSent" class="notice">{{ t("credentials.emailSent") }}</p>
@@ -181,10 +189,12 @@ async function submitPassword(): Promise<void> {
       <button type="submit" class="primary" :disabled="emailSending">
         {{ t("credentials.changeEmail") }}
       </button>
+      </fieldset>
     </form>
 
     <!-- The password, changed with the current one -->
     <form novalidate class="section" @submit.prevent="submitPassword">
+      <fieldset :disabled="locked">
       <h2>{{ t("credentials.password") }}</h2>
       <p v-if="passwordErrors['']" class="error">{{ passwordErrors[""] }}</p>
       <div class="field">
@@ -227,6 +237,7 @@ async function submitPassword(): Promise<void> {
         </button>
         <span v-if="badge" :key="badge.id" class="badge">{{ badge.text }}</span>
       </p>
+      </fieldset>
     </form>
   </div>
 </template>
@@ -252,6 +263,19 @@ h2 {
   margin: 10px 0 16px;
   color: var(--mt-blue);
   font-size: 1.35rem;
+}
+
+/* The frame that disables a whole form at once, without a look of its own */
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Disabled (a demo account): the fields greyed like the buttons */
+fieldset:disabled input {
+  background: var(--mt-surface);
+  cursor: not-allowed;
 }
 
 /* The address waiting for its link, with the way to give it up */

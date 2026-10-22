@@ -18,6 +18,8 @@ export type User = {
   display: string;
   has_usable_password: boolean;
   role: Role | "";
+  // An account of the public demonstration: shared, made again every night
+  is_demo: boolean;
 };
 
 // Answer of the calls that may open a session: the user, when logged in

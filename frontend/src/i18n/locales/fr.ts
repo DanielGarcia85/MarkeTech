@@ -22,6 +22,7 @@ const fr: typeof en = {
 
   // Header: session state and links of the account
   header: {
+    demo: "Essayer la démo",
     signup: "S'inscrire",
     login: "Se connecter",
     profile: "Mon profil",
@@ -49,6 +50,18 @@ const fr: typeof en = {
   // Empty lists: the way to the place where they get filled
   empty: {
     browse: "Voir les offres",
+  },
+
+  // Public demonstration: the demo accounts of the login page
+  demo: {
+    title: "Essayer la démo",
+    text: "Découvrez le site sans créer de compte, avec un compte de démonstration partagé et remis à zéro chaque nuit.",
+    terms: "En essayant la démo, vous acceptez les {terms} et avez lu la {privacy}.",
+    candidate: "Candidat·e",
+    employer: "Employeur",
+    unavailable: "La démo n'est pas disponible pour l'instant.",
+    band: "Compte de démo, remis à zéro chaque nuit.",
+    locked: "Compte de démo : l'adresse e-mail et le mot de passe ne sont pas modifiables.",
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
@@ -161,6 +174,7 @@ const fr: typeof en = {
         ],
         outro: [
           "L'administrateur du site voit toutes ces données dans son interface d'administration, pour faire fonctionner le site et répondre à vos demandes. Rien d'autre n'est collecté : pas de profilage, pas de publicité, pas de mesure d'audience.",
+          "Les deux comptes de démonstration sont partagés par tous les visiteurs : ce que vous y écrivez ou y déposez est vu par les suivants, jusqu'à leur remise à zéro chaque nuit. N'y mettez rien de personnel.",
         ],
       },
       cookies: {
@@ -212,13 +226,13 @@ const fr: typeof en = {
   // privacy page (title and paragraphs)
   terms: {
     title: "Conditions d'utilisation",
-    updated: "Dernière mise à jour : 20 octobre 2026",
+    updated: "Dernière mise à jour : 22 octobre 2026",
     sections: {
       purpose: {
         title: "Ce qu'est MarkeTech",
         intro: [
           "MarkeTech est un projet de démonstration réalisé par Daniel Garcia, à Genève, pour montrer son travail : une plateforme d'offres d'emploi pour les étudiants et les jeunes diplômés en informatique. Il n'a aucune activité commerciale : aucune offre n'engage qui que ce soit, personne n'est recruté par son intermédiaire, et rien n'y est vendu.",
-          "En créant un compte, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le site.",
+          "En créant un compte, ou en essayant un compte de démonstration, vous acceptez les présentes conditions. Si vous ne les acceptez pas, n'utilisez pas le site.",
         ],
       },
       account: {
@@ -226,6 +240,7 @@ const fr: typeof en = {
         intro: [
           "Un compte est personnel : une personne, une adresse e-mail qui vous appartient, un mot de passe que vous gardez pour vous. Vous choisissez votre rôle à l'inscription, candidat ou employeur, et vous répondez de ce qui est fait avec votre compte.",
           "Vous pouvez demander la suppression de votre compte à tout moment, en écrivant à {contact} depuis l'adresse du compte ; tout ce qui s'y rattache est supprimé avec lui.",
+          "Deux comptes de démonstration, une candidate et un employeur, s'ouvrent sans mot de passe depuis la page de connexion. Ils sont partagés par tous les visiteurs, leur adresse et leur mot de passe ne se changent pas, et ils sont remis à zéro chaque nuit : tout ce qui y a été fait disparaît, y compris ce qui relie votre propre compte à eux (une candidature à une de leurs offres, ses messages, vos favoris sur ces offres). Votre compte lui-même et ce qui ne dépend que de lui restent.",
         ],
       },
       use: {

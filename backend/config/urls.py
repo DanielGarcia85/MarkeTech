@@ -48,4 +48,6 @@ urlpatterns = [
     path("api/", include("favorites.urls")),
     # Messaging API: the conversations of the applications in progress
     path("api/", include("messaging.urls")),
+    # Demo API: the login to a demo account, for any visitor
+    path("api/", include("demo.urls")),
 ]
