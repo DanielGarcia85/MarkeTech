@@ -11,7 +11,7 @@
   colour). A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
   profile, the way to log out. A visitor gets the links to sign up and to
-  log in, and under them the way to the demo.
+  log in, then the way to the demo.
 -->
 
 <script setup lang="ts">
@@ -114,8 +114,8 @@ async function leave(): Promise<void> {
           </button>
         </div>
       </div>
-      <!-- A visitor: the two links of the account, and under them the way
-           to the demo, which is on the login page, beside the form -->
+      <!-- A visitor: the two links of the account, then the way to the
+           demo, smaller, which is on the login page, beside the form -->
       <div v-else class="visitor">
         <p class="links">
           <RouterLink :to="{ name: 'signup' }">{{ t("header.signup") }}</RouterLink>
@@ -157,9 +157,9 @@ async function leave(): Promise<void> {
    links get the same share of the width, so that the line sits in the
    middle whatever their own widths (the links of a visitor are wider than
    the round of a user). Hidden below the width where the three no longer
-   fit on one line (the links of a visitor, in French, decide it: 1090 px,
-   the demo under the two links, measured on 22.10.2026): the logo and the
-   links then fill the header and share it as they need */
+   fit on one line (the links of a visitor, in French, with the demo,
+   decide it: 1340 px, measured on 22.10.2026): the logo and the links
+   then fill the header and share it as they need */
 .about {
   flex: none;
   margin: 0;
@@ -168,14 +168,14 @@ async function leave(): Promise<void> {
   text-align: center;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1340px) {
   .brand,
   .nav {
     flex: 1 1 0;
   }
 }
 
-@media (max-width: 1099px) {
+@media (max-width: 1339px) {
   .about {
     display: none;
   }
@@ -192,12 +192,11 @@ async function leave(): Promise<void> {
   margin-left: auto;
 }
 
-/* A visitor: the two links on a line, the demo under them, on the right */
+/* A visitor: the two links, then the demo, on one line */
 .visitor {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+  align-items: baseline;
+  gap: 16px;
 }
 
 .links {
@@ -206,10 +205,11 @@ async function leave(): Promise<void> {
   margin: 0;
 }
 
-/* The way to the demo: a link like the others, in the dark of the accent */
+/* The way to the demo: a link like the others, smaller, in the dark of
+   the accent */
 .nav a.demo {
   color: var(--mt-accent-dark);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 /* The round and its menu: the menu is placed from the round */
