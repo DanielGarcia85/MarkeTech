@@ -17,13 +17,16 @@ Then the API as the pages will use it: only the employer proposes, while
 the application is in progress, one pending at a time; only the candidate
 answers, once, with a message; only the employer cancels, before the
 appointment; nobody else reaches them; what is news, marked seen once
-read; the appointments of a user over a period.
+read; the appointments of a user over a period; an accepted appointment
+to come as a calendar file, its texts escaped and its lines folded as
+the format asks.
 """
 
 import json
 import shutil
 import tempfile
-from datetime import timedelta
+from datetime import UTC, timedelta
+from zoneinfo import ZoneInfo
 
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -36,6 +39,7 @@ from applications.models import JobApplication
 from offers.models import JobOffer
 from profiles.models import CandidateProfile, EmployerProfile
 
+from .ics import fold
 from .models import Appointment
 
 PASSWORD = "Correct-horse-9"
@@ -385,3 +389,66 @@ class AppointmentApiTests(TestCase):
         self.assertEqual(response.json(), {"start": ["Give a date or a time."]})
         # Somebody else's appointments are not theirs
         self.assertEqual(self.login(self.stranger).get("/api/appointments/").json(), [])
+
+    # ── The calendar file ─────────────────────────────────────────────
+
+    def calendar(self, client, pk):
+        return client.get("/api/appointments/%d/calendar/" % pk)
+
+    def test_an_accepted_appointment_to_come_is_a_calendar_file(self):
+        candidate, employer = self.login(self.candidate), self.login(self.employer)
+        note = "Bring your laptop, your CV; and a smile.\nSecond floor."
+        pk = self.propose(employer, note=note, duration=90).json()["id"]
+        # Pending: not in an agenda yet
+        self.assertEqual(self.calendar(candidate, pk).status_code, 404)
+        self.answer(candidate, pk)
+        response = self.calendar(candidate, pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/calendar; charset=utf-8")
+        appointment = Appointment.objects.get(pk=pk)
+        day = timezone.localtime(appointment.starts_at, ZoneInfo("Europe/Zurich")).date()
+        self.assertEqual(
+            response["Content-Disposition"], f'attachment; filename="rendez-vous-{day}.ics"'
+        )
+        body = response.content.decode()
+        # Every line ended by CRLF and never longer than 75 bytes
+        lines = body.split("\r\n")
+        self.assertEqual(lines[-1], "")
+        self.assertTrue(all(len(line.encode()) <= 75 for line in lines))
+        unfolded = body.replace("\r\n ", "").split("\r\n")
+        self.assertEqual(unfolded[:2], ["BEGIN:VCALENDAR", "VERSION:2.0"])
+        self.assertIn("UID:appointment-%d@testserver" % pk, unfolded)
+        start = appointment.starts_at.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+        end = appointment.ends_at.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+        self.assertIn("DTSTART:" + start, unfolded)
+        self.assertIn("DTEND:" + end, unfolded)
+        self.assertIn("SUMMARY:Python developer · Acme", unfolded)
+        self.assertIn("LOCATION:Rue du Rhône 1\\, Genève", unfolded)
+        self.assertIn(
+            "DESCRIPTION:Bring your laptop\\, your CV\\; and a smile.\\nSecond floor.", unfolded
+        )
+        # The employer gets the candidate's name as the other participant
+        body = self.calendar(employer, pk).content.decode()
+        self.assertIn("SUMMARY:Python developer · Léa Martin", body.replace("\r\n ", ""))
+
+    def test_no_calendar_file_for_another_appointment_or_another_user(self):
+        candidate, employer = self.login(self.candidate), self.login(self.employer)
+        pk = self.propose(employer).json()["id"]
+        self.answer(candidate, pk)
+        self.assertEqual(self.calendar(self.login(self.stranger), pk).status_code, 404)
+        # Taken place already
+        Appointment.objects.filter(pk=pk).update(starts_at=timezone.now() - timedelta(hours=2))
+        self.assertEqual(self.calendar(candidate, pk).status_code, 404)
+        # Cancelled
+        pk = self.propose(employer, days=5).json()["id"]
+        self.answer(candidate, pk)
+        self.cancel(employer, pk)
+        self.assertEqual(self.calendar(candidate, pk).status_code, 404)
+
+    def test_a_long_line_is_folded_between_characters(self):
+        line = "SUMMARY:" + "é" * 80
+        folded = fold(line)
+        parts = folded.split("\r\n")
+        self.assertTrue(all(len(part.encode()) <= 75 for part in parts))
+        self.assertTrue(all(part.startswith(" ") for part in parts[1:]))
+        self.assertEqual(folded.replace("\r\n ", ""), line)

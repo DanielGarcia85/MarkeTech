@@ -27,6 +27,8 @@ Routes (appointments/urls.py, under /api/)
   GET   appointments/                    mine (?start=…&end=…, ISO dates or
                                          times, end excluded)
   GET   appointments/unseen/             {count, applications: {id: count}}
+  GET   appointments/<id>/calendar/      the appointment as a calendar file
+                                         (.ics), accepted and to come only
 
 Who may do what
 ───────────────
@@ -48,9 +50,11 @@ again cancels it, in the same transaction, without notice to anyone.
 """
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from django.db import transaction
 from django.db.models import Count, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
@@ -61,6 +65,7 @@ from rest_framework.views import APIView
 
 from applications.models import JobApplication
 
+from .ics import to_ics
 from .models import Appointment
 from .serializers import (
     AnswerSerializer,
@@ -282,3 +287,36 @@ class UnseenView(APIView):
         )
         applications = {str(row["application"]): row["count"] for row in rows}
         return Response({"count": sum(applications.values()), "applications": applications})
+
+
+# The day in the name of a calendar file: the day in Geneva, where the
+# site is used (the database keeps UTC)
+GENEVA = ZoneInfo("Europe/Zurich")
+
+
+class CalendarView(APIView):
+    """An accepted appointment still to come, as a calendar file to open in
+    one's agenda (decisions of 22.10.2026). Any other appointment, or one
+    the user takes no part in: 404."""
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        appointments = loaded(Appointment.objects.filter(mine(request.user))).filter(
+            status=Appointment.Status.ACCEPTED, starts_at__gt=timezone.now()
+        )
+        appointment = get_object_or_404(appointments, pk=pk)
+        application = appointment.application
+        if application.candidate.user_id == request.user.pk:
+            other = application.offer.employer.company_name
+        else:
+            person = application.candidate.user
+            other = person.get_full_name() or person.email
+        title = f"{application.offer.title} · {other}"
+        domain = request.get_host().split(":")[0]
+        response = HttpResponse(
+            to_ics(appointment, title, domain), content_type="text/calendar; charset=utf-8"
+        )
+        day = timezone.localtime(appointment.starts_at, GENEVA).date().isoformat()
+        response["Content-Disposition"] = f'attachment; filename="rendez-vous-{day}.ics"'
+        return response
