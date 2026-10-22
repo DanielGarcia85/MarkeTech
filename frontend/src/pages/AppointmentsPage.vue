@@ -9,14 +9,15 @@
   while it waits for an answer, green accepted, red declined, grey
   cancelled or expired. A click on one shows its card under the calendar,
   with the offer, the other participant, the way to the conversation, and
-  the buttons of the user's side (answer, cancel). Next to it, the
+  the buttons of the user's side (answer, cancel); the page scrolls just
+  enough for the whole card to be seen. Next to it, the
   appointments to come. The calendar asks the API for the period it shows,
   again at every change of view; reading marks the news seen, after which
   the counts of the side bar are read again (notifications.ts).
 -->
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
@@ -100,9 +101,20 @@ async function loadComing(): Promise<void> {
   }
 }
 
+// The card of the appointment chosen, under the calendar
+const card = ref<{ $el: HTMLElement } | null>(null);
+
+// Shows an appointment under the calendar, and scrolls down to it when
+// the window does not show it whole
+async function show(id: number): Promise<void> {
+  selectedId.value = id;
+  await nextTick();
+  card.value?.$el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
 // A click on an event of the calendar
 function select(event: { id: number }): void {
-  selectedId.value = event.id;
+  show(event.id);
 }
 
 // An answer or a cancellation: the appointment takes its new state in both lists
@@ -155,7 +167,7 @@ onMounted(loadComing);
       <EmptyState v-if="coming.length === 0" icon="calendar" :text="t('appointments.noneComing')" />
       <ul v-else>
         <li v-for="appointment in coming" :key="appointment.id">
-          <button type="button" class="line" :class="appointment.state" @click="selectedId = appointment.id">
+          <button type="button" class="line" :class="appointment.state" @click="show(appointment.id)">
             <span class="dot" aria-hidden="true"></span>
             <span>
               <strong>{{ short(appointment) }}</strong>
@@ -170,6 +182,7 @@ onMounted(loadComing);
 
   <AppointmentCard
     v-if="selected"
+    ref="card"
     class="selected"
     :appointment="selected"
     :role="role"
@@ -197,7 +210,7 @@ onMounted(loadComing);
 }
 
 .calendar {
-  height: 600px;
+  height: 440px;
   border: 1px solid var(--mt-border);
   border-radius: 10px;
   overflow: hidden;
