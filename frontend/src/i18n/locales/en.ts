@@ -132,7 +132,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 21 October 2026",
+    updated: "Last updated: 22 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -151,7 +151,7 @@ export default {
           { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
           { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
-          { term: "Messages", text: "Exchanged between a candidate and an employer about an application: subject, text, dates. Only the two of them can read them." },
+          { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application (withdrawn by the candidate, or an account or an offer deleted). No e-mail tells you of a new message: the site shows it when you log in." },
           { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
           { term: "Appointments", text: "Proposed by an employer about an application: date and time, description, the candidate's answer and the message that goes with it." },
           { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name and last name, visible to every visitor." },
