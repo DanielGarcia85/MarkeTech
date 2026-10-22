@@ -61,6 +61,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     cover_letter = serializers.SerializerMethodField()
     attachments = serializers.SerializerMethodField()
     history = serializers.SerializerMethodField()
+    unseen = serializers.SerializerMethodField()
 
     class Meta:
         model = JobApplication
@@ -75,6 +76,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             "history",
             "created_at",
             "updated_at",
+            "unseen",
         ]
         read_only_fields = fields
 
@@ -134,6 +136,11 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             {"status": change.status, "changed_at": change.changed_at}
             for change in application.history.all()
         ]
+
+    def get_unseen(self, application):
+        """Whether it brings news the user had not seen before this answer:
+        annotated by the list of the view, false anywhere else."""
+        return bool(getattr(application, "unseen", False))
 
 
 # ── Applying ──────────────────────────────────────────────────────────

@@ -33,6 +33,11 @@ in_progress, accepted, rejected: set by the employer. Every state the
 application goes through is recorded in its history by save(), whoever
 changes it (the API, the admin site): the original project had the table
 and never filled it.
+
+The history is also what is notified (decisions of 22.10.2026): the line
+"received" is news for the employer, every later line news for the
+candidate. seen_at stays empty until its recipient has seen it, in the
+list of their applications; the side bar counts what is still unseen.
 """
 
 from django.db import models
@@ -166,6 +171,9 @@ class StatusChange(models.Model):
     )
     status = models.CharField(max_length=11, choices=JobApplication.Status.choices)
     changed_at = models.DateTimeField(auto_now_add=True)
+    # When its recipient saw it: the employer for "received", the candidate
+    # for the others; empty until then
+    seen_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         # Oldest first: the history reads as a timeline

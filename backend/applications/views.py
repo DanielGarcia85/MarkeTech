@@ -16,7 +16,9 @@ Routes (applications/urls.py, under /api/, built by the router)
 ───────────────────────────────────────────────────────────────
   GET     applications/                     mine: candidate, their own;
                                             employer, those to their offers
-                                            (?offer=<id>, ?status=<status>)
+                                            (?offer=<id>, ?status=<status>);
+                                            marks their news seen
+  GET     applications/unseen/              how many bring news: {count}
   GET     applications/<id>/                one of the above
   POST    applications/                     candidate: apply (multipart)
   DELETE  applications/<id>/                candidate: withdraw, before the
@@ -44,12 +46,22 @@ the conversation when the application goes in progress, the last one when
 it is decided (decisions of 21.10.2026). It is written here, with the
 move, in one transaction: the only place where this API knows of the
 messaging (messaging/models.py), which otherwise depends on it.
+
+The news
+────────
+An application brings news to the employer when it arrives, to the
+candidate when its state moves (decisions of 22.10.2026): the lines of its
+history, "received" for the one, the others for the other, unseen until
+seen_at is set. The list says which applications bring news (unseen), as
+they were before the request, then marks them seen; unseen/ counts them
+for the side bar.
 """
 
 import os
 
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
+from django.utils import timezone
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
@@ -61,11 +73,23 @@ from messaging.models import MAX_LENGTH, Message
 from offers.views import IsCandidate, IsEmployer, is_candidate, is_employer
 from profiles.models import CandidateProfile
 
-from .models import JobApplication
+from .models import JobApplication, StatusChange
 from .serializers import ApplySerializer, JobApplicationSerializer
 
 # ── Who is asking ─────────────────────────────────────────────────────
 # The roles and their permissions are those of offers/views.py
+
+
+def news_for(user):
+    """The lines of history that are news to the user: the arrivals of the
+    applications to their offers for an employer, the moves of their
+    applications for a candidate, nothing for anyone else."""
+    received = Q(status=JobApplication.Status.RECEIVED)
+    if is_employer(user):
+        return received & Q(application__offer__employer__user=user)
+    if is_candidate(user):
+        return ~received & Q(application__candidate__user=user)
+    return Q(pk__in=[])
 
 
 def candidate_profile_of(user):
@@ -142,6 +166,31 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             applications = self.filtered(applications)
         return applications
+
+    def list(self, request, *args, **kwargs):
+        """The list, each application saying whether it brings news; the
+        news of the applications listed are seen from then on (the answer
+        is made before they are marked)."""
+        unseen = StatusChange.objects.filter(
+            news_for(request.user), application=OuterRef("pk"), seen_at__isnull=True
+        )
+        applications = list(self.get_queryset().annotate(unseen=Exists(unseen)))
+        data = self.get_serializer(applications, many=True).data
+        StatusChange.objects.filter(
+            news_for(request.user),
+            application__in=[a.pk for a in applications if a.unseen],
+            seen_at__isnull=True,
+        ).update(seen_at=timezone.now())
+        return Response(data)
+
+    @action(detail=False, methods=["get"])
+    def unseen(self, request):
+        """How many of one's applications bring news not seen yet."""
+        news = StatusChange.objects.filter(news_for(request.user), seen_at__isnull=True)
+        # order_by(): the default order of the history would be added to the
+        # columns made distinct, and count each line instead of each application
+        count = news.order_by().values("application").distinct().count()
+        return Response({"count": count})
 
     def filtered(self, applications):
         """The filters of the list, in the query string: ?offer=<id> and

@@ -24,7 +24,7 @@ class StatusChangeInline(admin.TabularInline):
     model = StatusChange
     extra = 0
     can_delete = False
-    readonly_fields = ("status", "changed_at")
+    readonly_fields = ("status", "changed_at", "seen_at")
 
     def has_add_permission(self, request, obj=None):
         """No row added by hand: a change of status adds its own."""
