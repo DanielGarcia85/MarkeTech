@@ -1079,28 +1079,28 @@ APPLICATIONS = [
         "unread": 2,
         "appointments": [
             {
-                # Declined: the candidate is not free that day
+                # Declined: the candidate is not free at that time
                 "created": (4, "16:00"),
-                "starts": (-2, "14:00"),
+                "starts": (-6, "09:30"),
                 "duration": 45,
                 "place": "Par téléphone, je vous appelle",
                 "status": "declined",
                 "response": (
-                    "Merci pour la proposition. Je suis en formation toute la journée jeudi ; "
-                    "vendredi matin me conviendrait très bien."
+                    "Merci pour la proposition. Je suis en formation ce matin-là ; l'après-midi du "
+                    "même jour me conviendrait très bien."
                 ),
                 "answered": (3, "09:30"),
             },
             {
-                # Proposed again for the Friday, accepted: news for the employer
+                # Proposed again for the afternoon, accepted: news for the employer
                 "created": (3, "11:00"),
-                "starts": (-3, "09:30"),
+                "starts": (-6, "16:00"),
                 "duration": 45,
                 "place": "Par téléphone, je vous appelle",
                 "note": "Échange avec le responsable QA sur vos parcours Playwright.",
                 "status": "accepted",
                 "response": (
-                    "Vendredi 9 h 30 me convient, merci. Je reste joignable au numéro de mon "
+                    "16 h me convient très bien, merci. Je reste joignable au numéro de mon "
                     "profil."
                 ),
                 "answered": (1, "12:05"),
@@ -1355,9 +1355,14 @@ GENEVA = ZoneInfo("Europe/Zurich")
 
 def at(days_ago, time):
     """The time "HH:MM" in Geneva of the day days_ago days before today,
-    or after it when days_ago is negative: the start of an appointment."""
+    or after it when days_ago is negative: the start of an appointment.
+    Always on a working day, the seed being made again every night: a
+    Saturday or a Sunday moves back to the Friday for a day past, on to the
+    Monday for a day to come."""
     hour, minute = (int(part) for part in time.split(":"))
     day = timezone.localtime(timezone=GENEVA) - timedelta(days=days_ago)
+    while day.weekday() >= 5:
+        day += timedelta(days=1 if days_ago < 0 else -1)
     return day.replace(hour=hour, minute=minute, second=0, microsecond=0)
 
 
