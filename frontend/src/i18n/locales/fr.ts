@@ -41,6 +41,9 @@ const fr: typeof en = {
     account: "Mon compte",
     profile: "Profil",
     credentials: "Identifiants",
+    messaging: "Messagerie",
+    openConversations: "Ouvertes",
+    closedConversations: "Closes",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -523,8 +526,34 @@ const fr: typeof en = {
       rejected: "Refuser",
     },
     confirm: {
-      accepted: "Accepter la candidature de {name} ?",
-      rejected: "Refuser la candidature de {name} ?",
+      in_progress: "Mettre en cours la candidature de {name} ? La conversation s'ouvre avec le candidat.",
+      accepted: "Accepter la candidature de {name} ? La conversation sera close.",
+      rejected: "Refuser la candidature de {name} ? La conversation sera close.",
+    },
+    firstMessage: "Premier message au candidat (facultatif)",
+    lastMessage: "Dernier message au candidat (facultatif)",
+  },
+
+  // Messaging: the conversations of the applications in progress
+  messaging: {
+    openTitle: "Conversations ouvertes",
+    closedTitle: "Conversations closes",
+    noneOpen: "Aucune conversation ouverte. Une conversation s'ouvre quand l'employeur met une candidature en cours.",
+    noneClosed: "Aucune conversation close. Une conversation se ferme quand la candidature est acceptée ou refusée.",
+    loadFailed: "Les conversations n'ont pas pu être chargées.",
+    notFound: "Cette conversation n'existe pas, ou n'est pas la vôtre.",
+    you: "Vous :",
+    button: "Messages",
+    placeholder: "Votre message",
+    hint: "Ctrl + Entrée pour envoyer",
+    send: "Envoyer",
+    read: "lu",
+    emptyOpen: "Aucun message pour l'instant : écrivez le premier.",
+    emptyClosed: "Aucun message n'a été échangé.",
+    closed: {
+      received: "La conversation s'ouvrira quand l'employeur prendra la candidature en charge.",
+      accepted: "Conversation close : la candidature a été acceptée.",
+      rejected: "Conversation close : la candidature a été refusée.",
     },
   },
 

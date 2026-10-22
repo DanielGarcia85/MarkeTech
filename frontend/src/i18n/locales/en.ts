@@ -39,6 +39,9 @@ export default {
     account: "My account",
     profile: "Profile",
     credentials: "Login details",
+    messaging: "Messaging",
+    openConversations: "Open",
+    closedConversations: "Closed",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -521,8 +524,34 @@ export default {
       rejected: "Reject",
     },
     confirm: {
-      accepted: "Accept the application of {name}?",
-      rejected: "Reject the application of {name}?",
+      in_progress: "Move the application of {name} in progress? The conversation with the candidate opens.",
+      accepted: "Accept the application of {name}? The conversation will be closed.",
+      rejected: "Reject the application of {name}? The conversation will be closed.",
+    },
+    firstMessage: "First message to the candidate (optional)",
+    lastMessage: "Last message to the candidate (optional)",
+  },
+
+  // Messaging: the conversations of the applications in progress
+  messaging: {
+    openTitle: "Open conversations",
+    closedTitle: "Closed conversations",
+    noneOpen: "No open conversation. A conversation opens when the employer moves an application in progress.",
+    noneClosed: "No closed conversation. A conversation closes when the application is accepted or rejected.",
+    loadFailed: "The conversations could not be loaded.",
+    notFound: "This conversation does not exist, or is not yours.",
+    you: "You:",
+    button: "Messages",
+    placeholder: "Your message",
+    hint: "Ctrl + Enter to send",
+    send: "Send",
+    read: "read",
+    emptyOpen: "No message yet: write the first one.",
+    emptyClosed: "No message was exchanged.",
+    closed: {
+      received: "The conversation will open when the employer takes up the application.",
+      accepted: "Conversation closed: the application was accepted.",
+      rejected: "Conversation closed: the application was rejected.",
     },
   },
 

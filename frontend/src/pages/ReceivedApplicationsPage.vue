@@ -14,8 +14,8 @@
   offer is then named under the title, with its state and the way to its
   form, and a line above the title leads back to every application).
   Another employer's offer is "not found". The moves of the state are the
-  same for every card
-  (ApplicationCard, shared composable).
+  same for every card (ApplicationCard, shared composable); each card leads
+  to its conversation, with its unread messages, read with the list.
 -->
 
 <script setup lang="ts">
@@ -24,6 +24,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import { listApplications, type Application, type ApplicationStatus } from "../api/applications";
+import { listConversations } from "../api/messaging";
 import { getOffer, type Offer } from "../api/offers";
 import { useApplicationMoves, useApplicationText } from "../applications";
 import ApplicationCard from "../components/ApplicationCard.vue";
@@ -43,7 +44,19 @@ const loadFailed = ref(false);
 const offer = ref<Offer | null>(null);
 const notFound = ref(false);
 
-const { busy, errors, move } = useApplicationMoves(applications);
+// The unread messages of each application that has a conversation
+const unread = ref<Record<number, number>>({});
+
+async function loadConversations(): Promise<void> {
+  try {
+    const conversations = await listConversations();
+    unread.value = Object.fromEntries(conversations.map((c) => [c.application, c.unread]));
+  } catch {
+    // The cards show the way to the conversations in progress anyway
+  }
+}
+
+const { busy, errors, move } = useApplicationMoves(applications, loadConversations);
 
 // The filters, as the address says them: a state among the four or "" for
 // all, an offer by its number or 0 for all
@@ -81,6 +94,7 @@ async function load(): Promise<void> {
       return;
     }
   }
+  loadConversations();
   try {
     applications.value = await listApplications({
       ...(offerId.value ? { offer: offerId.value } : {}),
@@ -154,6 +168,7 @@ onMounted(load);
               :application="application"
               :busy="busy === application.id"
               :error="errors[application.id]"
+              :unread="unread[application.id]"
               @move="move(application, $event)"
             />
           </li>

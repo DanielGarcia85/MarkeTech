@@ -30,6 +30,8 @@ import ReceivedApplicationsPage from "./pages/ReceivedApplicationsPage.vue";
 import ApplyPage from "./pages/ApplyPage.vue";
 import MyApplicationsPage from "./pages/MyApplicationsPage.vue";
 import MyFavoritesPage from "./pages/MyFavoritesPage.vue";
+import ConversationsPage from "./pages/ConversationsPage.vue";
+import ConversationPage from "./pages/ConversationPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import type { Role } from "./api/account";
 import { useSession, whenLoaded } from "./session";
@@ -73,6 +75,10 @@ export const router = createRouter({
     { path: "/employer/offers/:id(\\d+)/edit", name: "offerEdit", component: OfferFormPage, meta: { requiresRole: "employer" } },
     // The applications received by an employer, all of them or one offer's (?offer=)
     { path: "/employer/applications", name: "receivedApplications", component: ReceivedApplicationsPage, meta: { requiresRole: "employer" } },
+    // The conversations of the applications: open, closed, one of them
+    { path: "/messages", name: "conversations", component: ConversationsPage, props: { closed: false }, meta: { requiresAuth: true } },
+    { path: "/messages/closed", name: "closedConversations", component: ConversationsPage, props: { closed: true }, meta: { requiresAuth: true } },
+    { path: "/messages/:id(\\d+)", name: "conversation", component: ConversationPage, meta: { requiresAuth: true } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed

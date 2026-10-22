@@ -5,7 +5,7 @@
 // The lines that the page of a candidate and the pages of an employer
 // share: a date, the state, the history as one line. And, for the page of
 // an employer, the move of an application from one state to the next,
-// with its confirmation and its errors. Composables, because the
+// with its confirmation, the message that may go with it, and its errors. Composables, because the
 // words and the date formats depend on the language displayed.
 
 import { ref, type Ref } from "vue";
@@ -13,7 +13,7 @@ import { useI18n } from "vue-i18n";
 
 import { setStatus, type Application, type ApplicationStatus } from "./api/applications";
 import { firstErrorOf } from "./api/offers";
-import { confirm } from "./confirm";
+import { confirmWithText } from "./confirm";
 
 export function useApplicationText() {
   const { t, locale } = useI18n();
@@ -45,10 +45,14 @@ export function useApplicationText() {
   return { date, status, history, name };
 }
 
-// The moves of an employer on a list of applications: in progress at
-// once, accepted or rejected after a confirmation; the answer replaces
-// the application in the list, or its reason is kept to be shown under it
-export function useApplicationMoves(applications: Ref<Application[] | null>) {
+// The moves of an employer on a list of applications, each after a
+// confirmation that offers an optional message: the first of the
+// conversation when the application goes in progress, the last one with a
+// decision (decisions of 21.10.2026). The answer replaces the application
+// in the list, or its reason is kept to be shown under it; "moved" is
+// called after a move that wrote a message (the page counts the
+// conversations again)
+export function useApplicationMoves(applications: Ref<Application[] | null>, moved?: () => void) {
   const { t } = useI18n();
   const text = useApplicationText();
 
@@ -58,18 +62,19 @@ export function useApplicationMoves(applications: Ref<Application[] | null>) {
   const errors = ref<Record<number, string>>({});
 
   async function move(application: Application, status: ApplicationStatus): Promise<void> {
-    if (status !== "in_progress") {
-      const question = t(`receivedApplications.confirm.${status}`, { name: text.name(application) });
-      if (!(await confirm(question, t(`receivedApplications.set.${status}`)))) return;
-    }
+    const question = t(`receivedApplications.confirm.${status}`, { name: text.name(application) });
+    const label = t(status === "in_progress" ? "receivedApplications.firstMessage" : "receivedApplications.lastMessage");
+    const message = await confirmWithText(question, t(`receivedApplications.set.${status}`), label);
+    if (message === null) return;
     delete errors.value[application.id];
     busy.value = application.id;
     try {
-      const answer = await setStatus(application.id, status);
+      const answer = await setStatus(application.id, status, message);
       if (answer.status === 200 && answer.data) {
         applications.value = (applications.value ?? []).map((item) =>
           item.id === application.id ? answer.data! : item,
         );
+        if (message) moved?.();
       } else {
         errors.value[application.id] = firstErrorOf(answer.data) || t("form.failed");
       }
