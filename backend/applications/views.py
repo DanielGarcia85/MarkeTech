@@ -22,7 +22,8 @@ Routes (applications/urls.py, under /api/, built by the router)
   DELETE  applications/<id>/                candidate: withdraw, before the
                                             employer decided
   POST    applications/<id>/status/         employer: in_progress, accepted
-                                            or rejected
+                                            or rejected, with an optional
+                                            message for the candidate
   GET     applications/<id>/cv/             the CV, as a file
   GET     applications/<id>/cover-letter/   the letter, as a file
   GET     applications/<id>/attachments/<id>/  one joined document
@@ -35,10 +36,19 @@ role gets 403. Then everyone only ever reaches their own applications, the
 candidate those they sent, the employer those to their offers: another
 one's answers 404, never 403 (the API does not say what exists). No PATCH:
 an application is not edited once sent, its state moves by its own route.
+
+The message of a move
+─────────────────────
+A move of the state may carry a message from the employer: the first of
+the conversation when the application goes in progress, the last one when
+it is decided (decisions of 21.10.2026). It is written here, with the
+move, in one transaction: the only place where this API knows of the
+messaging (messaging/models.py), which otherwise depends on it.
 """
 
 import os
 
+from django.db import transaction
 from django.db.models import Q
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -47,6 +57,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from messaging.models import MAX_LENGTH, Message
 from offers.views import IsCandidate, IsEmployer, is_candidate, is_employer
 from profiles.models import CandidateProfile
 
@@ -168,7 +179,10 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="status")
     def change_status(self, request, pk=None):
         """Employer: in_progress, accepted or rejected, any of them from any
-        state but the same; the model records the change in the history."""
+        state but the same; the model records the change in the history.
+        An optional message goes to the conversation, written after the
+        move (so that a first message finds the application in progress)
+        and in the same transaction: both or neither."""
         application = get_object_or_404(self.get_queryset(), pk=pk)
         new_status = request.data.get("status")
         if new_status not in EMPLOYER_STATUSES:
@@ -177,8 +191,15 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         if new_status == application.status:
             message = "The application is already in this status."
             raise ValidationError({"non_field_errors": [message]})
-        application.status = new_status
-        application.save()
+        text = str(request.data.get("message") or "").strip()
+        if len(text) > MAX_LENGTH:
+            message = f"A message has at most {MAX_LENGTH} characters."
+            raise ValidationError({"message": [message]})
+        with transaction.atomic():
+            application.status = new_status
+            application.save()
+            if text:
+                Message.objects.create(application=application, author=request.user, body=text)
         return Response(self.get_serializer(application).data, status=status.HTTP_200_OK)
 
     # ── The files ─────────────────────────────────────────────────────

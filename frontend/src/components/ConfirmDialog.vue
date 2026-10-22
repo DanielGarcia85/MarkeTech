@@ -6,14 +6,16 @@
   Placed once by App.vue, invisible until a page calls confirm(). Built on
   the browser's <dialog> element, opened as a modal: the page behind is
   greyed and cannot be clicked, the focus stays in the box, and Escape
-  closes it. The box itself is styled like the rest of the site.
+  closes it. The box itself is styled like the rest of the site. When the
+  question asks for a text (confirmWithText), a text area under it, the
+  focus in it; the box is then wider.
 -->
 
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import { answer, useConfirm } from "../confirm";
+import { answer, draft, useConfirm } from "../confirm";
 
 const { t } = useI18n();
 const state = useConfirm();
@@ -50,13 +52,17 @@ function clickOutside(event: MouseEvent): void {
     @cancel.prevent="answer(false)"
     @click="clickOutside"
   >
-    <div class="box">
+    <div class="box" :class="{ wide: state.question.textLabel }">
       <p class="question">{{ state.question.message }}</p>
+      <div v-if="state.question.textLabel" class="field">
+        <label for="confirm-text">{{ state.question.textLabel }}</label>
+        <textarea id="confirm-text" v-model="draft" rows="5" maxlength="2000" autofocus></textarea>
+      </div>
       <p class="choices">
         <button type="button" class="secondary" @click="answer(false)">
           {{ t("dialog.cancel") }}
         </button>
-        <button type="button" class="primary" autofocus @click="answer(true)">
+        <button type="button" class="primary" :autofocus="!state.question.textLabel" @click="answer(true)">
           {{ state.question.action }}
         </button>
       </p>
@@ -92,9 +98,25 @@ function clickOutside(event: MouseEvent): void {
   box-shadow: 0 16px 40px rgba(30, 41, 59, 0.2);
 }
 
+.box.wide {
+  max-width: 560px;
+  margin-top: 12vh;
+}
+
 .question {
   margin: 0 0 20px;
   font-size: 1.05rem;
+}
+
+.field textarea {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--mt-border);
+  border-radius: 6px;
+  color: var(--mt-text);
+  font: inherit;
+  resize: vertical;
 }
 
 /* The two buttons on the right, cancel first, the action last */

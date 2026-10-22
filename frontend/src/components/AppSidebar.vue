@@ -6,8 +6,10 @@
   Displayed by App.vue on the left of the page, for everyone: a visitor
   gets the list of the offers only, so that the pages keep the same layout
   before and after logging in; a logged-in user gets the links of their
-  role and their account (the profile, then the e-mail address and the
-  password), each link with a small drawing before it (Icon). One group
+  role, their conversations (open and closed, each with the number of
+  unread messages, kept fresh by messaging.ts) and their account (the
+  profile, then the e-mail address and the password), each link with a
+  small drawing before it (Icon). One group
   of links per area of the application; a group gets its links when the
   pages exist, never before. On a narrow
   window, the bar becomes a strip under the header, where each group keeps
@@ -15,13 +17,19 @@
 -->
 
 <script setup lang="ts">
+import { watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+import { followUnread, useUnread } from "../messaging";
 import { useSession } from "../session";
 import Icon from "./Icon.vue";
 
 const { t } = useI18n();
 const session = useSession();
+const unread = useUnread();
+
+// The counts follow whoever is logged in: read every minute, or emptied
+watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediate: true });
 </script>
 
 <template>
@@ -40,6 +48,17 @@ const session = useSession();
       </RouterLink>
       <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
         <Icon name="heart" />{{ t("nav.myFavorites") }}
+      </RouterLink>
+    </div>
+    <div v-if="session.user?.role" class="block">
+      <p class="group">{{ t("nav.messaging") }}</p>
+      <RouterLink :to="{ name: 'conversations' }">
+        <Icon name="chat" />{{ t("nav.openConversations") }}
+        <span v-if="unread.open" class="count">{{ unread.open }}</span>
+      </RouterLink>
+      <RouterLink :to="{ name: 'closedConversations' }">
+        <Icon name="archive" />{{ t("nav.closedConversations") }}
+        <span v-if="unread.closed" class="count">{{ unread.closed }}</span>
       </RouterLink>
     </div>
     <div v-if="session.user" class="block">
@@ -95,6 +114,22 @@ const session = useSession();
 .sidebar a:hover .icon,
 .sidebar a.router-link-active .icon {
   color: inherit;
+}
+
+/* The unread messages, a small round of the accent at the end of the link */
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--mt-accent);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .sidebar a:hover {

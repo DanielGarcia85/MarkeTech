@@ -1,7 +1,7 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts, offers, applications and favorites for a development database
+Seed demo — test accounts, offers, applications, favorites and messages for a development database
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
@@ -10,8 +10,12 @@ Fill a development database with what the pages need to be looked at: three
 candidates with a CV and documents, three employers with their company and
 its logo, ten job offers per employer spread over the cities, the
 contracts, the salaries and the last two months — eight published, one
-draft and one closed each — nine applications in every state, with their
-history, and eight favorites. Everything is invented, the files included:
+draft and one closed each — thirteen applications in every state, with
+their history, eight favorites, and conversations on the applications that
+were taken up: open ones, closed ones, some with unread messages. The two
+accounts to show the site with are candidat1@test.com (Léa Martin) and
+employeur1@test.com (Marc Rochat, Lémantech SA), between whom most of it
+happens (decision of 21.10.2026). Everything is invented, the files included:
 one-page PDFs written by the command itself (no library needed for a page
 of text), and logos drawn with Pillow (the initials of the company on a
 colour), which the image fields need anyway. The six accounts share one
@@ -20,7 +24,8 @@ password, printed at the end.
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
                                         profiles, offers, applications,
-                                        favorites and files go with them)
+                                        favorites, messages and files go
+                                        with them)
 
 Why a command and not a fixture
 ───────────────────────────────
@@ -38,6 +43,7 @@ off (a server) unless --force is given.
 
 from datetime import timedelta
 from io import BytesIO
+from zoneinfo import ZoneInfo
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -51,6 +57,7 @@ from accounts.models import User
 from applications.models import Attachment, JobApplication
 from applications.serializers import copy_of
 from favorites.models import Favorite
+from messaging.models import Message
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
 
@@ -817,6 +824,13 @@ EMPLOYERS = [
 # many days ago, with a cover letter or not, with which documents of their
 # profile, and the states it went through since: (state, days ago). An
 # application is never older than the publication of its offer.
+#
+# Its conversation, when it was taken up: (who, days ago, time, text), who
+# being "employer" or "candidate", oldest first; the first message comes
+# with the move in progress, the last one of a decided application with
+# the decision, as the API writes them. The last "unread" messages are left
+# unread by the other participant, the others read an hour after they were
+# sent.
 
 APPLICATIONS = [
     {
@@ -836,6 +850,202 @@ APPLICATIONS = [
         "letter": True,
         "documents": ["Diplome_HEG.pdf", "Certificat_travail.pdf"],
         "moves": [("in_progress", 6), ("accepted", 2)],
+        "messages": [
+            (
+                "employer",
+                6,
+                "09:00",
+                "Bonjour Madame Martin, merci pour votre candidature au poste d'ingénieure "
+                "DevOps. Pourriez-vous passer nous voir mardi à 10 h, à la Rue de Lausanne 45 ?",
+            ),
+            (
+                "candidate",
+                6,
+                "09:45",
+                "Bonjour Monsieur Rochat, avec plaisir : je serai là mardi à 10 h.",
+            ),
+            (
+                "employer",
+                4,
+                "17:30",
+                "Merci pour l'entretien de ce matin, l'équipe a beaucoup apprécié. Pourriez-vous "
+                "nous indiquer deux références ?",
+            ),
+            (
+                "candidate",
+                3,
+                "08:50",
+                "Bien sûr : mes deux anciens responsables sont d'accord d'être contactés. Je vous"
+                " transmets leurs coordonnées par e-mail aujourd'hui.",
+            ),
+            (
+                "employer",
+                2,
+                "15:00",
+                "Bonne nouvelle : nous retenons votre candidature ! Notre service des ressources "
+                "humaines vous appelle cette semaine pour le contrat. D'ici là, vous pouvez me "
+                "joindre au +41 22 000 00 10.",
+            ),
+        ],
+        "unread": 0,
+    },
+    {
+        # The liveliest conversation, open, its last two messages unread by
+        # the candidate
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Développeur·euse Full Stack Vue / Django",
+        "days_ago": 5,
+        "letter": True,
+        "documents": ["Diplome_HEG.pdf"],
+        "moves": [("in_progress", 4)],
+        "messages": [
+            (
+                "employer",
+                4,
+                "09:12",
+                "Bonjour Madame Martin, merci pour votre candidature. Votre expérience en Vue.js "
+                "et en Java nous intéresse beaucoup. Seriez-vous disponible pour un premier "
+                "échange de trente minutes en visioconférence cette semaine ?",
+            ),
+            (
+                "candidate",
+                4,
+                "11:40",
+                "Bonjour Monsieur Rochat, merci pour votre retour. Avec plaisir : je suis "
+                "disponible jeudi ou vendredi après 14 h.",
+            ),
+            (
+                "employer",
+                3,
+                "08:55",
+                "Parfait, va pour jeudi à 14 h 30, je vous envoie le lien la veille. Sur quel "
+                "projet Vue avez-vous travaillé en dernier ?",
+            ),
+            (
+                "candidate",
+                3,
+                "10:05",
+                "Une application interne de suivi des demandes, en Vue 3 et TypeScript, avec une "
+                "API Django REST. J'y ai repris l'authentification et la pagination des listes. "
+                "Je peux vous montrer le code.",
+            ),
+            (
+                "employer",
+                2,
+                "16:20",
+                "Merci pour cet échange très agréable. L'équipe aimerait vous proposer un "
+                "exercice technique d'une heure, à faire chez vous : une petite API Django et sa "
+                "page Vue. Cela vous convient-il ?",
+            ),
+            ("candidate", 2, "17:45", "Oui, très volontiers. Puis-je le faire ce week-end ?"),
+            (
+                "employer",
+                1,
+                "08:30",
+                "Bien sûr, prenez le temps qu'il vous faut. Je vous envoie l'énoncé ici lundi "
+                "matin.",
+            ),
+            (
+                "employer",
+                1,
+                "18:05",
+                "Petite précision : l'exercice se fait en Python 3.13 et Vue 3, sans bibliothèque"
+                " de composants.",
+            ),
+        ],
+        "unread": 2,
+    },
+    {
+        # Open, the last two messages of the candidate unread by the employer
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Testeur·euse QA automatisation",
+        "days_ago": 10,
+        "letter": False,
+        "documents": [],
+        "moves": [("in_progress", 8)],
+        "messages": [
+            (
+                "employer",
+                8,
+                "14:00",
+                "Bonjour, votre profil nous intéresse aussi pour ce poste : l'équipe écrit ses "
+                "tests de bout en bout avec Playwright. En avez-vous déjà écrit ?",
+            ),
+            (
+                "candidate",
+                8,
+                "18:22",
+                "Bonjour, oui : une quarantaine de parcours Playwright sur l'application de suivi"
+                " dont je parle dans mon CV.",
+            ),
+            (
+                "employer",
+                6,
+                "10:15",
+                "Très bien. Quelles seraient vos prétentions salariales pour ce poste à 80 % ?",
+            ),
+            (
+                "candidate",
+                3,
+                "09:40",
+                "Pour un 80 %, je me situe autour de 6 800 CHF par mois. Je peux commencer dès le"
+                " 1er décembre.",
+            ),
+            (
+                "candidate",
+                1,
+                "12:10",
+                "Bonjour, je me permets de revenir vers vous : avez-vous pu avancer sur ma "
+                "candidature ?",
+            ),
+        ],
+        "unread": 2,
+    },
+    {
+        # Taken up, nobody has written yet: the conversation is open, empty
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Développeur·euse mobile Android",
+        "days_ago": 4,
+        "letter": True,
+        "documents": ["Certificat_travail.pdf"],
+        "moves": [("in_progress", 1)],
+    },
+    {
+        # Rejected with a last message: closed, read only
+        "candidate": "candidat1@test.com",
+        "employer": "employeur1@test.com",
+        "offer": "Administrateur·trice systèmes Linux",
+        "days_ago": 18,
+        "letter": False,
+        "documents": [],
+        "moves": [("in_progress", 15), ("rejected", 9)],
+        "messages": [
+            (
+                "employer",
+                15,
+                "10:30",
+                "Bonjour, merci pour votre intérêt. Le poste comprend des astreintes le week-end "
+                ": est-ce compatible avec votre situation ?",
+            ),
+            (
+                "candidate",
+                14,
+                "19:05",
+                "Bonjour, des astreintes ponctuelles oui, mais pas tous les week-ends.",
+            ),
+            (
+                "employer",
+                9,
+                "11:00",
+                "Merci pour votre franchise. Nous avons retenu un profil davantage orienté "
+                "systèmes, disponible pour toutes les astreintes. Votre candidature au poste Full"
+                " Stack reste bien sûr ouverte de notre côté.",
+            ),
+        ],
+        "unread": 0,
     },
     {
         "candidate": "candidat1@test.com",
@@ -863,6 +1073,16 @@ APPLICATIONS = [
         "letter": False,
         "documents": [],
         "moves": [("in_progress", 1)],
+        "messages": [
+            (
+                "employer",
+                1,
+                "10:20",
+                "Bonjour, êtes-vous certifié AWS ? Si oui, laquelle de leurs certifications avez-"
+                "vous ?",
+            ),
+        ],
+        "unread": 1,
     },
     {
         "candidate": "candidat2@test.com",
@@ -872,6 +1092,23 @@ APPLICATIONS = [
         "letter": True,
         "documents": ["Certificat_CFC.pdf"],
         "moves": [("in_progress", 16), ("rejected", 12)],
+        "messages": [
+            (
+                "employer",
+                16,
+                "09:30",
+                "Bonjour, pouvez-vous me préciser votre expérience avec Ansible ?",
+            ),
+            ("candidate", 15, "20:10", "Bonjour, deux ans, sur une vingtaine de serveurs Debian."),
+            (
+                "employer",
+                12,
+                "16:45",
+                "Merci pour votre candidature. Nous avons retenu un profil plus expérimenté en "
+                "virtualisation. Bonne continuation !",
+            ),
+        ],
+        "unread": 1,
     },
     {
         "candidate": "candidat3@test.com",
@@ -900,6 +1137,22 @@ APPLICATIONS = [
         "letter": True,
         "documents": [],
         "moves": [("in_progress", 48), ("accepted", 45)],
+        "messages": [
+            (
+                "employer",
+                48,
+                "11:00",
+                "Bonjour, votre candidature nous intéresse. Quand pourriez-vous commencer ?",
+            ),
+            ("candidate", 47, "08:15", "Bonjour, dès le début du mois prochain."),
+            (
+                "employer",
+                45,
+                "14:30",
+                "Parfait : bienvenue chez Lémantech ! Le contrat part demain par courrier.",
+            ),
+        ],
+        "unread": 0,
     },
 ]
 
@@ -973,6 +1226,20 @@ def pdf_file(name, title, lines):
     return ContentFile(pdf(title, lines), name=name)
 
 
+# The times of the messages are those of Geneva: the server counts in UTC
+# (TIME_ZONE), the pages show the time of the browser
+GENEVA = ZoneInfo("Europe/Zurich")
+
+
+def moment(days_ago, time):
+    """The time "HH:MM" in Geneva of the day days_ago days before today,
+    never later than a few minutes ago."""
+    hour, minute = (int(part) for part in time.split(":"))
+    day = timezone.localtime(timezone=GENEVA) - timedelta(days=days_ago)
+    when = day.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    return min(when, timezone.now() - timedelta(minutes=5))
+
+
 def logo(initials, colour):
     """A square PNG logo, as bytes: the initials of the company in white on
     a rounded square of its colour. Pillow's own font, so that nothing has
@@ -996,13 +1263,19 @@ def logo_file(initials, colour):
 
 
 class Command(BaseCommand):
-    help = "Create six test accounts (three candidates, three employers), their job offers, applications and favorites."
+    help = (
+        "Create six test accounts (three candidates, three employers), their job offers, "
+        "applications, favorites and conversations."
+    )
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help="Delete the six test accounts first, with their profiles, offers, applications and favorites.",
+            help=(
+                "Delete the six test accounts first, with their profiles, offers, applications, "
+                "favorites and messages."
+            ),
         )
         parser.add_argument(
             "--force",
@@ -1026,7 +1299,8 @@ class Command(BaseCommand):
                     "The test accounts already exist: run again with --reset to replace them."
                 )
             # The profiles, the offers, the applications, the favorites, the
-            # addresses of allauth and the files (signals) go with the users
+            # messages, the addresses of allauth and the files (signals) go
+            # with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -1040,10 +1314,11 @@ class Command(BaseCommand):
             for candidate, employer, title, days_ago in FAVORITES:
                 self.favorite(candidate, employer, title, days_ago)
 
+        messages = sum(len(spec.get("messages", [])) for spec in APPLICATIONS)
         self.stdout.write(
             self.style.SUCCESS(
-                f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications "
-                f"and {len(FAVORITES)} favorites."
+                f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications, "
+                f"{len(FAVORITES)} favorites and {messages} messages."
             )
         )
         self.stdout.write(f"Password of every account: {PASSWORD}")
@@ -1117,7 +1392,8 @@ class Command(BaseCommand):
     def application(self, spec):
         """One application, its files copied from the profile like the API
         does (the letter written here), dated days_ago days before today,
-        then moved through its states, each dated too."""
+        then moved through its states, each dated too, then its
+        conversation, if any."""
         profile = CandidateProfile.objects.get(user__email=spec["candidate"])
         offer = JobOffer.objects.get(employer__user__email=spec["employer"], title=spec["offer"])
         name = profile.user.get_full_name()
@@ -1151,6 +1427,24 @@ class Command(BaseCommand):
             when = now - timedelta(days=days_ago)
             JobApplication.objects.filter(pk=application.pk).update(updated_at=when)
             application.history.filter(status=status).update(changed_at=when)
+        self.conversation(application, spec.get("messages", []), spec.get("unread", 0))
+
+    def conversation(self, application, messages, unread):
+        """The messages of an application, dated, read an hour after they
+        were sent except the last "unread" ones."""
+        now = timezone.now()
+        authors = {
+            "employer": application.offer.employer.user,
+            "candidate": application.candidate.user,
+        }
+        for index, (who, days_ago, time, body) in enumerate(messages):
+            message = Message.objects.create(
+                application=application, author=authors[who], body=body
+            )
+            sent = moment(days_ago, time)
+            read = None if index >= len(messages) - unread else min(sent + timedelta(hours=1), now)
+            # Written straight to the row: the model stamps today
+            Message.objects.filter(pk=message.pk).update(sent_at=sent, read_at=read)
 
     def favorite(self, candidate, employer, title, days_ago):
         """One offer put aside by a candidate, days_ago days before today."""

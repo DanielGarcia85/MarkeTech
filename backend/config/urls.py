@@ -46,4 +46,6 @@ urlpatterns = [
     path("api/", include("applications.urls")),
     # Favorites API: the offers a candidate puts aside
     path("api/", include("favorites.urls")),
+    # Messaging API: the conversations of the applications in progress
+    path("api/", include("messaging.urls")),
 ]

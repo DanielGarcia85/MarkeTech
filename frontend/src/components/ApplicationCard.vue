@@ -6,9 +6,11 @@
   Used by the page of the applications received, grouped by offer. The
   candidate and their
   contact details, the date, the state as a pill and the states gone
-  through, the files as links, and the moves of the state as buttons (all
-  but the current state), which the page carries out: the card only says
-  which one was asked.
+  through, the files as links, the way to the conversation with the
+  candidate (while the application is in progress, or once a conversation
+  exists, with its unread messages), and the moves of the state as buttons
+  (all but the current state), which the page carries out: the card only
+  says which one was asked.
 -->
 
 <script setup lang="ts">
@@ -23,6 +25,8 @@ defineProps<{
   busy?: boolean;
   // The reason of a refused move, shown under the buttons
   error?: string;
+  // The unread messages of its conversation; undefined when it has none
+  unread?: number;
 }>();
 
 defineEmits<{ move: [status: ApplicationStatus] }>();
@@ -61,6 +65,14 @@ const text = useApplicationText();
       </a>
     </p>
     <div class="actions">
+      <RouterLink
+        v-if="application.status === 'in_progress' || unread !== undefined"
+        :to="{ name: 'conversation', params: { id: application.id } }"
+        class="secondary messages"
+      >
+        {{ t("messaging.button") }}
+        <span v-if="unread" class="count">{{ unread }}</span>
+      </RouterLink>
       <button
         v-for="status in EMPLOYER_STATUSES.filter((s) => s !== application.status)"
         :key="status"
@@ -166,6 +178,28 @@ const text = useApplicationText();
 
 .secondary:hover {
   background: var(--mt-border);
+}
+
+/* The way to the conversation, a link styled as the buttons beside it */
+.messages {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--mt-accent);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .secondary:disabled {

@@ -11,7 +11,17 @@
 -->
 
 <script lang="ts">
-export type IconName = "briefcase" | "clipboard" | "inbox" | "send" | "heart" | "user" | "key" | "search";
+export type IconName =
+  | "briefcase"
+  | "clipboard"
+  | "inbox"
+  | "send"
+  | "heart"
+  | "user"
+  | "key"
+  | "search"
+  | "chat"
+  | "archive";
 </script>
 
 <script setup lang="ts">
@@ -72,6 +82,14 @@ withDefaults(
       <circle cx="8" cy="15" r="4" />
       <path d="M10.8 12.2L20 3" />
       <path d="M17 6l2.5 2.5M14 9l2.5 2.5" />
+    </g>
+    <!-- A speech bubble: the open conversations -->
+    <path v-else-if="name === 'chat'" d="M4 5h16v11H9l-5 4z" />
+    <!-- A box with its lid: the closed conversations -->
+    <g v-else-if="name === 'archive'">
+      <rect x="3" y="4" width="18" height="4" rx="1" />
+      <path d="M5 8v11h14V8" />
+      <path d="M10 12h4" />
     </g>
     <!-- A magnifying glass: a search without result -->
     <g v-else-if="name === 'search'">

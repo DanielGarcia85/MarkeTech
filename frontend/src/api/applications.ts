@@ -107,7 +107,13 @@ export function withdraw(id: number): Promise<Answer<null>> {
 
 // ── The state, for an employer ────────────────────────────────────────
 
-// in_progress, accepted or rejected; the backend records the history
-export function setStatus(id: number, status: ApplicationStatus): Promise<Answer<Application>> {
-  return send<Application>("POST", `/api/applications/${id}/status/`, { status });
+// in_progress, accepted or rejected; the backend records the history. A
+// message, when given, goes to the conversation of the application: the
+// first one when it goes in progress, the last one with a decision
+export function setStatus(
+  id: number,
+  status: ApplicationStatus,
+  message = "",
+): Promise<Answer<Application>> {
+  return send<Application>("POST", `/api/applications/${id}/status/`, { status, message });
 }

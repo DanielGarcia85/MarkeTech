@@ -6,8 +6,10 @@
   Displayed by the router for "/candidate/applications", to a candidate only
   (the router sends anyone else away). The applications as cards, newest
   first: the offer and its company, the date sent, the state as a pill and
-  the states gone through, the files sent, a link to the offer, and the
-  withdrawal while the employer has not decided, after a confirmation.
+  the states gone through, the files sent, a link to the offer, the way to
+  the conversation with the employer (while the application is in
+  progress, or once a conversation exists, with its unread messages), and
+  the withdrawal while the employer has not decided, after a confirmation.
 -->
 
 <script setup lang="ts">
@@ -15,6 +17,7 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { canWithdraw, listApplications, withdraw, type Application } from "../api/applications";
+import { listConversations } from "../api/messaging";
 import { useApplicationText } from "../applications";
 import EmptyState from "../components/EmptyState.vue";
 import { confirm } from "../confirm";
@@ -29,9 +32,17 @@ const loadFailed = ref(false);
 const busy = ref<number | null>(null);
 // The reason of a refused withdrawal, by application
 const errors = ref<Record<number, string>>({});
+// The unread messages of each application that has a conversation
+const unread = ref<Record<number, number>>({});
 
 async function load(): Promise<void> {
   loadFailed.value = false;
+  try {
+    const conversations = await listConversations();
+    unread.value = Object.fromEntries(conversations.map((c) => [c.application, c.unread]));
+  } catch {
+    // The cards show the way to the conversations in progress anyway
+  }
   try {
     applications.value = await listApplications();
   } catch {
@@ -105,6 +116,14 @@ onMounted(load);
         <div class="actions">
           <RouterLink :to="{ name: 'offer', params: { id: application.offer.id } }" class="secondary">
             {{ t("myApplications.offerLink") }}
+          </RouterLink>
+          <RouterLink
+            v-if="application.status === 'in_progress' || unread[application.id] !== undefined"
+            :to="{ name: 'conversation', params: { id: application.id } }"
+            class="secondary messages"
+          >
+            {{ t("messaging.button") }}
+            <span v-if="unread[application.id]" class="count">{{ unread[application.id] }}</span>
           </RouterLink>
           <button
             v-if="canWithdraw(application)"
@@ -231,6 +250,27 @@ onMounted(load);
 
 .secondary:hover {
   background: var(--mt-border);
+}
+
+/* The way to the conversation, its unread messages in a round */
+.messages {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--mt-accent);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .danger {

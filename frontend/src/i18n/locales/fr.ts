@@ -41,6 +41,9 @@ const fr: typeof en = {
     account: "Mon compte",
     profile: "Profil",
     credentials: "Identifiants",
+    messaging: "Messagerie",
+    openConversations: "Ouvertes",
+    closedConversations: "Closes",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -131,7 +134,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 21 octobre 2026",
+    updated: "Dernière mise à jour : 22 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -150,7 +153,7 @@ const fr: typeof en = {
           { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
           { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement. Une offre qui a reçu des candidatures ne peut plus être supprimée, seulement clôturée : les candidats gardent la trace de leur candidature." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, les documents de votre profil que vous y joignez (copiés au moment de l'envoi : modifier votre profil ensuite ne change pas ce que l'employeur a reçu), la date, le statut (reçue, en cours, acceptée, refusée) et l'historique de ses changements. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre ; celui-ci voit aussi vos prénom, nom, adresse e-mail, téléphone et ville, lus sur votre compte et votre profil. Vous pouvez la retirer tant que l'employeur n'a pas décidé : elle est alors supprimée avec ses fichiers." },
-          { term: "Messages", text: "Échangés entre un candidat et un employeur au sujet d'une candidature : objet, texte, dates. Eux seuls peuvent les lire." },
+          { term: "Messages", text: "Échangés entre un candidat et l'employeur de l'offre au sujet d'une candidature : le texte, la date d'envoi et celle de la lecture par l'autre. La conversation s'ouvre quand l'employeur met la candidature en cours ; elle reste lisible, sans plus pouvoir écrire, une fois la candidature acceptée ou refusée. Les deux participants peuvent la lire, personne d'autre. Elle est supprimée avec la candidature (retrait par le candidat, suppression d'un compte ou d'une offre). Aucun e-mail ne signale un nouveau message : le site l'indique quand vous vous connectez." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté, avec la date. Lui seul les voit ; l'employeur d'une offre sait combien de candidats l'ont mise de côté, jamais lesquels. Un favori reste en place quand l'offre est clôturée, jusqu'à ce que le candidat le retire." },
           { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature : date et heure, description, réponse du candidat et message qui l'accompagne." },
           { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom et votre nom, visibles par tous les visiteurs." },
@@ -523,8 +526,34 @@ const fr: typeof en = {
       rejected: "Refuser",
     },
     confirm: {
-      accepted: "Accepter la candidature de {name} ?",
-      rejected: "Refuser la candidature de {name} ?",
+      in_progress: "Mettre en cours la candidature de {name} ? La conversation s'ouvre avec le candidat.",
+      accepted: "Accepter la candidature de {name} ? La conversation sera close.",
+      rejected: "Refuser la candidature de {name} ? La conversation sera close.",
+    },
+    firstMessage: "Premier message au candidat (facultatif)",
+    lastMessage: "Dernier message au candidat (facultatif)",
+  },
+
+  // Messaging: the conversations of the applications in progress
+  messaging: {
+    openTitle: "Conversations ouvertes",
+    closedTitle: "Conversations closes",
+    noneOpen: "Aucune conversation ouverte. Une conversation s'ouvre quand l'employeur met une candidature en cours.",
+    noneClosed: "Aucune conversation close. Une conversation se ferme quand la candidature est acceptée ou refusée.",
+    loadFailed: "Les conversations n'ont pas pu être chargées.",
+    notFound: "Cette conversation n'existe pas, ou n'est pas la vôtre.",
+    you: "Vous :",
+    button: "Messages",
+    placeholder: "Votre message",
+    hint: "Ctrl + Entrée pour envoyer",
+    send: "Envoyer",
+    read: "lu",
+    emptyOpen: "Aucun message pour l'instant : écrivez le premier.",
+    emptyClosed: "Aucun message n'a été échangé.",
+    closed: {
+      received: "La conversation s'ouvrira quand l'employeur prendra la candidature en charge.",
+      accepted: "Conversation close : la candidature a été acceptée.",
+      rejected: "Conversation close : la candidature a été refusée.",
     },
   },
 
