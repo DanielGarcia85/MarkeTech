@@ -49,6 +49,9 @@ export type Application = {
   status: ApplicationStatus;
   // Every state the application went through, oldest first
   history: { status: ApplicationStatus; changed_at: string }[];
+  // Whether it brought news not seen before this list (arrived for the
+  // employer, moved for the candidate); seen from then on
+  unseen: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -78,6 +81,11 @@ export function listApplications(filters: { offer?: number; status?: Application
   if (filters.status) params.set("status", filters.status);
   const query = params.toString();
   return getJson<Application[]>("/api/applications/" + (query ? "?" + query : ""));
+}
+
+// How many of one's applications bring news not seen yet: the side bar
+export function unseenApplications(): Promise<{ count: number }> {
+  return getJson<{ count: number }>("/api/applications/unseen/");
 }
 
 // ── Applying and withdrawing, for a candidate ─────────────────────────

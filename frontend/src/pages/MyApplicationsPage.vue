@@ -5,7 +5,8 @@
   ───────────────────────────────────────────────────────────────────────────
   Displayed by the router for "/candidate/applications", to a candidate only
   (the router sends anyone else away). The applications as cards, newest
-  first: the offer and its company, the date sent, the state as a pill and
+  first, marked "Updated" when its state moved since the last visit: the
+  offer and its company, the date sent, the state as a pill and
   the states gone through, the files sent, a link to the offer, the way to
   the conversation with the employer (while the application is in
   progress, or once a conversation exists, with its unread messages), and
@@ -20,6 +21,7 @@ import { canWithdraw, listApplications, withdraw, type Application } from "../ap
 import { listConversations } from "../api/messaging";
 import { useApplicationText } from "../applications";
 import EmptyState from "../components/EmptyState.vue";
+import { refreshNotifications } from "../notifications";
 import { confirm } from "../confirm";
 
 const { t } = useI18n();
@@ -45,6 +47,8 @@ async function load(): Promise<void> {
   }
   try {
     applications.value = await listApplications();
+    // The news listed are seen now: the side bar counts again
+    refreshNotifications();
   } catch {
     loadFailed.value = true;
   }
@@ -82,10 +86,11 @@ onMounted(load);
       <RouterLink :to="{ name: 'home' }">{{ t("empty.browse") }}</RouterLink>
     </EmptyState>
     <ul v-else class="cards">
-      <li v-for="application in applications" :key="application.id" class="card">
+      <li v-for="application in applications" :key="application.id" class="card" :class="{ unseen: application.unseen }">
         <p class="company">
           {{ application.offer.company.name }}
           <span class="pill" :class="application.status">{{ text.status(application.status) }}</span>
+          <span v-if="application.unseen" class="news">{{ t("applications.updated") }}</span>
         </p>
         <h2 class="title">
           <RouterLink :to="{ name: 'offer', params: { id: application.offer.id } }">
@@ -159,6 +164,23 @@ onMounted(load);
   border: 1px solid var(--mt-border);
   border-radius: 12px;
   background: var(--mt-background);
+}
+
+/* Moved since the last visit: a band of the accent on the left, and
+   "Updated" in the accent */
+.card.unseen {
+  border-left: 4px solid var(--mt-accent);
+}
+
+.news {
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: var(--mt-accent-surface);
+  color: var(--mt-accent-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .company {

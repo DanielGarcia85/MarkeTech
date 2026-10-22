@@ -449,6 +449,8 @@ const fr: typeof en = {
 
   // Job applications: what the candidate's and the employer's pages share
   applications: {
+    new: "Nouvelle",
+    updated: "Mise à jour",
     status: {
       received: "Reçue",
       in_progress: "En cours",

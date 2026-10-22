@@ -15,7 +15,10 @@ offer with a CV sent or copied from the profile, a letter and documents of
 the profile, follows and withdraws their applications; an employer reads
 the applications to their offers and moves their state; the files are
 served to both and to nobody else; and the offers that received
-applications are counted for their employer and cannot be deleted.
+applications are counted for their employer and cannot be deleted. Last,
+the news: an application arriving for the employer, a move of its state
+for the candidate, flagged once in the list, then seen, and counted for
+the side bar until then.
 """
 
 import json
@@ -467,3 +470,46 @@ class ApplicationApiTests(MediaTestCase):
         # Closed, the applications stay and the employer still reads them
         self.assertEqual(self.post(client, "/api/offers/%d/close/" % self.offer.pk).status_code, 200)
         self.assertEqual(len(client.get("/api/applications/?offer=%d" % self.offer.pk).json()), 2)
+
+    # ── The news ──────────────────────────────────────────────────────
+
+    def unseen(self, client):
+        return client.get("/api/applications/unseen/").json()["count"]
+
+    def test_a_new_application_is_news_for_the_employer_once(self):
+        employer, candidate = self.login(self.employer), self.login(self.candidate)
+        self.assertEqual(self.apply(candidate).status_code, 201)
+        self.application(candidate=self.other_candidate)
+        # Not for the candidate who sent it, nor for another employer
+        self.assertEqual(self.unseen(candidate), 0)
+        self.assertEqual(self.unseen(self.login(self.other_employer)), 0)
+        self.assertEqual(self.unseen(employer), 2)
+        # The list flags them once, then they are seen
+        self.assertEqual([a["unseen"] for a in employer.get("/api/applications/").json()], [True, True])
+        self.assertEqual(self.unseen(employer), 0)
+        self.assertEqual([a["unseen"] for a in employer.get("/api/applications/").json()], [False, False])
+
+    def test_a_move_is_news_for_the_candidate_once(self):
+        application = self.application()
+        employer, candidate = self.login(self.employer), self.login(self.candidate)
+        employer.get("/api/applications/")
+        self.post(employer, "/api/applications/%d/status/" % application.pk, {"status": "in_progress"})
+        self.post(employer, "/api/applications/%d/status/" % application.pk, {"status": "accepted"})
+        # Two moves of one application: one application with news
+        self.assertEqual(self.unseen(candidate), 1)
+        # The employer's own moves are no news to them
+        self.assertEqual(self.unseen(employer), 0)
+        self.assertTrue(candidate.get("/api/applications/").json()[0]["unseen"])
+        self.assertEqual(self.unseen(candidate), 0)
+
+    def test_a_filtered_list_marks_only_what_it_shows(self):
+        employer = self.login(self.employer)
+        self.application()
+        other_offer = JobOffer.objects.create(
+            employer=self.company, status="published", **{**OFFER, "title": "Vue developer"}
+        )
+        self.application(offer=other_offer)
+        employer.get("/api/applications/?offer=%d" % self.offer.pk)
+        self.assertEqual(self.unseen(employer), 1)
+        # A visitor has no news, only a refusal
+        self.assertEqual(Client().get("/api/applications/unseen/").status_code, 403)

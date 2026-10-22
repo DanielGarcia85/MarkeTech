@@ -12,7 +12,7 @@
   button while the application is in progress; once decided, a line says
   the conversation is closed, and the messages stay readable. Reading the
   page marks the other's messages read (the API does it), after which the
-  counts of the side bar are read again. Read again every ten seconds
+  counts of the side bar are read again (notifications.ts). Read again every ten seconds
   (phase 2: no WebSocket yet).
 -->
 
@@ -25,7 +25,7 @@ import { firstErrors } from "../api/http";
 import { getThread, writeMessage, type Thread } from "../api/messaging";
 import { useApplicationText } from "../applications";
 import CompanyMark from "../components/CompanyMark.vue";
-import { refreshUnread } from "../messaging";
+import { refreshNotifications } from "../notifications";
 import { useSession } from "../session";
 
 const { t, locale } = useI18n();
@@ -60,7 +60,7 @@ async function load(): Promise<void> {
     return;
   }
   // The other's messages are read now: the side bar counts again
-  refreshUnread();
+  refreshNotifications();
   if (thread.value.messages.length !== count) scrollDown();
 }
 

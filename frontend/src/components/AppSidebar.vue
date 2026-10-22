@@ -6,10 +6,12 @@
   Displayed by App.vue on the left of the page, for everyone: a visitor
   gets the list of the offers only, so that the pages keep the same layout
   before and after logging in; a logged-in user gets the links of their
-  role, their conversations (open and closed, each with the number of
-  unread messages, kept fresh by messaging.ts) and their account (the
+  role (with the number of applications that bring news: arrived for an
+  employer, moved for a candidate), their conversations (open and closed,
+  each with the number of unread messages) and their account (the
   profile, then the e-mail address and the password), each link with a
-  small drawing before it (Icon). One group
+  small drawing before it (Icon). The counts are kept fresh by
+  notifications.ts. One group
   of links per area of the application; a group gets its links when the
   pages exist, never before. On a narrow
   window, the bar becomes a strip under the header, where each group keeps
@@ -20,16 +22,16 @@
 import { watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import { followUnread, useUnread } from "../messaging";
+import { followNotifications, useNotifications } from "../notifications";
 import { useSession } from "../session";
 import Icon from "./Icon.vue";
 
 const { t } = useI18n();
 const session = useSession();
-const unread = useUnread();
+const counts = useNotifications();
 
 // The counts follow whoever is logged in: read every minute, or emptied
-watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediate: true });
+watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { immediate: true });
 </script>
 
 <template>
@@ -42,9 +44,11 @@ watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediat
       </RouterLink>
       <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
         <Icon name="inbox" />{{ t("nav.receivedApplications") }}
+        <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
       </RouterLink>
       <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
         <Icon name="send" />{{ t("nav.myApplications") }}
+        <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
       </RouterLink>
       <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
         <Icon name="heart" />{{ t("nav.myFavorites") }}
@@ -54,11 +58,11 @@ watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediat
       <p class="group">{{ t("nav.messaging") }}</p>
       <RouterLink :to="{ name: 'conversations' }">
         <Icon name="chat" />{{ t("nav.openConversations") }}
-        <span v-if="unread.open" class="count">{{ unread.open }}</span>
+        <span v-if="counts.open" class="count">{{ counts.open }}</span>
       </RouterLink>
       <RouterLink :to="{ name: 'closedConversations' }">
         <Icon name="archive" />{{ t("nav.closedConversations") }}
-        <span v-if="unread.closed" class="count">{{ unread.closed }}</span>
+        <span v-if="counts.closed" class="count">{{ counts.closed }}</span>
       </RouterLink>
     </div>
     <div v-if="session.user" class="block">
@@ -70,10 +74,13 @@ watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediat
 </template>
 
 <style scoped>
-/* Wide enough for the longest link, its drawing before it, on one line */
+/* Wide enough for the longest link, its drawing before it and its count
+   after it, on one line: "Candidatures reçues" with its count needs a
+   link of 247 px, its count then lined up with the others (measured on
+   22.10.2026) */
 .sidebar {
   flex: none;
-  width: 248px;
+  width: 272px;
   padding: 20px 12px;
   border-right: 1px solid var(--mt-border);
   background: var(--mt-surface);
@@ -105,6 +112,7 @@ watch(() => session.user?.id, (id) => followUnread(id !== undefined), { immediat
   border-radius: 6px;
   color: var(--mt-text);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .sidebar a .icon {

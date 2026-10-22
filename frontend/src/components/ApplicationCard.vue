@@ -3,8 +3,9 @@
 
   Application card — one application, as its employer sees it
   ───────────────────────────────────────────────────────────────────────────
-  Used by the page of the applications received, grouped by offer. The
-  candidate and their
+  Used by the page of the applications received, grouped by offer. A mark
+  "New" and a band of the accent on the left when it arrived since the
+  employer last looked (unseen). The candidate and their
   contact details, the date, the state as a pill and the states gone
   through, the files as links, the way to the conversation with the
   candidate (while the application is in progress, or once a conversation
@@ -36,10 +37,11 @@ const text = useApplicationText();
 </script>
 
 <template>
-  <article class="card">
+  <article class="card" :class="{ unseen: application.unseen }">
     <p class="head">
       <strong class="name">{{ text.name(application) }}</strong>
       <span class="pill" :class="application.status">{{ text.status(application.status) }}</span>
+      <span v-if="application.unseen" class="news">{{ t("applications.new") }}</span>
     </p>
     <!-- The contact details, read on the profile of the candidate -->
     <p class="line">
@@ -96,6 +98,23 @@ const text = useApplicationText();
   border: 1px solid var(--mt-border);
   border-radius: 12px;
   background: var(--mt-background);
+}
+
+/* Arrived since the last visit: a band of the accent on the left */
+.card.unseen {
+  border-left: 4px solid var(--mt-accent);
+}
+
+/* "New", in the accent */
+.news {
+  padding: 1px 10px;
+  border-radius: 999px;
+  background: var(--mt-accent-surface);
+  color: var(--mt-accent-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .head {
