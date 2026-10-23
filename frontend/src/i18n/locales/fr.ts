@@ -629,6 +629,8 @@ const fr: typeof en = {
       title: "Proposer un rendez-vous",
       when: "Date et heure",
       whenMissing: "Indiquez une date et une heure.",
+      whenHint: "Du lundi au vendredi",
+      weekend: "Un rendez-vous se propose un jour ouvrable, du lundi au vendredi.",
       duration: "Durée",
       place: "Lieu",
       placeHint: "Adresse, lien de visio ou « par téléphone »",

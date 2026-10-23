@@ -627,6 +627,8 @@ export default {
       title: "Propose an appointment",
       when: "Date and time",
       whenMissing: "Give a date and a time.",
+      whenHint: "Monday to Friday",
+      weekend: "An appointment is proposed on a working day, from Monday to Friday.",
       duration: "Length",
       place: "Place",
       placeHint: "Address, video link or \"by phone\"",
