@@ -6,13 +6,17 @@
   Displayed by App.vue under the current page. One band across the whole
   width, in the dark blue with light text, under a thin line in the accent
   colour: a sentence on the left, the links on two rows in the centre, the
-  privacy link above the copyright on the right.
+  privacy link above the copyright on the right; under a thin line, across
+  the whole width, the technologies of the site with the way to the about
+  page, and whether the backend answers (ApiStatus, decisions of
+  23.10.2026).
 -->
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
 import { CONTACT } from "../site";
+import ApiStatus from "./ApiStatus.vue";
 
 const { t } = useI18n();
 
@@ -53,6 +57,15 @@ const year = new Date().getFullYear();
       </span>
       <span>{{ t("footer.copyright", { year }) }}</span>
     </p>
+    <!-- Under a thin line, across the whole width: what the site is built
+         with and the way to the details, then whether the backend answers -->
+    <p class="technical">
+      <span>
+        {{ t("about.stack") }} ·
+        <RouterLink :to="{ name: 'about' }">{{ t("about.footerLink") }}</RouterLink>
+      </span>
+      <ApiStatus />
+    </p>
   </footer>
 </template>
 
@@ -82,6 +95,34 @@ const year = new Date().getFullYear();
   justify-self: start;
   margin: 0;
   white-space: pre-line;
+  color: #b7cdd9;
+}
+
+/* The last line, across the three columns, under a thin line: the
+   technologies on the left, the state of the API on the right */
+.technical {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
+  margin: 2px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+}
+
+/* The state of the API in lighter colours, readable on the dark blue */
+.technical :deep(.online) {
+  color: #86efac;
+}
+
+.technical :deep(.offline) {
+  color: #fca5a5;
+}
+
+.technical :deep(.checking) {
   color: #b7cdd9;
 }
 
