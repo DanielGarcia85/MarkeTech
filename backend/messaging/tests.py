@@ -266,6 +266,22 @@ class MessagingApiTests(TestCase):
         self.assertEqual(self.application.status, "in_progress")
         self.assertEqual(Message.objects.count(), 0)
 
+    def test_the_refusals_speak_the_language_of_the_interface(self):
+        # The frontend sends the language it shows in Accept-Language; the
+        # texts come from backend/locale (compiled .mo, decision of 23.10.2026)
+        candidate, employer = self.login(self.candidate), self.login(self.employer)
+        candidate.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        response = self.post(candidate, self.url, {"body": "Bonjour"})
+        self.assertEqual(
+            response.json(),
+            {"non_field_errors": ["Vous ne pouvez écrire que tant que la candidature est en cours."]},
+        )
+        self.move(employer, "in_progress")
+        response = self.post(candidate, self.url, {"body": "   "})
+        self.assertEqual(response.json(), {"body": ["Écrivez un message."]})
+        response = self.post(candidate, self.url, {"body": "x" * 2001})
+        self.assertEqual(response.json(), {"body": ["Un message compte au plus 2000 caractères."]})
+
     def test_nobody_else_reaches_the_conversation(self):
         self.move(self.login(self.employer), "in_progress", "Hello")
         others = (

@@ -36,6 +36,7 @@ taken up) and after (decided), 400.
 from django.db.models import Count, Exists, OuterRef, Q, Subquery
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from rest_framework import permissions, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -92,7 +93,7 @@ class ConversationView(APIView):
         """A new message, while the application is in progress."""
         application = self.application(request, pk)
         if not is_open(application):
-            message = "You can write only while the application is in progress."
+            message = _("You can write only while the application is in progress.")
             raise ValidationError({"non_field_errors": [message]})
         form = WriteSerializer(data=request.data)
         form.is_valid(raise_exception=True)
