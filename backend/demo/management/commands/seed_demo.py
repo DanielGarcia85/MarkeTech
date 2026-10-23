@@ -891,19 +891,20 @@ APPLICATIONS = [
                 6,
                 "09:00",
                 "Bonjour Madame Martin, merci pour votre candidature au poste d'ingénieure "
-                "DevOps. Pourriez-vous passer nous voir mardi à 10 h, à la Rue de Lausanne 45 ?",
+                "DevOps. Je vous propose un entretien dans nos locaux, à la Rue de Lausanne 45 : "
+                "vous trouverez le rendez-vous ci-dessous.",
             ),
             (
                 "candidate",
                 6,
                 "09:45",
-                "Bonjour Monsieur Rochat, avec plaisir : je serai là mardi à 10 h.",
+                "Bonjour Monsieur Rochat, avec plaisir : je l'accepte tout de suite.",
             ),
             (
                 "employer",
                 4,
                 "17:30",
-                "Merci pour l'entretien de ce matin, l'équipe a beaucoup apprécié. Pourriez-vous "
+                "Merci pour l'entretien, l'équipe a beaucoup apprécié. Pourriez-vous "
                 "nous indiquer deux références ?",
             ),
             (
@@ -932,7 +933,7 @@ APPLICATIONS = [
                 "place": "Quorvane SA, Rue de Lausanne 45, 1201 Genève",
                 "note": "Entretien avec moi et la responsable de l'équipe plateforme.",
                 "status": "accepted",
-                "response": "Avec plaisir, je serai là mardi à 10 h.",
+                "response": "Avec plaisir, je serai là.",
                 "answered": (6, "09:46"),
             },
         ],
@@ -961,14 +962,14 @@ APPLICATIONS = [
                 4,
                 "11:40",
                 "Bonjour Monsieur Rochat, merci pour votre retour. Avec plaisir : je suis "
-                "disponible jeudi ou vendredi après 14 h.",
+                "disponible en début d'après-midi, la plupart des jours.",
             ),
             (
                 "employer",
                 3,
                 "08:55",
-                "Parfait, va pour jeudi à 14 h 30, je vous envoie le lien la veille. Sur quel "
-                "projet Vue avez-vous travaillé en dernier ?",
+                "Parfait, je vous propose un créneau ci-dessous et vous envoie le lien la "
+                "veille. Sur quel projet Vue avez-vous travaillé en dernier ?",
             ),
             (
                 "candidate",
@@ -991,8 +992,8 @@ APPLICATIONS = [
                 "employer",
                 1,
                 "08:30",
-                "Bien sûr, prenez le temps qu'il vous faut. Je vous envoie l'énoncé ici lundi "
-                "matin.",
+                "Bien sûr, prenez le temps qu'il vous faut. Je vous envoie l'énoncé ici très "
+                "prochainement.",
             ),
             (
                 "employer",
@@ -1012,7 +1013,7 @@ APPLICATIONS = [
                 "place": "Visioconférence, lien envoyé la veille",
                 "note": "Premier échange : votre parcours et le poste.",
                 "status": "accepted",
-                "response": "Parfait, à jeudi 14 h 30.",
+                "response": "Parfait, à bientôt en visio.",
                 "answered": (3, "09:30"),
             },
             {
@@ -1161,7 +1162,7 @@ APPLICATIONS = [
                 "place": "Quorvane SA, Rue de Lausanne 45, 1201 Genève",
                 "status": "cancelled",
                 "response": (
-                    "Je dois malheureusement annuler notre rendez-vous de jeudi : nous avançons "
+                    "Je dois malheureusement annuler notre rendez-vous : nous avançons "
                     "avec un autre profil. Je vous écris plus en détail rapidement."
                 ),
                 "answered": (12, "08:30"),
