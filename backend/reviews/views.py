@@ -16,7 +16,9 @@ Routes (reviews/urls.py, under /api/)
                           (?page=2, ?page_size=3 for the side bar, fifty at
                           most), and their summary: how many, the average
                           of each score, how many gave each rating
-  GET     reviews/mine/   the review of the user, 404 if none yet
+  GET     reviews/mine/   the review of the user; 204, no content, before it
+                          is written (a normal state, not an error: a 404
+                          would fill the logs at every visit)
   PUT     reviews/mine/   {rating, ease_of_use, offers_and_applications,
                           messaging, appointments, comment}: writes it
                           (201) or rewrites it (200)
@@ -123,7 +125,10 @@ class MyReviewView(APIView):
         return Response(data, status=code)
 
     def get(self, request):
-        return self.answer(request, get_object_or_404(public(), user=request.user))
+        review = public().filter(user=request.user).first()
+        if review is None:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return self.answer(request, review)
 
     def put(self, request):
         form = WriteSerializer(data=request.data)

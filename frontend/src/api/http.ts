@@ -7,8 +7,9 @@
 // change here without touching the rest of the application.
 //
 // Three kinds of calls. getJson reads our own API, which answers plain JSON
-// (getJsonOrNull when the thing may not exist yet). send writes to it: JSON or a form with files, and the answer comes back
-// with its status, because a 400 carries the errors of the fields. api talks
+// (getJsonOrNull when the thing may not exist yet). send writes to it: JSON
+// or a form with files, and the answer comes back with its status, because
+// a 400 carries the errors of the fields. api talks
 // to the authentication API of allauth, which always answers an envelope
 // { status, data, errors, meta }, even with a 400 or 401 status: there, those
 // are ordinary answers (a field is invalid, nobody is logged in).
@@ -80,11 +81,11 @@ export async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-// Like getJson, for a thing that may not exist yet: null for a 404 (one's
-// review before it is written), an error for any other failure
+// Like getJson, for a thing that may not exist yet: null for a 204, no
+// content (one's review before it is written), an error for any failure
 export async function getJsonOrNull<T>(path: string): Promise<T | null> {
   const response = await fetch(path, { headers: commonHeaders() });
-  if (response.status === 404) return null;
+  if (response.status === 204) return null;
   if (!response.ok) {
     throw new Error(`Request to ${path} failed with status ${response.status}`);
   }
