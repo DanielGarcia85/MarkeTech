@@ -17,6 +17,7 @@ of the models, the same rules hold for every path that writes a file.
 """
 
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 from django.core.validators import FileExtensionValidator
 
 # Largest file accepted, in bytes: 5 MB (decision of 18.10.2026)
@@ -33,7 +34,7 @@ def validate_file_size(file):
     """Refuse a file bigger than MAX_FILE_SIZE."""
     if file.size > MAX_FILE_SIZE:
         raise ValidationError(
-            "The file is too big (%(size).1f MB); the limit is %(limit)d MB.",
+            _("The file is too big (%(size).1f MB); the limit is %(limit)d MB."),
             code="file_too_big",
             params={
                 "size": file.size / (1024 * 1024),

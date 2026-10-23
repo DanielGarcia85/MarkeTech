@@ -49,6 +49,7 @@ get_permissions().
 from django.db.models import Count, Exists, OuterRef, Q
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
+from django.utils.translation import gettext as _
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -93,7 +94,7 @@ class IsCandidate(permissions.BasePermission):
 def employer_profile_of(user):
     """The employer profile of the user, created empty when missing (an
     account made in the admin site), like the profiles API does."""
-    profile, _ = EmployerProfile.objects.get_or_create(user=user)
+    profile, _created = EmployerProfile.objects.get_or_create(user=user)
     return profile
 
 
@@ -197,7 +198,7 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         """Refused once candidates applied: the offer is closed instead, and
         the applications stay with their candidates."""
         if offer.applications.exists():
-            message = "This offer has received applications: close it instead of deleting it."
+            message = _("This offer has received applications: close it instead of deleting it.")
             raise ValidationError({"non_field_errors": [message]})
         offer.delete()
 
@@ -222,10 +223,12 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         is what the public list shows above the title."""
         offer = get_object_or_404(self.get_queryset(), pk=pk)
         if offer.status == JobOffer.Status.PUBLISHED:
-            raise ValidationError({"non_field_errors": ["This offer is already published."]})
+            raise ValidationError({"non_field_errors": [_("This offer is already published.")]})
         if not offer.employer.company_name.strip():
-            message = "Give the name of your company in your profile before publishing."
-            raise ValidationError({"non_field_errors": [message]})
+            # Under "company", so that the page can offer the way to the
+            # profile, whatever the language of the text
+            message = _("Give the name of your company in your profile before publishing.")
+            raise ValidationError({"company": [message]})
         offer.status = JobOffer.Status.PUBLISHED
         offer.save()
         return Response(self.get_serializer(offer).data, status=status.HTTP_200_OK)
@@ -235,7 +238,7 @@ class JobOfferViewSet(viewsets.ModelViewSet):
         """Published -> closed: out of the public list, kept by the employer."""
         offer = get_object_or_404(self.get_queryset(), pk=pk)
         if offer.status != JobOffer.Status.PUBLISHED:
-            raise ValidationError({"non_field_errors": ["Only a published offer can be closed."]})
+            raise ValidationError({"non_field_errors": [_("Only a published offer can be closed.")]})
         offer.status = JobOffer.Status.CLOSED
         offer.save()
         return Response(self.get_serializer(offer).data, status=status.HTTP_200_OK)

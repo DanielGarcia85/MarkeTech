@@ -29,6 +29,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django_countries.fields import CountryField
 
 from profiles.models import EmployerProfile
@@ -191,8 +192,8 @@ class JobOffer(models.Model):
         does the same checks in its own validate()."""
         errors = {}
         if self.salary_min and self.salary_max and self.salary_min > self.salary_max:
-            errors["salary_max"] = "The maximum must be at least the minimum."
+            errors["salary_max"] = _("The maximum must be at least the minimum.")
         if self.workload_min and self.workload_max and self.workload_min > self.workload_max:
-            errors["workload_max"] = "The maximum must be at least the minimum."
+            errors["workload_max"] = _("The maximum must be at least the minimum.")
         if errors:
             raise ValidationError(errors)

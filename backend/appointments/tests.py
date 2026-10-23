@@ -284,6 +284,27 @@ class AppointmentApiTests(TestCase):
         self.assertEqual(errors, {"starts_at": ["Give a date and a time."]})
         self.assertEqual(Appointment.objects.count(), 0)
 
+    def test_the_refusals_speak_the_language_of_the_interface(self):
+        candidate, employer = self.login(self.candidate), self.login(self.employer)
+        for client in (candidate, employer):
+            client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        errors = self.propose(employer, days=400, place="   ").json()
+        self.assertEqual(
+            errors,
+            {
+                "starts_at": ["Un rendez-vous se propose au plus un an à l'avance."],
+                "place": ["Indiquez où, ou comment, vous vous rencontrerez."],
+            },
+        )
+        errors = self.propose(employer, place="x" * 201).json()
+        self.assertEqual(errors, {"place": ["Un lieu compte au plus 200 caractères."]})
+        self.assertEqual(
+            self.propose(candidate).json(), {"detail": "Seul l'employeur propose un rendez-vous."}
+        )
+        pk = self.propose(employer).json()["id"]
+        errors = self.answer(candidate, pk, message="").json()
+        self.assertEqual(errors, {"message": ["Écrivez un message avec votre réponse."]})
+
     def test_one_pending_proposal_at_a_time(self):
         candidate, employer = self.login(self.candidate), self.login(self.employer)
         first = self.propose(employer).json()

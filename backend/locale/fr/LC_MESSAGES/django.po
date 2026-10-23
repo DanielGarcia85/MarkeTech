@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-23 10:29+0200\n"
+"POT-Creation-Date: 2026-10-23 10:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,15 +19,168 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % "
 "1000000 == 0 ? 1 : 2;\n"
 
-#: .\messaging\serializers.py:82
-msgid "Write a message."
-msgstr "Écrivez un message."
+#: .\applications\serializers.py:168 .\applications\serializers.py:169
+msgid "This offer is not open to applications."
+msgstr "Cette offre n'accepte pas de candidatures."
 
+#: .\applications\serializers.py:195
+msgid "Unknown document."
+msgstr "Document inconnu."
+
+#: .\applications\serializers.py:202
+msgid "Your profile has no CV."
+msgstr "Votre profil n'a pas de CV."
+
+#: .\applications\serializers.py:204
+msgid "A CV is required."
+msgstr "Un CV est obligatoire."
+
+#: .\applications\serializers.py:206
+msgid "You have already applied to this offer."
+msgstr "Vous avez déjà postulé à cette offre."
+
+#: .\applications\views.py:223
+msgid "This application has been decided and can no longer be withdrawn."
+msgstr "Cette candidature a reçu une décision et ne peut plus être retirée."
+
+#: .\applications\views.py:239
+msgid "Choose a status: in_progress, accepted or rejected."
+msgstr "Choisissez un état : in_progress, accepted ou rejected."
+
+#: .\applications\views.py:242
+msgid "The application is already in this status."
+msgstr "La candidature est déjà dans cet état."
+
+#: .\applications\views.py:246 .\appointments\serializers.py:30
 #: .\messaging\serializers.py:83
 #, python-brace-format
 msgid "A message has at most {max_length} characters."
 msgstr "Un message compte au plus {max_length} caractères."
 
+#: .\appointments\serializers.py:102
+msgid "Give a date and a time."
+msgstr "Indiquez une date et une heure."
+
+#: .\appointments\serializers.py:107
+msgid "This length is not offered."
+msgstr "Cette durée n'est pas proposée."
+
+#: .\appointments\serializers.py:113 .\appointments\serializers.py:114
+msgid "Say where, or how, you will meet."
+msgstr "Indiquez où, ou comment, vous vous rencontrerez."
+
+#: .\appointments\serializers.py:115
+#, python-brace-format
+msgid "A place has at most {max_length} characters."
+msgstr "Un lieu compte au plus {max_length} caractères."
+
+#: .\appointments\serializers.py:129
+msgid "An appointment is proposed in the future."
+msgstr "Un rendez-vous se propose dans le futur."
+
+#: .\appointments\serializers.py:131
+msgid "An appointment is proposed within a year."
+msgstr "Un rendez-vous se propose au plus un an à l'avance."
+
+#: .\appointments\serializers.py:139
+msgid "Accept or decline the appointment."
+msgstr "Acceptez ou refusez le rendez-vous."
+
+#: .\appointments\serializers.py:145 .\appointments\serializers.py:146
+msgid "Write a message with your answer."
+msgstr "Écrivez un message avec votre réponse."
+
+#: .\appointments\views.py:137
+msgid "Only the employer proposes an appointment."
+msgstr "Seul l'employeur propose un rendez-vous."
+
+#: .\appointments\views.py:139
+msgid ""
+"You can propose an appointment only while the application is in progress."
+msgstr ""
+"Vous ne pouvez proposer un rendez-vous que tant que la candidature est en "
+"cours."
+
+#: .\appointments\views.py:151
+msgid "This application already has a pending appointment."
+msgstr "Cette candidature a déjà un rendez-vous en attente."
+
+#: .\appointments\views.py:180
+msgid "Only the candidate answers an appointment."
+msgstr "Seul le candidat répond à un rendez-vous."
+
+#: .\appointments\views.py:182
+msgid "Only the employer cancels an appointment."
+msgstr "Seul l'employeur annule un rendez-vous."
+
+#: .\appointments\views.py:202
+msgid "This appointment can no longer be answered."
+msgstr "On ne peut plus répondre à ce rendez-vous."
+
+#: .\appointments\views.py:232
+msgid "This appointment can no longer be cancelled."
+msgstr "Ce rendez-vous ne peut plus être annulé."
+
+#: .\appointments\views.py:250
+msgid "Give a date or a time."
+msgstr "Indiquez une date ou une heure."
+
+#: .\demo\middleware.py:41
+msgid "A demo account cannot change its address nor its password."
+msgstr ""
+"Un compte de démonstration ne peut changer ni son adresse ni son mot de "
+"passe."
+
+#: .\demo\views.py:46
+msgid "Accept the terms of use to try the demo."
+msgstr "Acceptez les conditions d'utilisation pour essayer la démo."
+
+#: .\favorites\serializers.py:59 .\favorites\serializers.py:60
+msgid "This offer cannot be put aside."
+msgstr "Cette offre ne peut pas être mise de côté."
+
+#: .\favorites\serializers.py:67
+msgid "This offer is already in your favourites."
+msgstr "Cette offre est déjà dans vos favoris."
+
+#: .\messaging\serializers.py:82
+msgid "Write a message."
+msgstr "Écrivez un message."
+
 #: .\messaging\views.py:96
 msgid "You can write only while the application is in progress."
 msgstr "Vous ne pouvez écrire que tant que la candidature est en cours."
+
+#: .\offers\models.py:195 .\offers\models.py:197 .\offers\serializers.py:100
+msgid "The maximum must be at least the minimum."
+msgstr "Le maximum doit être au moins égal au minimum."
+
+#: .\offers\views.py:201
+msgid "This offer has received applications: close it instead of deleting it."
+msgstr ""
+"Cette offre a reçu des candidatures : clôturez-la au lieu de la supprimer."
+
+#: .\offers\views.py:226
+msgid "This offer is already published."
+msgstr "Cette offre est déjà publiée."
+
+#: .\offers\views.py:230
+msgid "Give the name of your company in your profile before publishing."
+msgstr ""
+"Indiquez le nom de votre entreprise dans votre profil avant de publier."
+
+#: .\offers\views.py:241
+msgid "Only a published offer can be closed."
+msgstr "Seule une offre publiée peut être clôturée."
+
+#: .\profiles\validators.py:37
+#, python-format
+msgid "The file is too big (%(size).1f MB); the limit is %(limit)d MB."
+msgstr ""
+"Le fichier est trop volumineux (%(size).1f Mo) ; la limite est de %(limit)d "
+"Mo."
+
+#: .\profiles\views.py:132
+#, python-brace-format
+msgid "At most {count} documents can be kept."
+msgstr "Vous pouvez garder au plus {count} documents."

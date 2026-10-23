@@ -248,6 +248,12 @@ class ProfileApiTests(TestCase):
             # The error is reported under the name of the field
             self.assertIn(field, response.json(), label)
         self.assertIsNone(client.get("/api/profile/").json()["cv"])
+        # The reason in the language of the interface
+        client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        response = self.patch_files(client, {"cv": self.file("cv.pdf", b"x" * (MAX_FILE_SIZE + 1))})
+        self.assertEqual(
+            response.json(), {"cv": ["Le fichier est trop volumineux (5.0 Mo) ; la limite est de 5 Mo."]}
+        )
 
     # ── The documents ─────────────────────────────────────────────────
 
@@ -279,7 +285,13 @@ class ProfileApiTests(TestCase):
             )
         response = client.post("/api/profile/documents/", {"file": self.file("one-more.pdf", PDF)})
         self.assertEqual(response.status_code, 400)
-        self.assertIn("file", response.json())
+        self.assertEqual(response.json(), {"file": ["At most 10 documents can be kept."]})
+        response = client.post(
+            "/api/profile/documents/",
+            {"file": self.file("one-more.pdf", PDF)},
+            HTTP_ACCEPT_LANGUAGE="fr",
+        )
+        self.assertEqual(response.json(), {"file": ["Vous pouvez garder au plus 10 documents."]})
         self.assertEqual(CandidateDocument.objects.count(), MAX_DOCUMENTS)
 
     # ── The files ─────────────────────────────────────────────────────

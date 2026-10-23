@@ -276,6 +276,14 @@ class DemoAccountTests(TestCase):
             response = self.post(client, url, data)
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["errors"][0]["code"], "demo_account")
+        # The reason in the language of the interface
+        client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        response = self.post(client, "/_allauth/browser/v1/account/email", {"email": "x@example.org"})
+        self.assertEqual(
+            response.json()["errors"][0]["message"],
+            "Un compte de démonstration ne peut changer ni son adresse ni son mot de passe.",
+        )
+        del client.defaults["HTTP_ACCEPT_LANGUAGE"]
         # Reading the addresses stays allowed
         self.assertEqual(client.get("/_allauth/browser/v1/account/email").status_code, 200)
         # Another account is not stopped here

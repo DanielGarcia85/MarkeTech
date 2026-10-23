@@ -24,6 +24,7 @@ Route (demo/urls.py, under /api/)
 
 from django.contrib.auth import login
 from django.http import Http404
+from django.utils.translation import gettext as _
 from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -42,7 +43,7 @@ class DemoLoginView(APIView):
         # as at sign-up (decision of 22.10.2026). Nothing is recorded: the
         # account is shared, the acceptance belongs to no one in particular
         if request.data.get("terms") is not True:
-            message = "Accept the terms of use to try the demo."
+            message = _("Accept the terms of use to try the demo.")
             raise ValidationError({"terms": [message]})
         role = request.data.get("role")
         account = User.objects.filter(is_demo=True, is_active=True, role=role).first()

@@ -22,6 +22,7 @@ offer at all get the same answer, the API does not say what exists. Once
 per offer.
 """
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from offers.models import JobOffer
@@ -55,15 +56,15 @@ class AddFavoriteSerializer(serializers.Serializer):
     offer = serializers.PrimaryKeyRelatedField(
         queryset=JobOffer.objects.filter(status=JobOffer.Status.PUBLISHED),
         error_messages={
-            "does_not_exist": "This offer cannot be put aside.",
-            "incorrect_type": "This offer cannot be put aside.",
+            "does_not_exist": _("This offer cannot be put aside."),
+            "incorrect_type": _("This offer cannot be put aside."),
         },
     )
 
     def validate_offer(self, offer):
         """Once per offer."""
         if Favorite.objects.filter(offer=offer, candidate=self.context["profile"]).exists():
-            raise serializers.ValidationError("This offer is already in your favourites.")
+            raise serializers.ValidationError(_("This offer is already in your favourites."))
         return offer
 
     def create(self, data):

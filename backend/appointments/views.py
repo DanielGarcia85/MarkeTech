@@ -58,6 +58,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
+from django.utils.translation import gettext as _
 from rest_framework import permissions, status
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
@@ -133,9 +134,9 @@ class ApplicationAppointmentsView(APIView):
         one pending at a time."""
         application = self.application(request, pk)
         if application.offer.employer.user_id != request.user.pk:
-            raise PermissionDenied("Only the employer proposes an appointment.")
+            raise PermissionDenied(_("Only the employer proposes an appointment."))
         if application.status != JobApplication.Status.IN_PROGRESS:
-            message = "You can propose an appointment only while the application is in progress."
+            message = _("You can propose an appointment only while the application is in progress.")
             raise ValidationError({"non_field_errors": [message]})
         form = ProposeSerializer(data=request.data)
         form.is_valid(raise_exception=True)
@@ -147,7 +148,7 @@ class ApplicationAppointmentsView(APIView):
                 .first()
             )
             if pending and pending.starts_at > now:
-                message = "This application already has a pending appointment."
+                message = _("This application already has a pending appointment.")
                 raise ValidationError({"non_field_errors": [message]})
             if pending:
                 # Left without answer after its time: the new one replaces it
@@ -176,9 +177,9 @@ class AppointmentMoveView(APIView):
         appointment = get_object_or_404(appointments.select_for_update(of=("self",)), pk=pk)
         if self.side == "candidate":
             if appointment.application.candidate.user_id != request.user.pk:
-                raise PermissionDenied("Only the candidate answers an appointment.")
+                raise PermissionDenied(_("Only the candidate answers an appointment."))
         elif appointment.application.offer.employer.user_id != request.user.pk:
-            raise PermissionDenied("Only the employer cancels an appointment.")
+            raise PermissionDenied(_("Only the employer cancels an appointment."))
         return appointment
 
     def answered(self, request, appointment):
@@ -198,7 +199,7 @@ class AnswerView(AppointmentMoveView):
         with transaction.atomic():
             appointment = self.appointment(request, pk)
             if appointment.status != Appointment.Status.PENDING or appointment.is_expired():
-                message = "This appointment can no longer be answered."
+                message = _("This appointment can no longer be answered.")
                 raise ValidationError({"non_field_errors": [message]})
             accept = form.validated_data["accept"]
             appointment.status = (
@@ -228,7 +229,7 @@ class CancelView(AppointmentMoveView):
             accepted = appointment.status == Appointment.Status.ACCEPTED
             coming = accepted and appointment.starts_at > now
             if not (pending or coming):
-                message = "This appointment can no longer be cancelled."
+                message = _("This appointment can no longer be cancelled.")
                 raise ValidationError({"non_field_errors": [message]})
             appointment.status = Appointment.Status.CANCELLED
             appointment.response = form.validated_data["message"]
@@ -246,7 +247,7 @@ def moment(value, name):
     if when is None:
         day = parse_date(value)
         if day is None:
-            raise ValidationError({name: ["Give a date or a time."]})
+            raise ValidationError({name: [_("Give a date or a time.")]})
         when = datetime(day.year, day.month, day.day)
     if timezone.is_naive(when):
         when = timezone.make_aware(when)

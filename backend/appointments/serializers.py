@@ -18,6 +18,7 @@ cancellation. Who may do what is decided by the views.
 from datetime import timedelta
 
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from .models import MAX_LENGTH, Appointment
@@ -25,7 +26,8 @@ from .models import MAX_LENGTH, Appointment
 # How far ahead an appointment may be proposed
 FURTHEST = timedelta(days=365)
 
-TOO_LONG = f"A message has at most {MAX_LENGTH} characters."
+# The same sentence as for a message: DRF puts the length in its place
+TOO_LONG = _("A message has at most {max_length} characters.")
 
 
 def role_in(appointment, user):
@@ -97,20 +99,20 @@ class ProposeSerializer(serializers.Serializer):
     of the lengths offered, a place, and a note if they wish."""
 
     starts_at = serializers.DateTimeField(
-        error_messages={"invalid": "Give a date and a time.", "required": "Give a date and a time."}
+        error_messages={"invalid": _("Give a date and a time."), "required": _("Give a date and a time.")}
     )
     duration = serializers.ChoiceField(
         choices=Appointment.Duration.choices,
         default=Appointment.Duration.HOUR,
-        error_messages={"invalid_choice": "This length is not offered."},
+        error_messages={"invalid_choice": _("This length is not offered.")},
     )
     place = serializers.CharField(
         max_length=200,
         trim_whitespace=True,
         error_messages={
-            "blank": "Say where, or how, you will meet.",
-            "required": "Say where, or how, you will meet.",
-            "max_length": "A place has at most 200 characters.",
+            "blank": _("Say where, or how, you will meet."),
+            "required": _("Say where, or how, you will meet."),
+            "max_length": _("A place has at most {max_length} characters."),
         },
     )
     note = serializers.CharField(
@@ -124,9 +126,9 @@ class ProposeSerializer(serializers.Serializer):
     def validate_starts_at(self, value):
         now = timezone.now()
         if value <= now:
-            raise serializers.ValidationError("An appointment is proposed in the future.")
+            raise serializers.ValidationError(_("An appointment is proposed in the future."))
         if value > now + FURTHEST:
-            raise serializers.ValidationError("An appointment is proposed within a year.")
+            raise serializers.ValidationError(_("An appointment is proposed within a year."))
         return value
 
 
@@ -134,14 +136,14 @@ class AnswerSerializer(serializers.Serializer):
     """The answer of the candidate: accept or decline, with a message."""
 
     accept = serializers.BooleanField(
-        error_messages={"required": "Accept or decline the appointment."}
+        error_messages={"required": _("Accept or decline the appointment.")}
     )
     message = serializers.CharField(
         max_length=MAX_LENGTH,
         trim_whitespace=True,
         error_messages={
-            "blank": "Write a message with your answer.",
-            "required": "Write a message with your answer.",
+            "blank": _("Write a message with your answer."),
+            "required": _("Write a message with your answer."),
             "max_length": TOO_LONG,
         },
     )
