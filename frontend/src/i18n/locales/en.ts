@@ -57,12 +57,12 @@ export default {
   // Public demonstration: the demo accounts of the login page
   demo: {
     title: "Try the demo",
-    text: "Discover the site without an account, with a shared demo account made again every night.",
+    text: "Discover the site without an account, with a shared demo account reset every night.",
     terms: "By trying the demo, you accept the {terms} and have read the {privacy}.",
     candidate: "Candidate",
     employer: "Employer",
     unavailable: "The demo is not available at the moment.",
-    band: "Demo account, made again every night.",
+    band: "Demo account, reset every night.",
     locked: "Demo account: the e-mail address and the password cannot be changed.",
   },
 
@@ -176,7 +176,7 @@ export default {
         ],
         outro: [
           "The administrator of the site sees all this data in its administration interface, to run the site and to answer your requests. Nothing else is collected: no profiling, no advertising, no audience measurement.",
-          "The two demo accounts are shared by every visitor: what you write or upload with them is seen by the next ones, until they are made again every night. Put nothing personal in them.",
+          "The two demo accounts are shared by every visitor: what you write or upload with them is seen by the next ones, until they are reset every night. Put nothing personal in them.",
         ],
       },
       cookies: {
@@ -242,7 +242,7 @@ export default {
         intro: [
           "An account is personal: one person, an e-mail address that is yours, a password you keep to yourself. You choose your role when you sign up, candidate or employer, and you are responsible for what is done with your account.",
           "You can ask for your account to be deleted at any time, by writing to {contact} from the address of the account; everything attached to it goes with it.",
-          "Two demo accounts, a candidate and an employer, open without password from the login page. Every visitor shares them, their address and password cannot be changed, and they are made again every night: everything done with them goes, including what links your own account to them (an application to one of their offers, its messages, your favourites among those offers). Your account itself and what depends on it alone stay.",
+          "Two demo accounts, a candidate and an employer, open without password from the login page. Every visitor shares them, their address and password cannot be changed, and they are reset every night: everything done with them goes, including what links your own account to them (an application to one of their offers, its messages, your favourites among those offers). Your account itself and what depends on it alone stay.",
         ],
       },
       use: {
