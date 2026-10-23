@@ -24,7 +24,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import { listApplications, type Application } from "../api/applications";
-import { closeOffer, firstErrorOf, getOffer, publishOffer, type Offer } from "../api/offers";
+import { closeOffer, firstErrorOf, getOffer, isCompanyMissing, publishOffer, type Offer } from "../api/offers";
 import { getCountries, type Country } from "../api/profile";
 import { useApplicationText } from "../applications";
 import CompanyMark from "../components/CompanyMark.vue";
@@ -87,9 +87,8 @@ async function move(call: typeof publishOffer): Promise<void> {
     if (answer.status === 200 && answer.data) {
       offer.value = answer.data;
     } else {
-      const message = firstErrorOf(answer.data);
-      needsCompany.value = /company/i.test(message);
-      moveError.value = needsCompany.value ? t("myOffers.needsCompany") : message || t("form.failed");
+      needsCompany.value = isCompanyMissing(answer.data);
+      moveError.value = firstErrorOf(answer.data) || t("form.failed");
     }
   } catch {
     moveError.value = t("form.unreachable");

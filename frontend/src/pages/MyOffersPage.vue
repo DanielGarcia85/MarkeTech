@@ -22,6 +22,7 @@ import {
   closeOffer,
   deleteOffer,
   firstErrorOf,
+  isCompanyMissing,
   myOffers,
   publishOffer,
   type Offer,
@@ -72,11 +73,11 @@ async function move(offer: Offer, call: (id: number) => ReturnType<typeof publis
     if (answer.status === 200 && answer.data) {
       offers.value = (offers.value ?? []).map((item) => (item.id === offer.id ? answer.data! : item));
     } else {
-      // The usual refusal, a company without a name, in the language of
-      // the page; any other reason as the backend words it
-      const message = firstErrorOf(answer.data);
-      needsCompany.value[offer.id] = /company/i.test(message);
-      errors.value[offer.id] = needsCompany.value[offer.id] ? t("myOffers.needsCompany") : message || t("form.failed");
+      // The reason as the backend words it, in the language of the page;
+      // a company without a name comes under "company", with the way to
+      // the profile
+      needsCompany.value[offer.id] = isCompanyMissing(answer.data);
+      errors.value[offer.id] = firstErrorOf(answer.data) || t("form.failed");
     }
   } catch {
     errors.value[offer.id] = t("form.unreachable");

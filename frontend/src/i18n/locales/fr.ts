@@ -429,7 +429,6 @@ const fr: typeof en = {
     close: "Clôturer",
     delete: "Supprimer",
     confirmDelete: "Supprimer l'offre « {title} » ? Elle ne pourra pas être récupérée.",
-    needsCompany: "Indiquez le nom de votre entreprise dans votre profil avant de publier.",
     companyLink: "Compléter mon profil",
     applications: "Aucune candidature | {count} candidature | {count} candidatures",
     favorites: "Aucun favori | {count} favori | {count} favoris",

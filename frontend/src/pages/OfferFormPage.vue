@@ -28,6 +28,7 @@ import {
   firstErrorOf,
   getOffer,
   inputOf,
+  isCompanyMissing,
   publishOffer,
   updateOffer,
   type Offer,
@@ -127,11 +128,10 @@ async function submit(publish: boolean): Promise<void> {
     if (publish) {
       const published = await publishOffer(saved.id);
       if (published.status !== 200) {
-        // Saved, not published: the usual reason, a company without a
-        // name, in the language of the page; any other as the backend words it
-        const message = firstErrorOf(published.data);
-        needsCompany.value = /company/i.test(message);
-        errors.value = { "": needsCompany.value ? t("myOffers.needsCompany") : message || t("form.failed") };
+        // Saved, not published: the reason as the backend words it, in the
+        // language of the page; a company without a name links to the profile
+        needsCompany.value = isCompanyMissing(published.data);
+        errors.value = { "": firstErrorOf(published.data) || t("form.failed") };
         return;
       }
     }
