@@ -7,8 +7,8 @@
   window while the page scrolls, in the light blue (the footer has the
   dark one). Between the logo and the links, a small
   line centred on the window says what the site is (a demo under
-  construction) and whether the backend answers (ApiStatus, the state in
-  colour). A logged-in user is shown as a round with
+  construction) and leads to the page about the project; whether the
+  backend answers is in the footer. A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
   profile, the way to log out. A visitor gets the links to sign up and to
   log in, then the way to the demo.
@@ -21,7 +21,6 @@ import { useRouter } from "vue-router";
 
 import logoUrl from "../assets/logo-horizontal.svg";
 import { logout, useSession } from "../session";
-import ApiStatus from "./ApiStatus.vue";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 const { t } = useI18n();
@@ -85,8 +84,12 @@ async function leave(): Promise<void> {
       <img :src="logoUrl" alt="MarkeTech" class="logo" />
     </RouterLink>
     <!-- What the site is, in a small line in the middle: a demo under
-         construction, and whether the backend answers -->
-    <p class="about">{{ t("app.notice") }} · <ApiStatus /></p>
+         construction, and the way to what it is built with (whether the
+         backend answers is in the footer: decisions of 23.10.2026) -->
+    <p class="about">
+      {{ t("app.notice") }} ·
+      <RouterLink :to="{ name: 'about' }">{{ t("about.headerLink") }}</RouterLink>
+    </p>
     <nav class="nav">
       <div v-if="session.user" ref="account" class="account">
         <!-- The round opens and closes the menu -->
@@ -158,7 +161,8 @@ async function leave(): Promise<void> {
    middle whatever their own widths (the links of a visitor are wider than
    the round of a user). Hidden below the width where the three no longer
    fit on one line (the links of a visitor, in French, with the demo,
-   decide it: 1380 px, measured on 22.10.2026): the logo and the links
+   decide it: 1230 px with the link to the about page and without the
+   state of the API, measured on 23.10.2026; 1240 px keeps a margin): the logo and the links
    then fill the header and share it as they need */
 .about {
   flex: none;
@@ -168,14 +172,14 @@ async function leave(): Promise<void> {
   text-align: center;
 }
 
-@media (min-width: 1380px) {
+@media (min-width: 1240px) {
   .brand,
   .nav {
     flex: 1 1 0;
   }
 }
 
-@media (max-width: 1379px) {
+@media (max-width: 1239px) {
   .about {
     display: none;
   }

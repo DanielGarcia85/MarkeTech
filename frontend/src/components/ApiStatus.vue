@@ -4,10 +4,11 @@
   API status — shows whether the backend can be reached
   ───────────────────────────────────────────────────────────────────────────
   Calls the health endpoint once, when the component is displayed, and shows
-  the result in the current language, as a span: it sits in a line of the
-  header, next to the notice. The state is told by its colour too: a dot
-  and the word in green when the backend answers, in red when it does not,
-  in grey while it is being asked.
+  the result in the current language, as a span: it sits at the end of the
+  last line of the footer, which gives it lighter colours for its dark
+  background. The state is told by its colour too: a dot and the word in
+  green when the backend answers, in red when it does not, in grey while
+  it is being asked.
 -->
 
 <script setup lang="ts">

@@ -205,7 +205,8 @@ class ReviewApiTests(TestCase):
 
     def test_an_author_writes_rewrites_and_deletes_their_review(self):
         client = self.login(self.candidate)
-        self.assertEqual(client.get(self.mine).status_code, 404)
+        # No review yet: no content, not an error
+        self.assertEqual(client.get(self.mine).status_code, 204)
         answer = self.put(client, self.scores(5, comment="  Very clear.  "))
         self.assertEqual(answer.status_code, 201)
         written = answer.json()
@@ -219,7 +220,7 @@ class ReviewApiTests(TestCase):
         self.assertEqual(client.get(self.mine).json()["rating"], 3)
         # Deleted, then nothing left to delete
         self.assertEqual(client.delete(self.mine).status_code, 204)
-        self.assertEqual(client.get(self.mine).status_code, 404)
+        self.assertEqual(client.get(self.mine).status_code, 204)
         self.assertEqual(client.delete(self.mine).status_code, 404)
 
     def test_the_scores_and_the_comment_are_checked(self):

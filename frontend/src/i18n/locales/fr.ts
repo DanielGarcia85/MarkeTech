@@ -694,6 +694,78 @@ const fr: typeof en = {
     noRole: "Un compte administrateur ne donne pas d'avis sur la plateforme.",
   },
 
+  // About the project: what the site does, its technologies, its code
+  about: {
+    title: "À propos du projet",
+    headerLink: "À propos du projet",
+    footerLink: "À propos du projet",
+    stack: "Python · Django · DRF · Vue 3 · TypeScript · Vite · PostgreSQL · nginx · Docker · GitHub Actions",
+    intro: [
+      "MarkeTech est une plateforme d'offres d'emploi pour étudiants et jeunes diplômés en informatique : les employeurs publient des offres, les candidats postulent, et les deux échangent par messages et par rendez-vous jusqu'à la décision.",
+      "Le site est né d'un projet d'équipe de la HEG Genève. Daniel Garcia l'a ensuite réécrit sans l'équipe d'origine, du code au déploiement, avec l'aide de Claude, l'assistant IA d'Anthropic : c'est cette version que décrit cette page.",
+    ],
+    features: {
+      title: "Ce que fait le site",
+      items: [
+        "Offres d'emploi publiques, avec filtres (mot-clé, ville, pays, contrat, télétravail, salaire, date de publication) et pagination.",
+        "Candidatures avec CV, lettre de motivation et documents, copiés au moment de l'envoi, et suivi de leur état des deux côtés.",
+        "Messagerie entre le candidat et l'employeur pour chaque candidature en cours.",
+        "Rendez-vous proposés par l'employeur, acceptés ou refusés par le candidat, dans un calendrier, et exportables vers un agenda (fichier .ics).",
+        "Favoris, avis sur la plateforme, interface et messages du serveur en français et en anglais.",
+        "Deux comptes de démonstration ouverts à tous, remis à zéro chaque nuit.",
+      ],
+    },
+    stackTitle: "Technologies",
+    groups: {
+      backend: {
+        title: "Backend",
+        items: [
+          { name: "Python 3.13 et Django 6.1", text: "Les modèles, les migrations, l'interface d'administration, les traductions (gettext)." },
+          { name: "Django REST Framework 3.18", text: "L'API JSON que lit le frontend, avec ses permissions par rôle." },
+          { name: "django-allauth 65.19 (mode headless)", text: "Inscription, connexion par cookie de session, vérification de l'adresse e-mail, mot de passe oublié." },
+          { name: "Daphne 4.2 et WhiteNoise 6.12", text: "Le serveur d'application, et les fichiers statiques de l'administration." },
+          { name: "Pillow 13.0 et django-countries 9.1", text: "Le contrôle des images envoyées, la liste des pays dans la langue de l'interface." },
+        ],
+      },
+      frontend: {
+        title: "Frontend",
+        items: [
+          { name: "Vue 3.5 et TypeScript 6.0", text: "Une application à page unique, en composants à fichier unique et Composition API." },
+          { name: "Vite 8.3", text: "Le serveur de développement et la compilation." },
+          { name: "Vue Router 5.4 et vue-i18n 11.4", text: "La navigation, et l'interface en français et en anglais." },
+          { name: "vue-cal 4.10", text: "Le calendrier des rendez-vous, chargé seulement quand la page s'ouvre." },
+        ],
+      },
+      data: {
+        title: "Données",
+        items: [
+          { name: "PostgreSQL 18 et psycopg 3.3", text: "La base de données en production, dans son propre conteneur, et le pilote qui la relie à Django." },
+          { name: "SQLite", text: "La base de données en développement et pendant les tests de GitHub Actions, intégrée à Python." },
+        ],
+      },
+      delivery: {
+        title: "Livraison",
+        items: [
+          { name: "Docker et Docker Compose", text: "Trois conteneurs : la base de données, le backend, et le frontend compilé par Node.js 22 puis servi par nginx (version stable)." },
+          { name: "GitHub Actions", text: "À chaque push, les tests ; sur la branche main, la construction des deux images et leur publication sur le registre de GitHub (ghcr.io)." },
+          { name: "Déploiement continu", text: "Le serveur, chez Infomaniak en Suisse, récupère la nouvelle version en moins de deux minutes ; les migrations s'appliquent au démarrage." },
+        ],
+      },
+      quality: {
+        title: "Qualité",
+        items: [
+          { name: "Plus de 120 tests automatisés", text: "Modèles, API, droits d'accès et données de démonstration, lancés à chaque push et vérifiés aussi sur PostgreSQL." },
+          { name: "Règles en base de données", text: "Les règles importantes sont aussi des contraintes de la base : un avis par compte, un rendez-vous en attente par candidature, des notes de 1 à 5." },
+        ],
+      },
+    },
+    code: {
+      title: "Le code",
+      text: "Le code source du site est public sur GitHub, avec son historique.",
+      link: "Voir le dépôt sur GitHub",
+    },
+  },
+
   // Not-found page, for any address the router does not know
   notFound: {
     title: "Page introuvable",

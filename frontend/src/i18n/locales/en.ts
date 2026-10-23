@@ -57,12 +57,12 @@ export default {
   // Public demonstration: the demo accounts of the login page
   demo: {
     title: "Try the demo",
-    text: "Discover the site without an account, with a shared demo account made again every night.",
+    text: "Discover the site without an account, with a shared demo account reset every night.",
     terms: "By trying the demo, you accept the {terms} and have read the {privacy}.",
     candidate: "Candidate",
     employer: "Employer",
     unavailable: "The demo is not available at the moment.",
-    band: "Demo account, made again every night.",
+    band: "Demo account, reset every night.",
     locked: "Demo account: the e-mail address and the password cannot be changed.",
   },
 
@@ -176,7 +176,7 @@ export default {
         ],
         outro: [
           "The administrator of the site sees all this data in its administration interface, to run the site and to answer your requests. Nothing else is collected: no profiling, no advertising, no audience measurement.",
-          "The two demo accounts are shared by every visitor: what you write or upload with them is seen by the next ones, until they are made again every night. Put nothing personal in them.",
+          "The two demo accounts are shared by every visitor: what you write or upload with them is seen by the next ones, until they are reset every night. Put nothing personal in them.",
         ],
       },
       cookies: {
@@ -242,7 +242,7 @@ export default {
         intro: [
           "An account is personal: one person, an e-mail address that is yours, a password you keep to yourself. You choose your role when you sign up, candidate or employer, and you are responsible for what is done with your account.",
           "You can ask for your account to be deleted at any time, by writing to {contact} from the address of the account; everything attached to it goes with it.",
-          "Two demo accounts, a candidate and an employer, open without password from the login page. Every visitor shares them, their address and password cannot be changed, and they are made again every night: everything done with them goes, including what links your own account to them (an application to one of their offers, its messages, your favourites among those offers). Your account itself and what depends on it alone stay.",
+          "Two demo accounts, a candidate and an employer, open without password from the login page. Every visitor shares them, their address and password cannot be changed, and they are reset every night: everything done with them goes, including what links your own account to them (an application to one of their offers, its messages, your favourites among those offers). Your account itself and what depends on it alone stay.",
         ],
       },
       use: {
@@ -690,6 +690,78 @@ export default {
     deleted: "Review deleted",
     demoLocked: "Demo account: the review of this account is shown, but it cannot be changed, as the reviews are public.",
     noRole: "An administrator account does not review the platform.",
+  },
+
+  // About the project: what the site does, its technologies, its code
+  about: {
+    title: "About the project",
+    headerLink: "About the project",
+    footerLink: "About the project",
+    stack: "Python · Django · DRF · Vue 3 · TypeScript · Vite · PostgreSQL · nginx · Docker · GitHub Actions",
+    intro: [
+      "MarkeTech is a job board for students and young graduates in computer science: employers publish offers, candidates apply, and both talk through messages and appointments until the decision.",
+      "The site started as a team project at the HEG Genève. Daniel Garcia then rewrote it without the original team, from the code to the deployment, with the help of Claude, the AI assistant made by Anthropic: this page describes that version.",
+    ],
+    features: {
+      title: "What the site does",
+      items: [
+        "Public job offers, with filters (keyword, city, country, contract, remote work, salary, publication date) and pages.",
+        "Applications with a CV, a cover letter and documents, copied when sent, and their status followed on both sides.",
+        "Messaging between the candidate and the employer for every application in progress.",
+        "Appointments proposed by the employer, accepted or declined by the candidate, in a calendar, and exported to an agenda (.ics file).",
+        "Favourites, reviews of the platform, interface and server messages in French and in English.",
+        "Two demo accounts open to everyone, reset every night.",
+      ],
+    },
+    stackTitle: "Technologies",
+    groups: {
+      backend: {
+        title: "Backend",
+        items: [
+          { name: "Python 3.13 and Django 6.1", text: "The models, the migrations, the admin interface, the translations (gettext)." },
+          { name: "Django REST Framework 3.18", text: "The JSON API read by the frontend, with its permissions by role." },
+          { name: "django-allauth 65.19 (headless mode)", text: "Sign-up, login with a session cookie, e-mail verification, forgotten password." },
+          { name: "Daphne 4.2 and WhiteNoise 6.12", text: "The application server, and the static files of the admin interface." },
+          { name: "Pillow 13.0 and django-countries 9.1", text: "The check of uploaded images, the list of countries in the language of the interface." },
+        ],
+      },
+      frontend: {
+        title: "Frontend",
+        items: [
+          { name: "Vue 3.5 and TypeScript 6.0", text: "A single-page application, in single-file components and the Composition API." },
+          { name: "Vite 8.3", text: "The development server and the build." },
+          { name: "Vue Router 5.4 and vue-i18n 11.4", text: "The navigation, and the interface in French and in English." },
+          { name: "vue-cal 4.10", text: "The calendar of the appointments, loaded only when its page opens." },
+        ],
+      },
+      data: {
+        title: "Data",
+        items: [
+          { name: "PostgreSQL 18 and psycopg 3.3", text: "The database in production, in its own container, and the driver that links it to Django." },
+          { name: "SQLite", text: "The database in development and during the tests on GitHub Actions, built into Python." },
+        ],
+      },
+      delivery: {
+        title: "Delivery",
+        items: [
+          { name: "Docker and Docker Compose", text: "Three containers: the database, the backend, and the frontend built with Node.js 22 then served by nginx (stable version)." },
+          { name: "GitHub Actions", text: "On every push, the tests; on the main branch, the build of the two images and their publication on GitHub's registry (ghcr.io)." },
+          { name: "Continuous deployment", text: "The server, at Infomaniak in Switzerland, pulls the new version within two minutes; the migrations run at start-up." },
+        ],
+      },
+      quality: {
+        title: "Quality",
+        items: [
+          { name: "More than 120 automated tests", text: "Models, API, access rights and demo data, run on every push and also checked on PostgreSQL." },
+          { name: "Rules in the database", text: "The important rules are also constraints of the database: one review per account, one pending appointment per application, scores from 1 to 5." },
+        ],
+      },
+    },
+    code: {
+      title: "The code",
+      text: "The source code of the site is public on GitHub, with its history.",
+      link: "See the repository on GitHub",
+    },
   },
 
   // Not-found page, for any address the router does not know
