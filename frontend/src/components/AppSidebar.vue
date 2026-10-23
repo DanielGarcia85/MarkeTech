@@ -39,50 +39,52 @@ watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { i
 
 <template>
   <nav class="sidebar" :aria-label="t('nav.label')">
-    <div class="block">
-      <p class="group">{{ t("nav.offers") }}</p>
-      <RouterLink :to="{ name: 'home' }"><Icon name="briefcase" />{{ t("nav.allOffers") }}</RouterLink>
-      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
-        <Icon name="clipboard" />{{ t("nav.myOffers") }}
-      </RouterLink>
-      <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
-        <Icon name="inbox" />{{ t("nav.receivedApplications") }}
-        <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
-      </RouterLink>
-      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
-        <Icon name="send" />{{ t("nav.myApplications") }}
-        <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
-      </RouterLink>
-      <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
-        <Icon name="heart" />{{ t("nav.myFavorites") }}
-      </RouterLink>
-    </div>
-    <div v-if="session.user?.role" class="block">
-      <p class="group">{{ t("nav.messaging") }}</p>
-      <RouterLink :to="{ name: 'conversations' }">
-        <Icon name="chat" />{{ t("nav.openConversations") }}
-        <span v-if="counts.open" class="count">{{ counts.open }}</span>
-      </RouterLink>
-      <RouterLink :to="{ name: 'closedConversations' }">
-        <Icon name="archive" />{{ t("nav.closedConversations") }}
-        <span v-if="counts.closed" class="count">{{ counts.closed }}</span>
-      </RouterLink>
-      <RouterLink :to="{ name: 'appointments' }">
-        <Icon name="calendar" />{{ t("nav.appointments") }}
-        <span v-if="counts.appointments" class="count">{{ counts.appointments }}</span>
-      </RouterLink>
-    </div>
-    <div v-if="session.user" class="block">
-      <p class="group">{{ t("nav.account") }}</p>
-      <RouterLink :to="{ name: 'profile' }"><Icon name="user" />{{ t("nav.profile") }}</RouterLink>
-      <RouterLink :to="{ name: 'credentials' }"><Icon name="key" />{{ t("nav.credentials") }}</RouterLink>
-    </div>
-    <div class="block">
-      <p class="group">{{ t("nav.platform") }}</p>
-      <RouterLink :to="{ name: 'reviews' }"><Icon name="star" />{{ t("nav.allReviews") }}</RouterLink>
-      <RouterLink v-if="session.user?.role" :to="{ name: 'myReview' }">
-        <Icon name="pencil" />{{ t("nav.myReview") }}
-      </RouterLink>
+    <div class="inner">
+      <div class="block">
+        <p class="group">{{ t("nav.offers") }}</p>
+        <RouterLink :to="{ name: 'home' }"><Icon name="briefcase" />{{ t("nav.allOffers") }}</RouterLink>
+        <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'myOffers' }">
+          <Icon name="clipboard" />{{ t("nav.myOffers") }}
+        </RouterLink>
+        <RouterLink v-if="session.user?.role === 'employer'" :to="{ name: 'receivedApplications' }">
+          <Icon name="inbox" />{{ t("nav.receivedApplications") }}
+          <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
+        </RouterLink>
+        <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myApplications' }">
+          <Icon name="send" />{{ t("nav.myApplications") }}
+          <span v-if="counts.applications" class="count">{{ counts.applications }}</span>
+        </RouterLink>
+        <RouterLink v-if="session.user?.role === 'candidate'" :to="{ name: 'myFavorites' }">
+          <Icon name="heart" />{{ t("nav.myFavorites") }}
+        </RouterLink>
+      </div>
+      <div v-if="session.user?.role" class="block">
+        <p class="group">{{ t("nav.messaging") }}</p>
+        <RouterLink :to="{ name: 'conversations' }">
+          <Icon name="chat" />{{ t("nav.openConversations") }}
+          <span v-if="counts.open" class="count">{{ counts.open }}</span>
+        </RouterLink>
+        <RouterLink :to="{ name: 'closedConversations' }">
+          <Icon name="archive" />{{ t("nav.closedConversations") }}
+          <span v-if="counts.closed" class="count">{{ counts.closed }}</span>
+        </RouterLink>
+        <RouterLink :to="{ name: 'appointments' }">
+          <Icon name="calendar" />{{ t("nav.appointments") }}
+          <span v-if="counts.appointments" class="count">{{ counts.appointments }}</span>
+        </RouterLink>
+      </div>
+      <div v-if="session.user" class="block">
+        <p class="group">{{ t("nav.account") }}</p>
+        <RouterLink :to="{ name: 'profile' }"><Icon name="user" />{{ t("nav.profile") }}</RouterLink>
+        <RouterLink :to="{ name: 'credentials' }"><Icon name="key" />{{ t("nav.credentials") }}</RouterLink>
+      </div>
+      <div class="block">
+        <p class="group">{{ t("nav.platform") }}</p>
+        <RouterLink :to="{ name: 'reviews' }"><Icon name="star" />{{ t("nav.allReviews") }}</RouterLink>
+        <RouterLink v-if="session.user?.role" :to="{ name: 'myReview' }">
+          <Icon name="pencil" />{{ t("nav.myReview") }}
+        </RouterLink>
+      </div>
     </div>
   </nav>
 </template>
@@ -98,6 +100,16 @@ watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { i
   padding: 20px 12px;
   border-right: 1px solid var(--mt-border);
   background: var(--mt-surface);
+}
+
+/* The links stay in view while the page scrolls, under the header (its
+   height in --mt-top, set by App.vue); the column keeps its colour down to
+   the footer. A window too short for all the links scrolls them */
+.inner {
+  position: sticky;
+  top: calc(var(--mt-top, 64px) + 20px);
+  max-height: calc(100dvh - var(--mt-top, 64px) - 40px);
+  overflow-y: auto;
 }
 
 /* The title of a group of links: small capitals, muted */
@@ -176,6 +188,14 @@ watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { i
     padding: 8px 16px;
     border-right: none;
     border-bottom: 1px solid var(--mt-border);
+  }
+
+  /* The strip scrolls away with the page */
+  .inner {
+    position: static;
+    display: contents;
+    max-height: none;
+    overflow: visible;
   }
 
   .block {

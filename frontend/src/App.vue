@@ -9,11 +9,13 @@
   confirmation dialog that any page may open. The body stretches so that
   the footer stays at the bottom of the window, even on a short page. A
   demo account sees a band under the header (shared, made again every
-  night), kept at the top of the window with it. Every page is declared
-  in router.ts.
+  night), kept at the top of the window with it; the two side bars stay
+  in view under them while the page scrolls (their height in --mt-top).
+  Every page is declared in router.ts.
 -->
 
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
@@ -30,13 +32,25 @@ const route = useRoute();
 
 // Runs once, when the application starts
 loadSession();
+
+// The height of the header and of the band, kept in --mt-top for the two
+// side bars, which stay in view under them while the page scrolls. Read
+// again whenever it changes: the band comes and goes with a demo account,
+// the header wraps on a narrow window
+const top = ref<HTMLElement | null>(null);
+const observer = new ResizeObserver(([entry]) => {
+  const height = entry.target.getBoundingClientRect().height;
+  document.documentElement.style.setProperty("--mt-top", `${height}px`);
+});
+onMounted(() => top.value && observer.observe(top.value));
+onBeforeUnmount(() => observer.disconnect());
 </script>
 
 <template>
   <div class="shell">
     <!-- The header and the band of a demo account stay at the top of the
          window together while the page scrolls -->
-    <div class="top">
+    <div ref="top" class="top">
       <AppHeader />
       <p v-if="session.user?.is_demo" class="demo-band">{{ t("demo.band") }}</p>
     </div>

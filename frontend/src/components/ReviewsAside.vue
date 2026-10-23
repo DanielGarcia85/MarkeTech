@@ -12,7 +12,8 @@
   the width of the media query, the page keeps all the room, and the
   reviews stay one link away in the side bar. Read once, and again when
   the user changes their review (reviews.ts), or logs in or out (the
-  reviews then say which one is theirs).
+  reviews then say which one is theirs). It stays in view while the page
+  scrolls, as the side bar on the left.
 -->
 
 <script setup lang="ts">
@@ -44,26 +45,28 @@ watch(() => session.user?.id, loadLatestReviews, { immediate: true });
 
 <template>
   <aside class="reviews-aside" :aria-label="t('reviews.asideTitle')">
-    <p class="group">{{ t("reviews.asideTitle") }}</p>
-    <template v-if="reviews.summary">
-      <div class="score">
-        <span class="average">{{ text.average(reviews.summary.averages.rating) }}</span>
-        <span class="of">
-          <StarRating :value="reviews.summary.averages.rating ?? 0" :size="18" />
-          <span class="count">{{ t("reviews.count", reviews.summary.count) }}</span>
-        </span>
-      </div>
-      <ul v-if="reviews.latest.length" class="latest">
-        <li v-for="review in reviews.latest" :key="review.id">
-          <ReviewCard :review="review" compact />
-        </li>
-      </ul>
-      <p v-else class="none">{{ t("reviews.none") }}</p>
-      <p class="links">
-        <RouterLink :to="{ name: 'reviews' }">{{ t("reviews.seeAll") }}</RouterLink>
-        <RouterLink v-if="mayReview" :to="{ name: 'myReview' }">{{ t("reviews.giveYours") }}</RouterLink>
-      </p>
-    </template>
+    <div class="inner">
+      <p class="group">{{ t("reviews.asideTitle") }}</p>
+      <template v-if="reviews.summary">
+        <div class="score">
+          <span class="average">{{ text.average(reviews.summary.averages.rating) }}</span>
+          <span class="of">
+            <StarRating :value="reviews.summary.averages.rating ?? 0" :size="18" />
+            <span class="count">{{ t("reviews.count", reviews.summary.count) }}</span>
+          </span>
+        </div>
+        <ul v-if="reviews.latest.length" class="latest">
+          <li v-for="review in reviews.latest" :key="review.id">
+            <ReviewCard :review="review" compact />
+          </li>
+        </ul>
+        <p v-else class="none">{{ t("reviews.none") }}</p>
+        <p class="links">
+          <RouterLink :to="{ name: 'reviews' }">{{ t("reviews.seeAll") }}</RouterLink>
+          <RouterLink v-if="mayReview" :to="{ name: 'myReview' }">{{ t("reviews.giveYours") }}</RouterLink>
+        </p>
+      </template>
+    </div>
   </aside>
 </template>
 
@@ -75,6 +78,14 @@ watch(() => session.user?.id, loadLatestReviews, { immediate: true });
   padding: 20px 16px;
   border-left: 1px solid var(--mt-border);
   background: var(--mt-surface);
+}
+
+/* In view while the page scrolls, as the side bar on the left */
+.inner {
+  position: sticky;
+  top: calc(var(--mt-top, 64px) + 20px);
+  max-height: calc(100dvh - var(--mt-top, 64px) - 40px);
+  overflow-y: auto;
 }
 
 /* The title, as the groups of the side bar */
