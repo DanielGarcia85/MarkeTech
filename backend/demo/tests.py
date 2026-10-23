@@ -7,10 +7,10 @@ Demo tests — the seed_demo command
 Responsibility
 ──────────────
 Check the seed_demo command, which fills a development database with test
-accounts, offers, applications, favorites and messages: everything it
-announces is there, the files it writes are real PDFs and the logos real PNGs, it runs
-once only unless --reset, and it refuses to run with DEBUG off, as on a
-server. Then the public demonstration: any visitor opens a demo account by
+accounts, offers, applications, favorites, messages, appointments and
+reviews: everything it announces is there, the files it writes are real
+PDFs and the logos real PNGs, it runs once only unless --reset, and it
+refuses to run with DEBUG off, as on a server. Then the public demonstration: any visitor opens a demo account by
 its role, without password; a demo account cannot change its address nor
 its password, and writes 60 times an hour at most.
 """
@@ -36,6 +36,7 @@ from favorites.models import Favorite
 from messaging.models import Message
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
+from reviews.models import Review
 
 # Files land here during the tests, never in the media folder of the project
 MEDIA = tempfile.mkdtemp(prefix="marketech-tests-")
@@ -184,6 +185,25 @@ class SeedDemoTests(TestCase):
         states = [a["state"] for a in candidate.get("/api/appointments/").json()]
         self.assertEqual(len(states), proposed)
         self.assertNotIn("expired", states)
+
+    @override_settings(DEBUG=True)
+    def test_seed_demo_writes_the_reviews(self):
+        call_command("seed_demo", stdout=StringIO())
+        # Five of the six accounts, Inès Dupont without
+        self.assertEqual(Review.objects.count(), 5)
+        self.assertFalse(Review.objects.filter(user__email="candidat3@example.com").exists())
+        body = Client().get("/api/reviews/").json()
+        self.assertEqual(body["summary"]["count"], 5)
+        self.assertEqual(body["summary"]["averages"]["rating"], 4.2)
+        # Written in the past, changed after written, never before
+        now = timezone.now()
+        for review in Review.objects.all():
+            self.assertLess(review.created_at, now)
+            self.assertLessEqual(review.created_at, review.updated_at)
+        # Shown as first name and initial, the company for an employer
+        authors = [row["author"] for row in body["results"]]
+        self.assertIn({"name": "Marc R.", "role": "employer", "company": "Quorvane SA"}, authors)
+        self.assertIn({"name": "Léa M.", "role": "candidate", "company": None}, authors)
 
     @override_settings(DEBUG=True)
     def test_seed_demo_runs_once_unless_reset(self):

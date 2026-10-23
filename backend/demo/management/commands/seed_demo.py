@@ -1,7 +1,7 @@
 # backend/demo/management/commands/seed_demo.py
 
 """
-Seed demo — test accounts, offers, applications, favorites, messages and appointments
+Seed demo — test accounts, offers, applications, favorites, messages, appointments, reviews
 ─────────────────────────────────────────────────────────────────────────────
 
 Responsibility
@@ -13,7 +13,8 @@ contracts, the salaries and the last two months — eight published, one
 draft and one closed each — thirteen applications in every state, with
 their history, eight favorites, conversations on the applications that
 were taken up: open ones, closed ones, some with unread messages, and six
-appointments in every state, past and to come. The two
+appointments in every state, past and to come, and the reviews of the
+platform by five of the six accounts, from 3 to 5 stars. The two
 accounts to show the site with are candidat1@example.com (Léa Martin) and
 employeur1@example.com (Marc Rochat, Quorvane SA), between whom most of it
 happens (decision of 21.10.2026). Everything is invented, the files included:
@@ -36,9 +37,9 @@ other accounts are there to be seen, not to be opened.
     python manage.py seed_demo          creates everything, once
     python manage.py seed_demo --reset  deletes the six accounts first (their
                                         profiles, offers, applications,
-                                        favorites, messages, appointments
-                                        and files go with them; the other
-                                        accounts stay)
+                                        favorites, messages, appointments,
+                                        reviews and files go with them;
+                                        the other accounts stay)
     python manage.py seed_demo --force  on a server (DEBUG off)
 
 Why a command and not a fixture
@@ -78,6 +79,7 @@ from favorites.models import Favorite
 from messaging.models import Message
 from offers.models import JobOffer
 from profiles.models import CandidateDocument, CandidateProfile, EmployerProfile
+from reviews.models import CRITERIA, Review
 
 # The password of the six accounts in development; none on a server
 PASSWORD = "Demo-1234"
@@ -1295,6 +1297,70 @@ FAVORITES = [
     ("candidat3@example.com", "employeur3@example.com", "Développeur·euse Python Django", 5),
 ]
 
+# ── The reviews ───────────────────────────────────────────────────────
+# What five of the accounts think of the platform: the overall rating, the
+# four detailed scores in the order of CRITERIA, the comment, how many days
+# ago it was written and, if so, last changed. Inès Dupont has none. Every
+# remark names something the site does, or does not do yet (decisions of
+# 23.10.2026); no label "demo": the header of the site already says it is
+# one (condition: if that mention leaves the header, these reviews go or
+# get a mark).
+
+REVIEWS = [
+    {
+        "email": "candidat1@example.com",
+        "scores": (5, 5, 5, 4, 5),
+        "comment": (
+            "J'ai trouvé deux offres qui correspondaient à mon profil en quelques minutes, "
+            "grâce aux filtres par ville et par contrat. Postuler avec le CV déjà enregistré "
+            "dans mon profil est très pratique. J'aimerais recevoir un e-mail quand un "
+            "employeur me répond, pour ne pas devoir revenir vérifier."
+        ),
+        "written": 12,
+    },
+    {
+        "email": "candidat2@example.com",
+        "scores": (4, 4, 4, 4, 3),
+        "comment": (
+            "Interface claire et rapide. Voir où en est chacune de mes candidatures m'évite "
+            "de relancer les recruteurs. Pour les rendez-vous, j'aurais aimé pouvoir proposer "
+            "un autre créneau plutôt que seulement accepter ou refuser."
+        ),
+        "written": 20,
+    },
+    {
+        "email": "employeur1@example.com",
+        "scores": (4, 5, 4, 5, 4),
+        "comment": (
+            "Publier une offre prend cinq minutes, et je garde mes brouillons jusqu'à ce que "
+            "le texte soit prêt. Tout l'échange avec un candidat reste au même endroit : sa "
+            "candidature, nos messages et le rendez-vous. Il me manque une alerte par e-mail "
+            "quand un candidat accepte un rendez-vous."
+        ),
+        "written": 9,
+        "changed": 2,
+    },
+    {
+        "email": "employeur2@example.com",
+        "scores": (5, 5, 4, 5, 5),
+        "comment": (
+            "Le calendrier me montre d'un coup d'œil les entretiens de la semaine, et "
+            "j'ajoute chacun à mon agenda avec le fichier proposé. Nos candidats reçoivent "
+            "une réponse plus vite qu'avec nos anciens échanges par e-mail."
+        ),
+        "written": 6,
+    },
+    {
+        "email": "employeur3@example.com",
+        "scores": (3, 4, 3, 3, 3),
+        "comment": (
+            "Simple à prendre en main. Pour l'instant, nos offres en France reçoivent peu de "
+            "candidatures ; je reviendrai sur cette note quand nous aurons plus de recul."
+        ),
+        "written": 3,
+    },
+]
+
 EMAILS = [person["email"] for person in CANDIDATES + EMPLOYERS]
 
 
@@ -1401,7 +1467,7 @@ def logo_file(initials, colour):
 class Command(BaseCommand):
     help = (
         "Create six test accounts (three candidates, three employers), their job offers, "
-        "applications, favorites, conversations and appointments."
+        "applications, favorites, conversations, appointments and reviews."
     )
 
     def add_arguments(self, parser):
@@ -1410,7 +1476,7 @@ class Command(BaseCommand):
             action="store_true",
             help=(
                 "Delete the six test accounts first, with their profiles, offers, applications, "
-                "favorites, messages and appointments."
+                "favorites, messages, appointments and reviews."
             ),
         )
         parser.add_argument(
@@ -1435,8 +1501,8 @@ class Command(BaseCommand):
                     "The test accounts already exist: run again with --reset to replace them."
                 )
             # The profiles, the offers, the applications, the favorites, the
-            # messages, the appointments, the addresses of allauth and the
-            # files (signals) go with the users
+            # messages, the appointments, the reviews, the addresses of
+            # allauth and the files (signals) go with the users
             count, _ = existing.delete()
             self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
@@ -1449,13 +1515,16 @@ class Command(BaseCommand):
                 self.application(spec)
             for candidate, employer, title, days_ago in FAVORITES:
                 self.favorite(candidate, employer, title, days_ago)
+            for spec in REVIEWS:
+                self.review(spec)
 
         messages = sum(len(spec.get("messages", [])) for spec in APPLICATIONS)
         appointments = sum(len(spec.get("appointments", [])) for spec in APPLICATIONS)
         self.stdout.write(
             self.style.SUCCESS(
                 f"Created {len(EMAILS)} accounts, {offers} offers, {len(APPLICATIONS)} applications, "
-                f"{len(FAVORITES)} favorites, {messages} messages and {appointments} appointments."
+                f"{len(FAVORITES)} favorites, {messages} messages, {appointments} appointments "
+                f"and {len(REVIEWS)} reviews."
             )
         )
         # The addresses are listed in development only: on a server, the
@@ -1629,3 +1698,19 @@ class Command(BaseCommand):
         # Written straight to the row: the model stamps today
         when = timezone.now() - timedelta(days=days_ago)
         Favorite.objects.filter(pk=favorite.pk).update(created_at=when)
+
+    def review(self, spec):
+        """The review of one account, dated days before today: written, and
+        last changed if the spec says so."""
+        rating, *details = spec["scores"]
+        review = Review.objects.create(
+            user=User.objects.get(email=spec["email"]),
+            rating=rating,
+            comment=spec["comment"],
+            **dict(zip(CRITERIA, details, strict=True)),
+        )
+        now = timezone.now()
+        written = now - timedelta(days=spec["written"])
+        changed = now - timedelta(days=spec.get("changed", spec["written"]))
+        # Written straight to the row: the model stamps today
+        Review.objects.filter(pk=review.pk).update(created_at=written, updated_at=changed)
