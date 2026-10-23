@@ -6,7 +6,7 @@
   Opened by ConversationPage from its "Propose an appointment" button, for
   the employer of an application in progress. A box over the greyed page,
   as the confirmation dialog: the day and the time (the browser's own
-  picker, in its time zone, never in the past), the length (30, 45, 60 or
+  picker, in its time zone, never in the past, Monday to Friday), the length (30, 45, 60 or
   90 minutes), where or how (an address, a link to a video call, "by
   phone") and a note if the employer wishes. Sent to the API, which checks
   it again; its errors are shown under their field. Emits the appointment
@@ -53,6 +53,13 @@ async function submit(): Promise<void> {
     errors.value = { starts_at: t("appointments.form.whenMissing") };
     return;
   }
+  // Monday to Friday only, as the calendar shows (the API checks it again,
+  // on the day in Geneva)
+  const day = new Date(form.when).getDay();
+  if (day === 0 || day === 6) {
+    errors.value = { starts_at: t("appointments.form.weekend") };
+    return;
+  }
   sending.value = true;
   try {
     // The time typed is local: the API receives it with its offset (ISO)
@@ -85,6 +92,7 @@ async function submit(): Promise<void> {
         <div class="field">
           <label for="appointment-when">{{ t("appointments.form.when") }}</label>
           <input id="appointment-when" v-model="form.when" type="datetime-local" :min="earliest" step="300" />
+          <p class="hint">{{ t("appointments.form.whenHint") }}</p>
           <p v-if="errors.starts_at" class="error">{{ errors.starts_at }}</p>
         </div>
         <div class="field">
@@ -122,6 +130,13 @@ async function submit(): Promise<void> {
 </template>
 
 <style scoped>
+/* What the field accepts, under it, in small muted words */
+.hint {
+  margin: 4px 0 0;
+  color: var(--mt-muted);
+  font-size: 0.8rem;
+}
+
 /* The <dialog> fills the window and carries the grey veil; the box sits
    in its middle, as the confirmation dialog */
 .propose {

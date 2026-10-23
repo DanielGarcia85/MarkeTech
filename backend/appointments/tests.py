@@ -14,8 +14,8 @@ with its application, whether withdrawn or deleted with its offer or an
 account; the participant who has news follows from the state; a pending
 appointment expires when its time has come or its application is decided.
 Then the API as the pages will use it: only the employer proposes, while
-the application is in progress, one pending at a time; only the candidate
-answers, once, with a message; only the employer cancels, before the
+the application is in progress, one pending at a time, on a working day;
+only the candidate answers, once, with a message; only the employer cancels, before the
 appointment; nobody else reaches them; what is news, marked seen once
 read; the appointments of a user over a period; an accepted appointment
 to come as a calendar file, its texts escaped and its lines folded as
@@ -43,6 +43,9 @@ from .ics import fold
 from .models import Appointment
 
 PASSWORD = "Correct-horse-9"
+
+# The day of an appointment is the day in Geneva
+GENEVA = ZoneInfo("Europe/Zurich")
 
 # Files land here during the tests, never in the media folder of the project
 MEDIA = tempfile.mkdtemp(prefix="marketech-tests-")
@@ -226,9 +229,13 @@ class AppointmentApiTests(TestCase):
         return client.post(url, data=json.dumps(data), content_type="application/json")
 
     def proposal(self, days=2, **fields):
-        """What the employer sends: a time in so many days, and a place."""
-        when = (timezone.now() + timedelta(days=days)).isoformat()
-        return {"starts_at": when, "place": "Rue du Rhône 1, Genève", **fields}
+        """What the employer sends: a time in so many days, moved on to the
+        Monday when it falls on a weekend in Geneva (refused, else), and a
+        place."""
+        when = timezone.now() + timedelta(days=days)
+        while days > 0 and when.astimezone(GENEVA).weekday() >= 5:
+            when += timedelta(days=1)
+        return {"starts_at": when.isoformat(), "place": "Rue du Rhône 1, Genève", **fields}
 
     def propose(self, client, days=2, **fields):
         return self.post(client, self.url, self.proposal(days, **fields))
@@ -283,6 +290,28 @@ class AppointmentApiTests(TestCase):
         errors = self.post(employer, self.url, {"place": "Online"}).json()
         self.assertEqual(errors, {"starts_at": ["Give a date and a time."]})
         self.assertEqual(Appointment.objects.count(), 0)
+
+    def test_an_appointment_is_proposed_on_a_working_day(self):
+        employer = self.login(self.employer)
+        # Saturday and Sunday of next week, 10:00 in Geneva
+        today = timezone.localtime(timezone=GENEVA)
+        saturday = today + timedelta(days=12 - today.weekday())
+        saturday = saturday.replace(hour=10, minute=0, second=0, microsecond=0)
+        # Saturday 00:30 in Geneva is still Friday in UTC: the day of Geneva
+        # counts
+        early = saturday.replace(hour=0, minute=30)
+        for day in (saturday, saturday + timedelta(days=1), early):
+            errors = self.post(
+                employer, self.url, {"starts_at": day.isoformat(), "place": "Online"}
+            ).json()
+            self.assertEqual(
+                errors,
+                {"starts_at": ["An appointment is proposed on a working day, from Monday to Friday."]},
+            )
+        # Friday 23:30 in Geneva: a working day
+        friday = early - timedelta(hours=1)
+        answer = self.post(employer, self.url, {"starts_at": friday.isoformat(), "place": "Online"})
+        self.assertEqual(answer.status_code, 201)
 
     def test_the_refusals_speak_the_language_of_the_interface(self):
         candidate, employer = self.login(self.candidate), self.login(self.employer)

@@ -16,6 +16,7 @@ cancellation. Who may do what is decided by the views.
 """
 
 from datetime import timedelta
+from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -25,6 +26,10 @@ from .models import MAX_LENGTH, Appointment
 
 # How far ahead an appointment may be proposed
 FURTHEST = timedelta(days=365)
+
+# The day of an appointment is the day in Geneva, where the site is used
+# (the database keeps UTC)
+GENEVA = ZoneInfo("Europe/Zurich")
 
 # The same sentence as for a message: DRF puts the length in its place
 TOO_LONG = _("A message has at most {max_length} characters.")
@@ -95,8 +100,10 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
 
 class ProposeSerializer(serializers.Serializer):
-    """What the employer proposes: a time in the future, within a year, one
-    of the lengths offered, a place, and a note if they wish."""
+    """What the employer proposes: a time in the future, within a year, on
+    a working day (the calendar shows Monday to Friday: decisions of
+    23.10.2026), one of the lengths offered, a place, and a note if they
+    wish."""
 
     starts_at = serializers.DateTimeField(
         error_messages={"invalid": _("Give a date and a time."), "required": _("Give a date and a time.")}
@@ -129,6 +136,10 @@ class ProposeSerializer(serializers.Serializer):
             raise serializers.ValidationError(_("An appointment is proposed in the future."))
         if value > now + FURTHEST:
             raise serializers.ValidationError(_("An appointment is proposed within a year."))
+        if timezone.localtime(value, GENEVA).weekday() >= 5:
+            raise serializers.ValidationError(
+                _("An appointment is proposed on a working day, from Monday to Friday.")
+            )
         return value
 
 

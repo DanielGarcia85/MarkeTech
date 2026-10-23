@@ -78,6 +78,8 @@ INSTALLED_APPS = [
     "messaging",
     # Appointments: the meetings an employer proposes about an application
     "appointments",
+    # Reviews: what the users think of the platform, public
+    "reviews",
     # Demo: the seed_demo command only, test data for a development database
     "demo",
 ]

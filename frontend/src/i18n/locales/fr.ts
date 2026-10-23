@@ -46,6 +46,9 @@ const fr: typeof en = {
     openConversations: "Ouvertes",
     closedConversations: "Closes",
     appointments: "Rendez-vous",
+    platform: "Plateforme",
+    allReviews: "Tous les avis",
+    myReview: "Mon avis",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -148,7 +151,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 22 octobre 2026",
+    updated: "Dernière mise à jour : 23 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -170,7 +173,7 @@ const fr: typeof en = {
           { term: "Messages", text: "Échangés entre un candidat et l'employeur de l'offre au sujet d'une candidature : le texte, la date d'envoi et celle de la lecture par l'autre. La conversation s'ouvre quand l'employeur met la candidature en cours ; elle reste lisible, sans plus pouvoir écrire, une fois la candidature acceptée ou refusée. Les deux participants peuvent la lire, personne d'autre. Elle est supprimée avec la candidature (retrait par le candidat, suppression d'un compte ou d'une offre). Aucun e-mail ne signale un nouveau message : le site l'indique quand vous vous connectez." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté, avec la date. Lui seul les voit ; l'employeur d'une offre sait combien de candidats l'ont mise de côté, jamais lesquels. Un favori reste en place quand l'offre est clôturée, jusqu'à ce que le candidat le retire." },
           { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature en cours : date, heure et durée, lieu, précisions éventuelles ; puis la réponse du candidat et son message, ou l'annulation par l'employeur et son message éventuel." },
-          { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom et votre nom, visibles par tous les visiteurs." },
+          { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom, l'initiale de votre nom et votre rôle (pour un employeur, le nom de son entreprise), visibles par tous les visiteurs. Un avis par compte, que vous pouvez modifier ou supprimer à tout moment ; les comptes de démonstration ne peuvent pas en publier." },
           { term: "Données techniques", text: "Le serveur enregistre les requêtes qu'il reçoit : adresse IP, page demandée, date, navigateur. Ces journaux ne servent qu'à la sécurité et au dépannage, et s'effacent automatiquement à mesure que de plus récents les remplacent." },
         ],
         outro: [
@@ -626,12 +629,69 @@ const fr: typeof en = {
       title: "Proposer un rendez-vous",
       when: "Date et heure",
       whenMissing: "Indiquez une date et une heure.",
+      whenHint: "Du lundi au vendredi",
+      weekend: "Un rendez-vous se propose un jour ouvrable, du lundi au vendredi.",
       duration: "Durée",
       place: "Lieu",
       placeHint: "Adresse, lien de visio ou « par téléphone »",
       note: "Précisions (facultatif)",
       send: "Proposer",
     },
+  },
+
+  // Reviews of the platform: the list, the bar on the right, one's own
+  reviews: {
+    title: "Avis sur la plateforme",
+    intro: "Ce que les candidats et les employeurs pensent de MarkeTech.",
+    asideTitle: "Avis des utilisateurs",
+    summary: "Résumé des avis",
+    count: "Aucun avis | {count} avis | {count} avis",
+    stars: "{count} étoile | {count} étoile | {count} étoiles",
+    outOfFive: "{value} sur 5",
+    none: "Aucun avis pour l'instant.",
+    loadFailed: "Les avis n'ont pas pu être chargés.",
+    seeAll: "Voir tous les avis",
+    giveYours: "Donner mon avis",
+    changeYours: "Modifier mon avis",
+    more: "Afficher plus d'avis",
+    someone: "Un utilisateur",
+    yours: "Votre avis",
+    role: {
+      candidate: "Candidat·e",
+      employer: "Employeur",
+    },
+    changed: "modifié le {date}",
+    criteria: {
+      ease_of_use: "Facilité d'utilisation",
+      offers_and_applications: "Offres et candidatures",
+      messaging: "Messagerie",
+      appointments: "Rendez-vous",
+    },
+    word: {
+      1: "Mauvais",
+      2: "Moyen",
+      3: "Correct",
+      4: "Bien",
+      5: "Excellent",
+    },
+    choose: "Choisissez une note",
+    mineTitle: "Mon avis",
+    mineIntro: "Notez la plateforme de 1 à 5 étoiles, dans l'ensemble puis sur quatre points, et dites en quelques mots ce qui vous plaît ou ce qui vous manque.",
+    overall: "Note générale",
+    comment: "Votre commentaire",
+    commentHint: "Ce qui vous a aidé, ce qui vous a manqué…",
+    length: "{count} / {max}",
+    signedCandidate: "Votre avis est public : il est signé de votre prénom et de l'initiale de votre nom.",
+    signedEmployer: "Votre avis est public : il est signé de votre prénom, de l'initiale de votre nom et du nom de votre entreprise.",
+    publish: "Publier mon avis",
+    save: "Enregistrer",
+    delete: "Supprimer mon avis",
+    confirmDelete: "Supprimer votre avis ? Il disparaîtra de la liste publique.",
+    published: "Avis publié",
+    saved: "Avis enregistré",
+    deleted: "Avis supprimé",
+    demoLocked: "Compte de démo : l'avis de ce compte est affiché, mais il ne peut pas être modifié, car les avis sont publics.",
+    noRole: "Un compte administrateur ne donne pas d'avis sur la plateforme.",
   },
 
   // Not-found page, for any address the router does not know

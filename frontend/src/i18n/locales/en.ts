@@ -44,6 +44,9 @@ export default {
     openConversations: "Open",
     closedConversations: "Closed",
     appointments: "Appointments",
+    platform: "Platform",
+    allReviews: "All the reviews",
+    myReview: "My review",
   },
 
   // Empty lists: the way to the place where they get filled
@@ -146,7 +149,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 22 October 2026",
+    updated: "Last updated: 23 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -168,7 +171,7 @@ export default {
           { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application (withdrawn by the candidate, or an account or an offer deleted). No e-mail tells you of a new message: the site shows it when you log in." },
           { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
           { term: "Appointments", text: "Proposed by an employer about an application in progress: date, time and length, place, any details; then the candidate's answer and their message, or the employer's cancellation and any message with it." },
-          { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name and last name, visible to every visitor." },
+          { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name, the initial of your last name and your role (for an employer, the name of the company), visible to every visitor. One review per account, which you may change or delete at any time; the demo accounts cannot publish one." },
           { term: "Technical data", text: "The server logs the requests it receives: IP address, page requested, date, browser. These logs serve for security and troubleshooting only, and are erased automatically as newer ones replace them." },
         ],
         outro: [
@@ -624,12 +627,69 @@ export default {
       title: "Propose an appointment",
       when: "Date and time",
       whenMissing: "Give a date and a time.",
+      whenHint: "Monday to Friday",
+      weekend: "An appointment is proposed on a working day, from Monday to Friday.",
       duration: "Length",
       place: "Place",
       placeHint: "Address, video link or \"by phone\"",
       note: "Details (optional)",
       send: "Propose",
     },
+  },
+
+  // Reviews of the platform: the list, the bar on the right, one's own
+  reviews: {
+    title: "Reviews of the platform",
+    intro: "What candidates and employers think of MarkeTech.",
+    asideTitle: "User reviews",
+    summary: "Summary of the reviews",
+    count: "No review | {count} review | {count} reviews",
+    stars: "{count} star | {count} star | {count} stars",
+    outOfFive: "{value} out of 5",
+    none: "No review yet.",
+    loadFailed: "The reviews could not be loaded.",
+    seeAll: "See all the reviews",
+    giveYours: "Give my review",
+    changeYours: "Change my review",
+    more: "Show more reviews",
+    someone: "A user",
+    yours: "Your review",
+    role: {
+      candidate: "Candidate",
+      employer: "Employer",
+    },
+    changed: "changed on {date}",
+    criteria: {
+      ease_of_use: "Ease of use",
+      offers_and_applications: "Offers and applications",
+      messaging: "Messaging",
+      appointments: "Appointments",
+    },
+    word: {
+      1: "Poor",
+      2: "Fair",
+      3: "Okay",
+      4: "Good",
+      5: "Excellent",
+    },
+    choose: "Choose a score",
+    mineTitle: "My review",
+    mineIntro: "Rate the platform from 1 to 5 stars, overall then on four points, and say in a few words what you like or what you miss.",
+    overall: "Overall rating",
+    comment: "Your comment",
+    commentHint: "What helped you, what you missed…",
+    length: "{count} / {max}",
+    signedCandidate: "Your review is public: it is signed with your first name and the initial of your last name.",
+    signedEmployer: "Your review is public: it is signed with your first name, the initial of your last name and the name of your company.",
+    publish: "Publish my review",
+    save: "Save",
+    delete: "Delete my review",
+    confirmDelete: "Delete your review? It will leave the public list.",
+    published: "Review published",
+    saved: "Review saved",
+    deleted: "Review deleted",
+    demoLocked: "Demo account: the review of this account is shown, but it cannot be changed, as the reviews are public.",
+    noRole: "An administrator account does not review the platform.",
   },
 
   // Not-found page, for any address the router does not know

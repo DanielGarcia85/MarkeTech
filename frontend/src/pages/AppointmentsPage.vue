@@ -4,8 +4,9 @@
   Appointments page — the appointments of the user, in a calendar
   ───────────────────────────────────────────────────────────────────────────
   Displayed for "/appointments", to a logged-in user of either role. A
-  calendar (vue-cal, decision of 22.10.2026) by month, week or day, in the
-  language displayed, each appointment in the colour of its state: amber
+  calendar (vue-cal, decision of 22.10.2026) by month, week or day, Monday
+  to Friday (no appointment is proposed on a weekend: decisions of
+  23.10.2026), in the language displayed, each appointment in the colour of its state: amber
   while it waits for an answer, green accepted, red declined, grey
   cancelled or expired. A click on one shows its card under the calendar,
   with the offer, the other participant, the way to the conversation, and
@@ -154,6 +155,7 @@ onMounted(loadComing);
         :time-to="20 * 60"
         :time-step="60"
         events-on-month-view="short"
+        hide-weekends
         :events="events"
         :on-event-click="select"
         today-button

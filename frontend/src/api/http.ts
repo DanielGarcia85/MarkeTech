@@ -6,8 +6,8 @@
 // through the functions of this file, so that the way requests are sent can
 // change here without touching the rest of the application.
 //
-// Three kinds of calls. getJson reads our own API, which answers plain JSON.
-// send writes to it: JSON or a form with files, and the answer comes back
+// Three kinds of calls. getJson reads our own API, which answers plain JSON
+// (getJsonOrNull when the thing may not exist yet). send writes to it: JSON or a form with files, and the answer comes back
 // with its status, because a 400 carries the errors of the fields. api talks
 // to the authentication API of allauth, which always answers an envelope
 // { status, data, errors, meta }, even with a 400 or 401 status: there, those
@@ -80,6 +80,17 @@ export async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+// Like getJson, for a thing that may not exist yet: null for a 404 (one's
+// review before it is written), an error for any other failure
+export async function getJsonOrNull<T>(path: string): Promise<T | null> {
+  const response = await fetch(path, { headers: commonHeaders() });
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`Request to ${path} failed with status ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
 // Answer of a call that writes to our API: the status, and the JSON body
 // when there is one (null after a 204). With a 400, the body is the errors
 // of DRF: { "field": ["message", ...] }
@@ -105,7 +116,7 @@ export function firstErrors(
 // body is sent as a form with files (the browser sets its content type); any
 // other body is sent as JSON.
 export async function send<T>(
-  method: "PATCH" | "POST" | "DELETE",
+  method: "PATCH" | "POST" | "PUT" | "DELETE",
   path: string,
   body?: FormData | object,
 ): Promise<Answer<T>> {
