@@ -50,6 +50,8 @@ urlpatterns = [
     path("api/", include("messaging.urls")),
     # Appointments API: the meetings proposed on the applications in progress
     path("api/", include("appointments.urls")),
+    # Reviews API: what the users think of the platform, public reading
+    path("api/", include("reviews.urls")),
     # Demo API: the login to a demo account, for any visitor
     path("api/", include("demo.urls")),
 ]
