@@ -7,7 +7,7 @@
 
 // The address that receives the messages about the site: in the footer and
 // on the privacy page
-export const CONTACT = "info@marketech.ch";
+export const CONTACT = "contact@marketech.ch";
 
 // The public repository of the code: on the about page
 export const REPOSITORY = "https://github.com/DanielGarcia85/MarkeTech";
