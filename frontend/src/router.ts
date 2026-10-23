@@ -32,6 +32,8 @@ import MyApplicationsPage from "./pages/MyApplicationsPage.vue";
 import MyFavoritesPage from "./pages/MyFavoritesPage.vue";
 import ConversationsPage from "./pages/ConversationsPage.vue";
 import ConversationPage from "./pages/ConversationPage.vue";
+import ReviewsPage from "./pages/ReviewsPage.vue";
+import MyReviewPage from "./pages/MyReviewPage.vue";
 import NotFoundPage from "./pages/NotFoundPage.vue";
 import type { Role } from "./api/account";
 import { useSession, whenLoaded } from "./session";
@@ -82,6 +84,9 @@ export const router = createRouter({
     // The appointments of the user, in a calendar. Loaded only when opened:
     // the calendar (vue-cal) weighs about a quarter of the rest of the site
     { path: "/appointments", name: "appointments", component: () => import("./pages/AppointmentsPage.vue"), meta: { requiresAuth: true } },
+    // The reviews of the platform: all of them, for anyone; one's own
+    { path: "/reviews", name: "reviews", component: ReviewsPage },
+    { path: "/review", name: "myReview", component: MyReviewPage, meta: { requiresAuth: true } },
     { path: "/privacy", name: "privacy", component: PrivacyPage },
     { path: "/terms", name: "terms", component: TermsPage },
     // Any other address: the "not found" page, the address left as typed

@@ -10,7 +10,9 @@
   employer, moved for a candidate), their conversations (open and closed,
   each with the number of unread messages) and their appointments (with
   the number that bring news), and their account (the
-  profile, then the e-mail address and the password), each link with a
+  profile, then the e-mail address and the password); last, for everyone,
+  the platform: all the reviews, and one's own for a candidate or an
+  employer (decisions of 23.10.2026); each link with a
   small drawing before it (Icon). The counts are kept fresh by
   notifications.ts. One group
   of links per area of the application; a group gets its links when the
@@ -74,6 +76,13 @@ watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { i
       <p class="group">{{ t("nav.account") }}</p>
       <RouterLink :to="{ name: 'profile' }"><Icon name="user" />{{ t("nav.profile") }}</RouterLink>
       <RouterLink :to="{ name: 'credentials' }"><Icon name="key" />{{ t("nav.credentials") }}</RouterLink>
+    </div>
+    <div class="block">
+      <p class="group">{{ t("nav.platform") }}</p>
+      <RouterLink :to="{ name: 'reviews' }"><Icon name="star" />{{ t("nav.allReviews") }}</RouterLink>
+      <RouterLink v-if="session.user?.role" :to="{ name: 'myReview' }">
+        <Icon name="pencil" />{{ t("nav.myReview") }}
+      </RouterLink>
     </div>
   </nav>
 </template>

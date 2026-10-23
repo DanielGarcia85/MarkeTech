@@ -4,8 +4,8 @@
   Root component — top of the component tree, and the page shell
   ───────────────────────────────────────────────────────────────────────────
   Mounted by main.ts. Asks the backend who is logged in, then lays out the
-  three bands of every page: the header, the body (the side bar, then the
-  current page) and the footer, plus the
+  three bands of every page: the header, the body (the side bar, the
+  current page, then the reviews on a wide window) and the footer, plus the
   confirmation dialog that any page may open. The body stretches so that
   the footer stays at the bottom of the window, even on a short page. A
   demo account sees a band under the header (shared, made again every
@@ -15,15 +15,18 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
 
 import AppFooter from "./components/AppFooter.vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppSidebar from "./components/AppSidebar.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
+import ReviewsAside from "./components/ReviewsAside.vue";
 import { loadSession, useSession } from "./session";
 
 const { t } = useI18n();
 const session = useSession();
+const route = useRoute();
 
 // Runs once, when the application starts
 loadSession();
@@ -44,6 +47,9 @@ loadSession();
       <main class="page">
         <RouterView />
       </main>
+      <!-- The reviews of the platform, on a wide window, on every page but
+           their own list -->
+      <ReviewsAside v-if="route.name !== 'reviews'" />
     </div>
     <AppFooter />
     <!-- Invisible until a page asks a question -->

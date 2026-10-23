@@ -3,8 +3,8 @@
 
   Icon — one of the small drawings of the site, by its name
   ───────────────────────────────────────────────────────────────────────────
-  Used by the side bar before each link, and by the empty states of the
-  lists. Line drawings on a 24 × 24 grid, drawn in the colour of the text
+  Used by the side bar before each link, by the empty states of the
+  lists, and by the reviews. Line drawings on a 24 × 24 grid, drawn in the colour of the text
   around them (currentColor), so that they follow the link they sit in.
   Decorative: hidden from screen readers, the text next to them says it
   all. The names are typed: a misspelled one is a type error.
@@ -22,7 +22,9 @@ export type IconName =
   | "search"
   | "chat"
   | "archive"
-  | "calendar";
+  | "calendar"
+  | "star"
+  | "pencil";
 </script>
 
 <script setup lang="ts">
@@ -96,6 +98,16 @@ withDefaults(
     <g v-else-if="name === 'calendar'">
       <rect x="3" y="5" width="18" height="16" rx="2" />
       <path d="M3 10h18M8 3v4M16 3v4" />
+    </g>
+    <!-- A star with five points: the reviews -->
+    <path
+      v-else-if="name === 'star'"
+      d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"
+    />
+    <!-- A pencil over a line: one's own review, to write -->
+    <g v-else-if="name === 'pencil'">
+      <path d="M15 5l4 4L9 19H5v-4z" />
+      <path d="M13 7l4 4" />
     </g>
     <!-- A magnifying glass: a search without result -->
     <g v-else-if="name === 'search'">
