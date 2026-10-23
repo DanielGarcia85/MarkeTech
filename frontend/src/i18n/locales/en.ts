@@ -427,7 +427,6 @@ export default {
     close: "Close",
     delete: "Delete",
     confirmDelete: "Delete the offer \"{title}\"? It cannot be recovered.",
-    needsCompany: "Give the name of your company in your profile before publishing.",
     companyLink: "Complete my profile",
     applications: "No application | {count} application | {count} applications",
     favorites: "No favourite | {count} favourite | {count} favourites",

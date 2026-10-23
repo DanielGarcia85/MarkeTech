@@ -36,6 +36,7 @@ import os
 
 from django.core.files.base import ContentFile
 from django.db import transaction
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -164,8 +165,8 @@ class ApplySerializer(serializers.Serializer):
     offer = serializers.PrimaryKeyRelatedField(
         queryset=JobOffer.objects.filter(status=JobOffer.Status.PUBLISHED),
         error_messages={
-            "does_not_exist": "This offer is not open to applications.",
-            "incorrect_type": "This offer is not open to applications.",
+            "does_not_exist": _("This offer is not open to applications."),
+            "incorrect_type": _("This offer is not open to applications."),
         },
     )
     cv = serializers.FileField(required=False)
@@ -191,18 +192,18 @@ class ApplySerializer(serializers.Serializer):
         ids = list(dict.fromkeys(ids))
         documents = list(self.profile.documents.filter(pk__in=ids))
         if len(documents) != len(ids):
-            raise serializers.ValidationError("Unknown document.")
+            raise serializers.ValidationError(_("Unknown document."))
         return documents
 
     def validate(self, data):
         """A CV, one way or the other; one application per offer."""
         if data["use_profile_cv"]:
             if not self.profile.cv:
-                raise serializers.ValidationError({"cv": ["Your profile has no CV."]})
+                raise serializers.ValidationError({"cv": [_("Your profile has no CV.")]})
         elif "cv" not in data:
-            raise serializers.ValidationError({"cv": ["A CV is required."]})
+            raise serializers.ValidationError({"cv": [_("A CV is required.")]})
         if JobApplication.objects.filter(offer=data["offer"], candidate=self.profile).exists():
-            raise serializers.ValidationError("You have already applied to this offer.")
+            raise serializers.ValidationError(_("You have already applied to this offer."))
         return data
 
     def create(self, data):

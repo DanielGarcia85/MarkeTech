@@ -62,6 +62,7 @@ import os
 from django.db import transaction
 from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
@@ -95,7 +96,7 @@ def news_for(user):
 def candidate_profile_of(user):
     """The candidate profile of the user, created empty when missing (an
     account made in the admin site), like the profiles API does."""
-    profile, _ = CandidateProfile.objects.get_or_create(user=user)
+    profile, _created = CandidateProfile.objects.get_or_create(user=user)
     return profile
 
 
@@ -219,7 +220,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         """Withdraw: refused once the employer decided; the files leave the
         disk with the row (signals.py)."""
         if application.status in DECIDED:
-            message = "This application has been decided and can no longer be withdrawn."
+            message = _("This application has been decided and can no longer be withdrawn.")
             raise ValidationError({"non_field_errors": [message]})
         application.delete()
 
@@ -235,14 +236,14 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         application = get_object_or_404(self.get_queryset(), pk=pk)
         new_status = request.data.get("status")
         if new_status not in EMPLOYER_STATUSES:
-            message = "Choose a status: in_progress, accepted or rejected."
+            message = _("Choose a status: in_progress, accepted or rejected.")
             raise ValidationError({"status": [message]})
         if new_status == application.status:
-            message = "The application is already in this status."
+            message = _("The application is already in this status.")
             raise ValidationError({"non_field_errors": [message]})
         text = str(request.data.get("message") or "").strip()
         if len(text) > MAX_LENGTH:
-            message = f"A message has at most {MAX_LENGTH} characters."
+            message = _("A message has at most {max_length} characters.").format(max_length=MAX_LENGTH)
             raise ValidationError({"message": [message]})
         with transaction.atomic():
             application.status = new_status

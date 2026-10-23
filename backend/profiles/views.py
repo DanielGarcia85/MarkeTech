@@ -38,6 +38,7 @@ import os
 from django.core.files.storage import default_storage
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
+from django.utils.translation import gettext as _
 from django_countries import countries
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -71,7 +72,7 @@ def profile_of(user):
     if user.role not in ROLES:
         raise Http404
     model, serializer_class, file_fields = ROLES[user.role]
-    profile, _ = model.objects.get_or_create(user=user)
+    profile, _created = model.objects.get_or_create(user=user)
     return profile, serializer_class, file_fields
 
 
@@ -79,7 +80,7 @@ def candidate_profile_of(user):
     """The profile of a candidate; 404 for anyone else."""
     if user.role != User.Role.CANDIDATE:
         raise Http404
-    profile, _ = CandidateProfile.objects.get_or_create(user=user)
+    profile, _created = CandidateProfile.objects.get_or_create(user=user)
     return profile
 
 
@@ -90,13 +91,13 @@ class ProfileView(APIView):
     """The profile of the logged-in user: read it, change part of it."""
 
     def get(self, request):
-        profile, serializer_class, _ = profile_of(request.user)
+        profile, serializer_class, _file_fields = profile_of(request.user)
         return Response(serializer_class(profile).data)
 
     def patch(self, request):
         # partial: only the fields sent change, the others keep their value.
         # The data may be JSON (text fields) or multipart (with files)
-        profile, serializer_class, _ = profile_of(request.user)
+        profile, serializer_class, _file_fields = profile_of(request.user)
         serializer = serializer_class(profile, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -128,7 +129,7 @@ class DocumentListView(APIView):
         profile = candidate_profile_of(request.user)
         if profile.documents.count() >= MAX_DOCUMENTS:
             raise ValidationError(
-                {"file": [f"At most {MAX_DOCUMENTS} documents can be kept."]},
+                {"file": [_("At most {count} documents can be kept.").format(count=MAX_DOCUMENTS)]},
                 code="too_many_documents",
             )
         serializer = CandidateDocumentSerializer(data=request.data)

@@ -14,6 +14,7 @@ its last message, how many are unread). Checks what a participant writes.
 Who may read or write which conversation is decided by the views.
 """
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from applications.models import JobApplication
@@ -78,8 +79,8 @@ class WriteSerializer(serializers.Serializer):
         max_length=MAX_LENGTH,
         trim_whitespace=True,
         error_messages={
-            "blank": "Write a message.",
-            "max_length": f"A message has at most {MAX_LENGTH} characters.",
+            "blank": _("Write a message."),
+            "max_length": _("A message has at most {max_length} characters."),
         },
     )
 

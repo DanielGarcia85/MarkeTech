@@ -111,6 +111,11 @@ class FavoriteApiTests(TestCase):
         response = self.post(client, "/api/favorites/", {"offer": self.offer.pk})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"offer": ["This offer is already in your favourites."]})
+        # In the language of the interface
+        client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        response = self.post(client, "/api/favorites/", {"offer": self.offer.pk})
+        self.assertEqual(response.json(), {"offer": ["Cette offre est déjà dans vos favoris."]})
+        del client.defaults["HTTP_ACCEPT_LANGUAGE"]
         for status in ("draft", "closed"):
             offer = JobOffer.objects.create(employer=self.company, status=status, **OFFER)
             response = self.post(client, "/api/favorites/", {"offer": offer.pk})

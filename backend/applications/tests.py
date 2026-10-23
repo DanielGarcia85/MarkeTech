@@ -294,6 +294,17 @@ class ApplicationApiTests(MediaTestCase):
         response = client.post("/api/applications/", {"offer": self.offer.pk, "use_profile_cv": True})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"cv": ["Your profile has no CV."]})
+        # The same refusals in the language of the interface
+        response = client.post(
+            "/api/applications/", {"offer": self.offer.pk}, HTTP_ACCEPT_LANGUAGE="fr"
+        )
+        self.assertEqual(response.json(), {"cv": ["Un CV est obligatoire."]})
+        response = client.post(
+            "/api/applications/",
+            {"offer": self.offer.pk, "use_profile_cv": True},
+            HTTP_ACCEPT_LANGUAGE="fr",
+        )
+        self.assertEqual(response.json(), {"cv": ["Votre profil n'a pas de CV."]})
         # The rules of the files hold here too
         response = self.apply(client, cv=SimpleUploadedFile("cv.exe", b"MZ"))
         self.assertEqual(response.status_code, 400)

@@ -165,9 +165,17 @@ export function getOffer(id: number): Promise<Offer> {
 // is not an employer, a 404 that the offer is somebody else's
 
 // The first message of a refused request, whatever its field: a refused
-// move (publish, close) has one reason, under non_field_errors
+// move (publish, close) has one reason, under non_field_errors, or under
+// "company" when the company of the employer has no name
 export function firstErrorOf(data: unknown): string {
   return Object.values(firstErrors(data as Record<string, string[]> | null))[0] ?? "";
+}
+
+// A publication refused because the company has no name: the page then
+// offers the way to the profile (decided by the key, not by the words,
+// which follow the language of the interface)
+export function isCompanyMissing(data: unknown): boolean {
+  return typeof data === "object" && data !== null && "company" in data;
 }
 
 // All the offers of the employer, in any state, newest first

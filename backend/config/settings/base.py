@@ -223,6 +223,11 @@ LANGUAGES = [
 ]
 LANGUAGE_CODE = "en"
 
+# Where our own translations live: backend/locale/<language>/LC_MESSAGES/,
+# one folder for the whole project (decision of 23.10.2026). Django looks
+# here first, then in each application, then in its own translations
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
 TIME_ZONE = "UTC"
 
 # Enables Django's translation system

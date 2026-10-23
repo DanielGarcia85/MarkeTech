@@ -28,6 +28,7 @@ applied, how many put it aside (the public does not need them, and an
 offer does not say how many compete for it).
 """
 
+from django.utils.translation import gettext_lazy as _
 from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
 
@@ -96,7 +97,7 @@ class JobOfferSerializer(CountryFieldMixin, serializers.ModelSerializer):
         errors = {}
         for low, high in (("salary_min", "salary_max"), ("workload_min", "workload_max")):
             if value(low) and value(high) and value(low) > value(high):
-                errors[high] = "The maximum must be at least the minimum."
+                errors[high] = _("The maximum must be at least the minimum.")
         if errors:
             raise serializers.ValidationError(errors)
         return data

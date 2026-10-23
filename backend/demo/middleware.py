@@ -15,6 +15,7 @@ allowed, files included; the pages show the two forms disabled.
 """
 
 from django.http import JsonResponse
+from django.utils.translation import gettext as _
 
 # The routes of allauth that change the address or the password; any
 # method but GET (reading the addresses stays allowed)
@@ -37,7 +38,7 @@ class DemoGuardMiddleware:
             and request.path.rstrip("/") in CLOSED
             and getattr(user, "is_demo", False)
         ):
-            message = "A demo account cannot change its address nor its password."
+            message = _("A demo account cannot change its address nor its password.")
             return JsonResponse(
                 {"status": 403, "errors": [{"message": message, "code": "demo_account"}]},
                 status=403,

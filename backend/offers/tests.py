@@ -276,7 +276,18 @@ class OfferApiTests(TestCase):
         offer = self.offer(status="draft")
         response = self.post(employer, "/api/offers/%d/publish/" % offer.pk)
         self.assertEqual(response.status_code, 400)
-        self.assertIn("company", response.json()["non_field_errors"][0])
+        # Under "company", whatever the language: the page offers the way to
+        # the profile; the text in the language of the interface
+        self.assertEqual(
+            response.json(),
+            {"company": ["Give the name of your company in your profile before publishing."]},
+        )
+        employer.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        response = self.post(employer, "/api/offers/%d/publish/" % offer.pk)
+        self.assertEqual(
+            response.json(),
+            {"company": ["Indiquez le nom de votre entreprise dans votre profil avant de publier."]},
+        )
         self.assertEqual(JobOffer.objects.get(pk=offer.pk).status, "draft")
         self.company.company_name = "Acme"
         self.company.save()
