@@ -592,6 +592,7 @@ export default {
     accept: "Accept",
     decline: "Decline",
     cancel: "Cancel the appointment",
+    addToCalendar: "Add to my calendar",
     answerLabel: "Your message (required)",
     cancelLabel: "A word for the candidate (optional)",
     confirm: {

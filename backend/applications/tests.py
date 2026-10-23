@@ -230,11 +230,16 @@ class ApplicationApiTests(MediaTestCase):
         return application
 
     def status_of(self, client, url):
-        """Status of a GET on a file URL, the response closed at once: a
-        served file stays open until its response is closed, and Windows
-        refuses to delete an open file."""
+        """Status of a GET on a file URL, the file closed at once: a served
+        file stays open until its response is closed, and Windows refuses
+        to delete an open file. Read to its end, the file is closed by the
+        test client itself. Never response.close(): it sends the signal of
+        a finished request, which closes the database connection of the
+        test; SQLite in memory ignores it, PostgreSQL refuses every query
+        after it (found on 22.10.2026)."""
         response = client.get(url)
-        response.close()
+        if response.streaming:
+            b"".join(response.streaming_content)
         return response.status_code
 
     # ── Applying ──────────────────────────────────────────────────────
@@ -426,9 +431,9 @@ class ApplicationApiTests(MediaTestCase):
             client = self.login(user)
             self.assertEqual([self.status_of(client, url) for url in urls], [200, 200, 200])
         response = self.login(self.candidate).get(urls[0])
+        # Read to its end: closed by the test client, as status_of says
         self.assertEqual(b"".join(response.streaming_content), PDF)
         self.assertIn("cv.pdf", response["Content-Disposition"])
-        response.close()
         for user in (self.other_candidate, self.other_employer):
             client = self.login(user)
             self.assertEqual([self.status_of(client, url) for url in urls], [404, 404, 404])

@@ -99,12 +99,17 @@ class ProfileApiTests(TestCase):
         return os.path.exists(os.path.join(MEDIA, url.removeprefix("/api/files/")))
 
     def status(self, client, url):
-        """Status of a GET on a file URL, the response closed at once. A
-        served file stays open until its response is closed, and Windows
-        refuses to delete an open file: a test that removes the file next
-        would fail there, and only there."""
+        """Status of a GET on a file URL, the file closed at once. A served
+        file stays open until its response is closed, and Windows refuses
+        to delete an open file: a test that removes the file next would
+        fail there, and only there. Read to its end, the file is closed by
+        the test client itself. Never response.close(): it sends the signal
+        of a finished request, which closes the database connection of the
+        test; SQLite in memory ignores it, PostgreSQL refuses every query
+        after it (found on 22.10.2026)."""
         response = client.get(url)
-        response.close()
+        if response.streaming:
+            b"".join(response.streaming_content)
         return response.status_code
 
     # ── The profile ───────────────────────────────────────────────────

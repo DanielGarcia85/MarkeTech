@@ -11,7 +11,9 @@
   the candidate or the word of a cancellation, and the day it was
   proposed. Its buttons follow the side of the user: Accept and Decline
   for the candidate while it waits for an answer, Cancel for the employer
-  until it takes place. The page does the moves (useAppointmentMoves) and
+  until it takes place; for both, once accepted and still to come, the
+  calendar file to add it to their agenda (a plain download, the session
+  cookie being enough). The page does the moves (useAppointmentMoves) and
   passes back whether one is in flight and the reason of a refusal. In
   the calendar, the offer and the other participant, with the way to the
   conversation (about).
@@ -43,6 +45,12 @@ const { t, locale } = useI18n();
 const text = useAppointmentText();
 
 const canAnswer = computed(() => props.role === "candidate" && props.appointment.state === "pending");
+// Accepted and still to come: worth a place in an agenda
+const canExport = computed(
+  () => props.appointment.state === "accepted" && new Date(props.appointment.starts_at) > new Date(),
+);
+const calendarUrl = computed(() => `/api/appointments/${props.appointment.id}/calendar/`);
+
 const canCancel = computed(
   () =>
     props.role === "employer" &&
@@ -86,7 +94,7 @@ function proposed(iso: string): string {
       <span class="label">{{ responseLabel }}</span><span>{{ appointment.response }}</span>
     </blockquote>
     <p class="meta">{{ t("appointments.proposed", { date: proposed(appointment.created_at) }) }}</p>
-    <p v-if="canAnswer || canCancel || about" class="actions">
+    <p v-if="canAnswer || canCancel || canExport || about" class="actions">
       <template v-if="canAnswer">
         <button type="button" class="primary" :disabled="busy" @click="emit('answer', true)">
           {{ t("appointments.accept") }}
@@ -95,6 +103,9 @@ function proposed(iso: string): string {
           {{ t("appointments.decline") }}
         </button>
       </template>
+      <a v-if="canExport" :href="calendarUrl" class="secondary export" download>
+        <Icon name="calendar" />{{ t("appointments.addToCalendar") }}
+      </a>
       <button v-if="canCancel" type="button" class="secondary" :disabled="busy" @click="emit('cancel')">
         {{ t("appointments.cancel") }}
       </button>
@@ -215,6 +226,14 @@ function proposed(iso: string): string {
 
 .secondary:hover {
   background: var(--mt-border);
+}
+
+/* The calendar file: a link dressed as the buttons beside it */
+.export {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
 }
 
 .secondary:disabled {
