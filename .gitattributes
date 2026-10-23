@@ -11,3 +11,7 @@
 * text=auto eol=lf
 
 *.bat text eol=crlf
+
+# Compiled translations: binary, never touched by the conversion of the
+# line endings (decision of 23.10.2026)
+*.mo binary
