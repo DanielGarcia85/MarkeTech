@@ -175,7 +175,7 @@ class AuthenticationApiTests(TestCase):
         self.sign_up()
         self.assertEqual(
             mail.outbox[0].subject,
-            "[MarkeTech] Confirmez votre adresse e-mail",
+            "Confirmez votre adresse e-mail",
         )
         self.assertIn("Bonjour Léa,", mail.outbox[0].body)
 
@@ -185,7 +185,7 @@ class AuthenticationApiTests(TestCase):
         )
         self.sign_up()
         self.assertEqual(
-            mail.outbox[0].subject, "[MarkeTech] Confirm your e-mail address"
+            mail.outbox[0].subject, "Confirm your e-mail address"
         )
         self.assertIn("Hello Léa,", mail.outbox[0].body)
 
@@ -218,7 +218,7 @@ class AccountChangesTests(TestCase):
         # The e-mail goes to the new address, with the words of a change, not
         # those of a sign-up; the current address is untouched meanwhile
         self.assertEqual(mail.outbox[-1].to, ["new.address@example.com"])
-        self.assertEqual(mail.outbox[-1].subject, "[MarkeTech] Confirm your new e-mail address")
+        self.assertEqual(mail.outbox[-1].subject, "Confirm your new e-mail address")
         self.assertIn("stays in force", mail.outbox[-1].body)
         self.user.refresh_from_db()
         self.assertEqual(self.user.email, "lea.doe@example.com")
