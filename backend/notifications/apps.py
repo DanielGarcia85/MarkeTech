@@ -8,7 +8,8 @@ Responsibility
 ──────────────
 Give Django the identity of the notifications application: its Python
 path. It has no model and no route: the views of the other applications
-call send.py. Contains no logic.
+call send.py (the users) and moderation.py (the administrator). Contains
+no logic.
 """
 
 from django.apps import AppConfig

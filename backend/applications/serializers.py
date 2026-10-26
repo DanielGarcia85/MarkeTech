@@ -24,7 +24,7 @@ only here: it moves through its own route.
 
 How a candidate applies
 ───────────────────────
-A multipart form: "offer" (its id; published offers only), then either
+A multipart form: "offer" (its id; public offers only), then either
 "cv" (a file) or "use_profile_cv" (true: the CV of the profile is copied),
 "cover_letter" (a file, optional) and "documents" (ids of the documents of
 the profile, repeated: documents=3&documents=5, optional). The files are
@@ -160,10 +160,11 @@ class ApplySerializer(serializers.Serializer):
     """What a candidate sends to apply. Needs the candidate profile in its
     context: the view passes it as "profile"."""
 
-    # Published offers only: a draft, a closed offer or no offer at all get
-    # the same answer, the API does not say what exists
+    # Public offers only: a draft, a closed offer, an offer of a blocked
+    # account or no offer at all get the same answer, the API does not say
+    # what exists
     offer = serializers.PrimaryKeyRelatedField(
-        queryset=JobOffer.objects.filter(status=JobOffer.Status.PUBLISHED),
+        queryset=JobOffer.objects.public(),
         error_messages={
             "does_not_exist": _("This offer is not open to applications."),
             "incorrect_type": _("This offer is not open to applications."),

@@ -12,7 +12,8 @@ reviews: everything it announces is there, the files it writes are real
 PDFs and the logos real PNGs, it runs once only unless --reset, and it
 refuses to run with DEBUG off, as on a server. Then the public demonstration: any visitor opens a demo account by
 its role, without password; a demo account cannot change its address nor
-its password, and writes 60 times an hour at most.
+its password, and writes 60 times an hour at most; any other account, 300
+times.
 """
 
 import json
@@ -253,6 +254,11 @@ class DemoAccountTests(TestCase):
             email="real@example.org", password="Correct-horse-9", role="candidate"
         )
 
+    def tearDown(self):
+        # These tests fill the counts of the write limits: none left for
+        # the next tests, whose accounts may have the same numbers
+        cache.clear()
+
     def client_with_token(self, user=None):
         """A client, logged in or not, sending back its CSRF token."""
         client = Client(enforce_csrf_checks=True)
@@ -321,7 +327,18 @@ class DemoAccountTests(TestCase):
         for _ in range(60):
             self.assertEqual(self.post(client, "/api/favorites/", {"offer": 9999}).status_code, 400)
         self.assertEqual(self.post(client, "/api/favorites/", {"offer": 9999}).status_code, 429)
-        # Reading goes on, and another account is not limited
+        # Reading goes on, and another account has its own limit, higher
         self.assertEqual(client.get("/api/favorites/").status_code, 200)
         for _ in range(61):
             self.assertEqual(self.post(other, "/api/favorites/", {"offer": 9999}).status_code, 400)
+
+    def test_any_other_account_writes_three_hundred_times_an_hour(self):
+        client = self.client_with_token(self.real)
+        CandidateProfile.objects.create(user=self.real)
+        for _ in range(300):
+            self.assertEqual(self.post(client, "/api/favorites/", {"offer": 9999}).status_code, 400)
+        response = self.post(client, "/api/favorites/", {"offer": 9999})
+        self.assertEqual(response.status_code, 429)
+        # The answer says how long to wait; reading goes on
+        self.assertIn("Retry-After", response.headers)
+        self.assertEqual(client.get("/api/favorites/").status_code, 200)

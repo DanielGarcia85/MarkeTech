@@ -153,6 +153,10 @@ ACCOUNT_CHANGE_EMAIL = True
 # An empty text, not None: None would make allauth add the name of the site
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
 
+# The address told of every review and offer made public, to moderate them
+# from the admin (notifications/moderation.py); empty: no alert
+MODERATION_EMAIL = os.environ.get("MODERATION_EMAIL", "contact@marketech.ch")
+
 # https://docs.allauth.org/en/latest/headless/configuration.html
 # No HTML page from allauth: the Vue frontend renders everything
 HEADLESS_ONLY = True
@@ -288,13 +292,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    # A demo account, open to anyone, writes 60 times an hour at most;
-    # nobody else is limited (demo/throttles.py)
+    # A demo account, open to anyone, writes 60 times an hour at most, any
+    # other account 300 times; reading is not limited (demo/throttles.py)
     "DEFAULT_THROTTLE_CLASSES": [
         "demo.throttles.DemoWriteThrottle",
+        "demo.throttles.AccountWriteThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
         "demo": "60/hour",
+        "account": "300/hour",
     },
 }
 

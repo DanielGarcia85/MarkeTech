@@ -1,0 +1,5 @@
+{# backend/templates/moderation/base_message.txt — frame of every moderation alert: the event, then how to block the account #}
+{% autoescape off %}{% block content %}{% endblock content %}
+
+Bloquer le compte (décocher « Actif ») retire du site tous ses avis et ses offres, sans rien supprimer ; recocher la case les remet :
+{{ account_url }}{% endautoescape %}

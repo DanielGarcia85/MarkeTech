@@ -21,7 +21,8 @@ Who may do what
 ───────────────
 Everything needs a logged-in candidate: a visitor or an employer gets 403.
 A candidate only ever reaches their own favorites: taking back an offer
-that is not among them answers 404. The deletion is keyed by the offer,
+that is not among them answers 404. The offers of an account the
+administrator blocked are left out of the list, until it is unblocked. The deletion is keyed by the offer,
 not by the favorite: that is what a heart on a card knows.
 """
 
@@ -51,9 +52,9 @@ class FavoriteViewSet(
     def get_queryset(self):
         """One's own favorites, with the offer and its employer loaded for
         the cards, in a single query."""
-        return Favorite.objects.filter(candidate__user=self.request.user).select_related(
-            "offer__employer__user"
-        )
+        return Favorite.objects.filter(
+            candidate__user=self.request.user, offer__employer__user__is_active=True
+        ).select_related("offer__employer__user")
 
     def get_serializer_class(self):
         return AddFavoriteSerializer if self.action == "create" else FavoriteSerializer

@@ -17,7 +17,8 @@ The rules
 ─────────
 - Nobody gets an e-mail they do not want: not a user who turned the
   notifications off (notify_by_email), not a demo account, not an address
-  in example.com (the accounts of the seed, which receive nothing).
+  in example.com (the accounts of the seed, which receive nothing), not an
+  account the administrator blocked.
 - The e-mail goes in the language of the user (accounts/signals.py), the
   language of the site while it is unknown.
 - It says who, what and about which offer, with the link to the page; never
@@ -53,7 +54,8 @@ CANDIDATE_APPLICATIONS = "/candidate/applications"
 def wants(user):
     """Whether the user receives the notifications."""
     return (
-        user.notify_by_email
+        user.is_active
+        and user.notify_by_email
         and not user.is_demo
         and not user.email.lower().endswith("@example.com")
     )

@@ -28,10 +28,18 @@ Who may do what
 ───────────────
 Anyone reads the reviews, logged in or not. A candidate or an employer has
 one review; an administrator, who has no role, has none (403), and the
-list leaves out any review of an account without a role. A demo account,
+list leaves out any review of an account without a role, and of an account
+the administrator blocked (is_active unticked in the admin: the review
+comes back when the account is unblocked; decision of 26.10.2026). A demo account,
 open to every visitor, reads its review but may not change it (403): the
 reviews are public, and a visitor would otherwise write in the name of the
 platform until the night.
+
+The administrator is told
+─────────────────────────
+A review is public as soon as it is written: each one written or rewritten
+is sent by e-mail to the administrator, who may delete it from the admin
+(notifications/moderation.py; decisions of 26.10.2026).
 """
 
 from django.db.models import Avg, Count
@@ -45,6 +53,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import User
+from notifications import moderation
 
 from .models import CRITERIA, HIGHEST, LOWEST, Review
 from .serializers import ReviewSerializer, WriteSerializer
@@ -54,9 +63,10 @@ AUTHORS = [User.Role.CANDIDATE, User.Role.EMPLOYER]
 
 
 def public():
-    """The reviews shown: those of a candidate or an employer, with the
-    author and the profile of an employer, which the JSON reads."""
-    return Review.objects.filter(user__role__in=AUTHORS).select_related(
+    """The reviews shown: those of a candidate or an employer whose account
+    is not blocked, with the author and the profile of an employer, which
+    the JSON reads."""
+    return Review.objects.filter(user__role__in=AUTHORS, user__is_active=True).select_related(
         "user", "user__employer_profile"
     )
 
@@ -140,6 +150,7 @@ class MyReviewView(APIView):
             user=request.user, defaults=form.validated_data
         )
         review = public().get(pk=review.pk)
+        moderation.review_written(request, review, created)
         return self.answer(request, review, status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
     def delete(self, request):
