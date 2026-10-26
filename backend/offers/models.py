@@ -22,6 +22,13 @@ The states
 draft: being written, seen by its employer only. published: in the public
 list, from published_at. closed: withdrawn, kept by its employer as history
 and reopenable. Decisions of 20.10.2026.
+
+The offers of a blocked account
+───────────────────────────────
+An account the administrator blocks (is_active unticked in the admin) takes
+its offers out of sight: public() leaves them out, and they come back as
+they were when the account is unblocked (decision of 26.10.2026). Nothing
+is deleted.
 """
 
 from django.core.exceptions import ValidationError
@@ -35,8 +42,25 @@ from django_countries.fields import CountryField
 from profiles.models import EmployerProfile
 
 
+def public_offer():
+    """The condition of an offer anyone may see: published, by an account
+    that is not blocked. The list, the detail, the applications and the
+    favorites all start from it."""
+    return Q(status=JobOffer.Status.PUBLISHED, employer__user__is_active=True)
+
+
+class OfferQuerySet(models.QuerySet):
+    """The ways to select offers, on JobOffer.objects."""
+
+    def public(self):
+        """The offers anyone may see (public_offer)."""
+        return self.filter(public_offer())
+
+
 class JobOffer(models.Model):
     """One job offer of an employer."""
+
+    objects = OfferQuerySet.as_manager()
 
     # ── The choices ───────────────────────────────────────────────────
     # The value stored (left) never changes; the label (right) is for the

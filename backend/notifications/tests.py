@@ -12,8 +12,10 @@ and without the text of a message: a new application, a withdrawal, a
 move of the state (one e-mail when a message comes with it), a message
 (one until it is read), an appointment proposed, answered, cancelled.
 Then that nobody gets an e-mail they do not want (notifications off, demo
-account, address of the seed, the seed itself), and that a failure to send
-never breaks the action. The e-mails leave once the change is saved: the
+account, address of the seed, blocked account, the seed itself), and that
+a failure to send never breaks the action. Last, the alerts of moderation
+to the administrator: a review written or rewritten, an offer published or
+changed while published, with the text and the links to the admin. The e-mails leave once the change is saved: the
 tests run the callbacks of the transaction (captureOnCommitCallbacks).
 """
 
@@ -240,6 +242,15 @@ class NotificationTests(TestCase):
         self.employer.email = "marc@example.com"
         self.employer.save()
         self.assertEqual(self.sent(apply), [])
+        JobApplication.objects.all().delete()
+        # A blocked account: its offers are out of sight, but a candidate
+        # who already applied may still write to it
+        self.employer.email = "marc@company.test"
+        self.employer.save()
+        application = self.application(status="in_progress")
+        User.objects.filter(pk=self.employer.pk).update(is_active=False)
+        url = f"/api/applications/{application.pk}/messages/"
+        self.assertEqual(self.sent(lambda: self.post(client, url, {"body": "Hello?"})), [])
 
     @override_settings(DEBUG=True)
     def test_the_seed_sends_nothing(self):
@@ -258,3 +269,104 @@ class NotificationTests(TestCase):
         # The event and the number of the account, never the address
         self.assertIn(f"application_received to user {self.employer.pk} not sent (OSError)", logs.output[0])
         self.assertNotIn("company.test", logs.output[0])
+
+
+@override_settings(MEDIA_ROOT=MEDIA, MODERATION_EMAIL="moderation@marketech.test")
+class ModerationTests(TestCase):
+    """The alerts to the administrator, of what became public."""
+
+    def setUp(self):
+        cache.clear()
+        self.candidate = User.objects.create_user(
+            email="lea@candidates.test",
+            password=PASSWORD,
+            role="candidate",
+            first_name="Léa",
+            last_name="Martin",
+        )
+        self.employer = User.objects.create_user(
+            email="marc@company.test",
+            password=PASSWORD,
+            role="employer",
+            first_name="Marc",
+            last_name="Dubois",
+        )
+        EmployerProfile.objects.create(user=self.employer, company_name="Acme")
+
+    login = NotificationTests.login
+    post = NotificationTests.post
+    sent = NotificationTests.sent
+
+    def review(self, client, comment="Clear and quick."):
+        data = {"rating": 4, "ease_of_use": 5, "offers_and_applications": 4,
+                "messaging": 3, "appointments": 4, "comment": comment}
+        return client.put("/api/reviews/mine/", data=json.dumps(data), content_type="application/json")
+
+    def offer(self, client, **fields):
+        return self.post(client, "/api/offers/", {**OFFER, **fields}).json()["id"]
+
+    def test_a_review_written_or_rewritten_tells_the_administrator(self):
+        client = self.login(self.candidate)
+        sent = self.sent(lambda: self.review(client))
+        self.assertEqual(len(sent), 1)
+        email = sent[0]
+        self.assertEqual(email.to, ["moderation@marketech.test"])
+        self.assertEqual(email.subject, "Nouvel avis (4/5) : Léa Martin")
+        # Everything needed to judge, without logging in
+        self.assertIn("Auteur : Léa Martin, candidat, lea@candidates.test", email.body)
+        self.assertIn("Note globale : 4/5 (prise en main 5, offres et candidatures 4, messagerie 3, rendez-vous 4)", email.body)
+        self.assertIn("Commentaire :\nClear and quick.", email.body)
+        self.assertIn("http://testserver/reviews", email.body)
+        review = self.candidate.review
+        self.assertIn(f"http://testserver/admin/reviews/review/{review.pk}/change/", email.body)
+        self.assertIn(f"http://testserver/admin/accounts/user/{self.candidate.pk}/change/", email.body)
+        sent = self.sent(lambda: self.review(client, comment="Changed my mind."))
+        self.assertEqual(sent[0].subject, "Avis modifié (4/5) : Léa Martin")
+        self.assertIn("Un avis vient d'être modifié", sent[0].body)
+        self.assertIn("Changed my mind.", sent[0].body)
+        # Deleting it tells nothing: nothing more is public
+        self.assertEqual(self.sent(lambda: client.delete("/api/reviews/mine/")), [])
+
+    def test_an_offer_published_or_changed_tells_the_administrator(self):
+        client = self.login(self.employer)
+        # A draft is not public: nothing, even changed
+        pk = self.offer(client)
+        draft = f"/api/offers/{pk}/"
+        patch = lambda data: client.patch(draft, data=json.dumps(data), content_type="application/json")  # noqa: E731
+        self.assertEqual(self.sent(lambda: patch({"title": "Django developer"})), [])
+        sent = self.sent(lambda: self.post(client, f"/api/offers/{pk}/publish/", {}))
+        self.assertEqual(len(sent), 1)
+        email = sent[0]
+        self.assertEqual(email.to, ["moderation@marketech.test"])
+        self.assertEqual(email.subject, "Nouvelle offre : Django developer (Acme)")
+        self.assertIn("Entreprise : Acme, Marc Dubois, marc@company.test", email.body)
+        self.assertIn("Lieu : Geneva, CH", email.body)
+        self.assertIn("Description :\nDjango and Vue.", email.body)
+        self.assertIn(f"http://testserver/offers/{pk}", email.body)
+        self.assertIn(f"http://testserver/admin/offers/joboffer/{pk}/change/", email.body)
+        sent = self.sent(lambda: patch({"description": "Django, Vue and Docker."}))
+        self.assertEqual(sent[0].subject, "Offre modifiée : Django developer (Acme)")
+        self.assertIn("Django, Vue and Docker.", sent[0].body)
+        # Closed: out of sight, nothing to say
+        self.assertEqual(self.sent(lambda: self.post(client, f"/api/offers/{pk}/close/", {})), [])
+
+    def test_no_alert_for_a_demo_account_nor_without_an_address(self):
+        User.objects.filter(pk=self.employer.pk).update(is_demo=True)
+        self.employer.refresh_from_db()
+        client = self.login(self.employer)
+        pk = self.offer(client)
+        self.assertEqual(self.sent(lambda: self.post(client, f"/api/offers/{pk}/publish/", {})), [])
+        with override_settings(MODERATION_EMAIL=""):
+            self.assertEqual(self.sent(lambda: self.review(self.login(self.candidate))), [])
+
+    def test_a_failure_to_send_an_alert_never_breaks_the_action(self):
+        client = self.login(self.candidate)
+        with (
+            mock.patch("notifications.moderation.send_mail", side_effect=OSError("refused")),
+            self.assertLogs("notifications.moderation", level="WARNING") as logs,
+        ):
+            with self.captureOnCommitCallbacks(execute=True):
+                response = self.review(client)
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("Moderation alert review_written not sent (OSError)", logs.output[0])
+        self.assertNotIn("candidates.test", logs.output[0])

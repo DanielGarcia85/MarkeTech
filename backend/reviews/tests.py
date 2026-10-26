@@ -13,7 +13,8 @@ use it: anyone reads the reviews, ten a page, with their summary; the
 author shows as first name and initial, with the company of an employer;
 a candidate or an employer writes, rewrites and deletes their own review,
 once per account; the scores and the comment are checked; an
-administrator has no review, a demo account changes nothing.
+administrator has no review, a demo account changes nothing; the review
+of a blocked account is out of sight.
 """
 
 import json
@@ -200,6 +201,19 @@ class ReviewApiTests(TestCase):
         client = self.login(admin)
         self.assertEqual(client.get(self.mine).status_code, 403)
         self.assertEqual(self.put(client, self.scores()).status_code, 403)
+
+    def test_a_blocked_account_takes_its_review_out_of_sight(self):
+        self.review(self.candidate, 5)
+        self.review(self.employer, 3)
+        # Blocked in the admin: out of the list and of the averages
+        User.objects.filter(pk=self.candidate.pk).update(is_active=False)
+        body = Client().get(self.url).json()
+        self.assertEqual([row["rating"] for row in body["results"]], [3])
+        self.assertEqual(body["summary"]["count"], 1)
+        self.assertEqual(body["summary"]["averages"]["rating"], 3.0)
+        # Nothing was deleted: unblocked, the review is back
+        User.objects.filter(pk=self.candidate.pk).update(is_active=True)
+        self.assertEqual(Client().get(self.url).json()["count"], 2)
 
     # ── Writing ───────────────────────────────────────────────────────
 

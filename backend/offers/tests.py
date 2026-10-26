@@ -10,7 +10,7 @@ Check the offers API as the frontend will use it: anyone reads the published
 offers, filtered, ordered and paged; an employer creates, edits, publishes,
 closes and deletes their own offers and nobody else's; the rules of the
 fields and of the states hold; a candidate and a visitor are kept out of
-the management.
+the management; the offers of a blocked account are out of sight.
 """
 
 import json
@@ -21,7 +21,8 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from accounts.models import User
-from profiles.models import EmployerProfile
+from favorites.models import Favorite
+from profiles.models import CandidateProfile, EmployerProfile
 
 from .models import JobOffer
 
@@ -161,6 +162,28 @@ class OfferApiTests(TestCase):
         self.assertEqual(self.login(self.other).get("/api/offers/%d/" % draft.pk).status_code, 404)
         self.assertEqual(self.login(self.employer).get("/api/offers/%d/" % draft.pk).status_code, 200)
         self.assertEqual(Client().get("/api/offers/999/").status_code, 404)
+
+    def test_a_blocked_account_takes_its_offers_out_of_sight(self):
+        hidden = self.offer(title="Hidden")
+        self.offer(employer=self.other_company, title="Shown")
+        profile = CandidateProfile.objects.create(user=self.candidate)
+        Favorite.objects.create(candidate=profile, offer=hidden)
+        candidate = self.login(self.candidate)
+        # Blocked in the admin: out of the list, of the detail, of the
+        # favorites, and closed to applications and favorites
+        User.objects.filter(pk=self.employer.pk).update(is_active=False)
+        titles = [o["title"] for o in Client().get("/api/offers/").json()["results"]]
+        self.assertEqual(titles, ["Shown"])
+        self.assertEqual(Client().get("/api/offers/%d/" % hidden.pk).status_code, 404)
+        self.assertEqual(candidate.get("/api/favorites/").json(), [])
+        Favorite.objects.all().delete()
+        self.assertEqual(self.post(candidate, "/api/favorites/", {"offer": hidden.pk}).status_code, 400)
+        answer = candidate.post("/api/applications/", {"offer": hidden.pk, "use_profile_cv": "true"})
+        self.assertIn("offer", answer.json())
+        # Nothing was deleted: unblocked, the offer is back as it was
+        User.objects.filter(pk=self.employer.pk).update(is_active=True)
+        self.assertEqual(Client().get("/api/offers/%d/" % hidden.pk).status_code, 200)
+        self.assertEqual(Client().get("/api/offers/").json()["count"], 2)
 
     # ── The management, for an employer ───────────────────────────────
 

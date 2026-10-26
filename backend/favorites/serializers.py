@@ -17,8 +17,8 @@ the same cards with the same heart; "created_at": when it was put aside.
 
 How a candidate puts an offer aside
 ───────────────────────────────────
-{"offer": <id>}, a published offer only: a draft, a closed offer or no
-offer at all get the same answer, the API does not say what exists. Once
+{"offer": <id>}, a public offer only: a draft, a closed offer, an offer of
+a blocked account or no offer at all get the same answer, the API does not say what exists. Once
 per offer.
 """
 
@@ -54,7 +54,7 @@ class AddFavoriteSerializer(serializers.Serializer):
     profile in its context: the view passes it as "profile"."""
 
     offer = serializers.PrimaryKeyRelatedField(
-        queryset=JobOffer.objects.filter(status=JobOffer.Status.PUBLISHED),
+        queryset=JobOffer.objects.public(),
         error_messages={
             "does_not_exist": _("This offer cannot be put aside."),
             "incorrect_type": _("This offer cannot be put aside."),

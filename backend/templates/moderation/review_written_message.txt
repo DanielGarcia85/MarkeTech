@@ -1,0 +1,16 @@
+{# backend/templates/moderation/review_written_message.txt — body of the alert: a review written or rewritten, to the administrator #}
+{% extends "moderation/base_message.txt" %}
+
+{% block content %}{% autoescape off %}{% if created %}Un nouvel avis vient d'être publié sur MarkeTech.{% else %}Un avis vient d'être modifié sur MarkeTech.{% endif %} Il est visible par tous dès maintenant.
+
+Auteur : {{ author.get_full_name|default:"(sans nom)" }}, {% if author.role == "employer" %}employeur, {{ author.employer_profile.company_name|default:"(entreprise sans nom)" }}{% else %}candidat{% endif %}, {{ author.email }}
+Note globale : {{ review.rating }}/5 (prise en main {{ review.ease_of_use }}, offres et candidatures {{ review.offers_and_applications }}, messagerie {{ review.messaging }}, rendez-vous {{ review.appointments }})
+
+Commentaire :
+{{ review.comment }}
+
+Page des avis :
+{{ page_url }}
+
+Supprimer l'avis dans l'administration :
+{{ admin_url }}{% endautoescape %}{% endblock content %}

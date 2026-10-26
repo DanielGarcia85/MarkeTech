@@ -26,6 +26,7 @@ import os
 import shutil
 import tempfile
 
+from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError, transaction
 from django.test import Client, TestCase, override_settings
@@ -166,6 +167,9 @@ class ApplicationApiTests(MediaTestCase):
 
     def setUp(self):
         super().setUp()
+        # The counts of the write limits live in the cache: none left by
+        # another test, whose account could have had the same number
+        cache.clear()
         self.candidate = User.objects.create_user(
             email="cand@example.com",
             password=PASSWORD,

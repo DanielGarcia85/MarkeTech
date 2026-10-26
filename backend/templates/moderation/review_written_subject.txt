@@ -1,0 +1,2 @@
+{# backend/templates/moderation/review_written_subject.txt — subject of the alert: a review written or rewritten, to the administrator #}
+{% autoescape off %}{% if created %}Nouvel avis{% else %}Avis modifié{% endif %} ({{ review.rating }}/5) : {{ author.get_full_name|default:author.email }}{% endautoescape %}

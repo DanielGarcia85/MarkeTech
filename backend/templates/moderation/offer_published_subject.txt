@@ -1,0 +1,2 @@
+{# backend/templates/moderation/offer_published_subject.txt — subject of the alert: an offer published or changed, to the administrator #}
+{% autoescape off %}{% if changed %}Offre modifiée{% else %}Nouvelle offre{% endif %} : {{ offer.title }} ({{ offer.employer.company_name }}){% endautoescape %}

@@ -1,0 +1,17 @@
+{# backend/templates/moderation/offer_published_message.txt — body of the alert: an offer published or changed, to the administrator #}
+{% extends "moderation/base_message.txt" %}
+
+{% block content %}{% autoescape off %}{% if changed %}Une offre publiée vient d'être modifiée sur MarkeTech.{% else %}Une nouvelle offre vient d'être publiée sur MarkeTech.{% endif %} Elle est visible par tous dès maintenant.
+
+Entreprise : {{ offer.employer.company_name }}, {{ author.get_full_name|default:"(sans nom)" }}, {{ author.email }}
+Titre : {{ offer.title }}
+Lieu : {{ offer.city }}, {{ offer.country.code }}
+
+Description :
+{{ offer.description }}
+
+Page de l'offre :
+{{ page_url }}
+
+Dépublier ou supprimer l'offre dans l'administration :
+{{ admin_url }}{% endautoescape %}{% endblock content %}

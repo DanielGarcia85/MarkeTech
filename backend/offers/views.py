@@ -35,7 +35,14 @@ Reading the list and a published offer is public. Everything else needs a
 logged-in employer: a visitor or a candidate gets 403. An employer only ever
 reaches their own offers: another one's answers 404, never 403 (the API
 does not say what exists), and a draft or a closed offer is 404 for the
-public.
+public, as is any offer of an account the administrator blocked
+(models.py).
+
+The administrator is told
+─────────────────────────
+An offer published, or changed while it is published, is public at once:
+an e-mail tells the administrator, who may remove it from the admin
+(notifications/moderation.py; decisions of 26.10.2026).
 
 Why a ModelViewSet
 ──────────────────
@@ -60,7 +67,9 @@ from accounts.models import User
 from favorites.models import Favorite
 from profiles.models import EmployerProfile
 
-from .models import JobOffer
+from notifications import moderation
+
+from .models import JobOffer, public_offer
 from .serializers import JobOfferSerializer, MyOfferSerializer
 
 # ── Who ───────────────────────────────────────────────────────────────
@@ -156,10 +165,10 @@ class JobOfferViewSet(viewsets.ModelViewSet):
             offers = offers.annotate(favorite=Exists(put_aside))
         mine = Q(employer__user=user) if is_employer(user) else Q(pk__in=[])
         if self.action == "list":
-            return self.filtered(offers.filter(status=JobOffer.Status.PUBLISHED))
+            return self.filtered(offers.public())
         if self.action == "retrieve":
-            # A published offer, or one's own in any state
-            return offers.filter(Q(status=JobOffer.Status.PUBLISHED) | mine)
+            # A public offer, or one's own in any state
+            return offers.filter(public_offer() | mine)
         # mine, update, destroy, publish, close: one's own only
         return offers.filter(mine)
 
@@ -193,6 +202,13 @@ class JobOfferViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """A new offer belongs to the employer who sends it, as a draft."""
         serializer.save(employer=employer_profile_of(self.request.user))
+
+    def perform_update(self, serializer):
+        """A change to an offer already published is public at once: the
+        administrator is told."""
+        offer = serializer.save()
+        if offer.status == JobOffer.Status.PUBLISHED:
+            moderation.offer_published(self.request, offer, changed=True)
 
     def perform_destroy(self, offer):
         """Refused once candidates applied: the offer is closed instead, and
@@ -231,6 +247,7 @@ class JobOfferViewSet(viewsets.ModelViewSet):
             raise ValidationError({"company": [message]})
         offer.status = JobOffer.Status.PUBLISHED
         offer.save()
+        moderation.offer_published(request, offer, changed=False)
         return Response(self.get_serializer(offer).data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["post"])
