@@ -1,0 +1,2 @@
+{# backend/templates/notifications/application_received_subject.txt — subject of the e-mail: a new application, to the employer #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Nouvelle candidature : {{ offer }}{% else %}New application: {{ offer }}{% endif %}{% endautoescape %}

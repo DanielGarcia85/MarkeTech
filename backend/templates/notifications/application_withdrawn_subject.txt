@@ -1,0 +1,2 @@
+{# backend/templates/notifications/application_withdrawn_subject.txt — subject of the e-mail: a withdrawn application, to the employer #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Candidature retirée : {{ offer }}{% else %}Application withdrawn: {{ offer }}{% endif %}{% endautoescape %}

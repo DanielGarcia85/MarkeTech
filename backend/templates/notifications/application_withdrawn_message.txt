@@ -1,0 +1,5 @@
+{# backend/templates/notifications/application_withdrawn_message.txt — body of the e-mail: a withdrawn application, to the employer #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ candidate }} a retiré sa candidature à votre offre « {{ offer }} ». Elle n'apparaît plus dans vos candidatures reçues :{% else %}{{ candidate }} has withdrawn their application to your offer "{{ offer }}". It no longer appears among the applications you received:{% endif %}{% endautoescape %}{% endblock event %}

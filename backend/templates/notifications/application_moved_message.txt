@@ -1,0 +1,5 @@
+{# backend/templates/notifications/application_moved_message.txt — body of the e-mail: a move of the state, to the candidate #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ company }} a {% if status == "in_progress" %}mis en cours{% elif status == "accepted" %}accepté{% else %}refusé{% endif %} votre candidature à l'offre « {{ offer }} ».{% if with_message %} Un message l'accompagne.{% endif %}{% if status == "in_progress" %} Vous pouvez désormais échanger des messages avec l'employeur.{% endif %} Pour la suivre :{% else %}{{ company }} has {% if status == "in_progress" %}moved your application to the offer "{{ offer }}" in progress{% elif status == "accepted" %}accepted your application to the offer "{{ offer }}"{% else %}rejected your application to the offer "{{ offer }}"{% endif %}.{% if with_message %} A message comes with it.{% endif %}{% if status == "in_progress" %} You can now exchange messages with the employer.{% endif %} To follow it:{% endif %}{% endautoescape %}{% endblock event %}

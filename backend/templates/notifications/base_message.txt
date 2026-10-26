@@ -1,0 +1,10 @@
+{# backend/templates/notifications/base_message.txt — frame of every notification: the frame of the e-mails, the event, the link, and how to stop them #}
+{% extends "account/email/base_message.txt" %}
+{% load i18n %}
+
+{% block content %}{% get_current_language as lang %}{% autoescape off %}{% block event %}{% endblock event %}
+
+{{ url }}
+
+{% if lang == "fr" %}Vous recevez cet e-mail parce que les notifications sont activées sur votre compte. Pour ne plus en recevoir, décochez « Recevoir les e-mails de notification » dans vos identifiants :{% else %}You receive this e-mail because the notifications are on for your account. To stop them, untick "Receive the notification e-mails" in your login details:{% endif %}
+{{ settings_url }}{% endautoescape %}{% endblock content %}

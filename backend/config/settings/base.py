@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     "appointments",
     # Reviews: what the users think of the platform, public
     "reviews",
+    # Notifications: the e-mails that tell a user what happened, no model
+    "notifications",
     # Demo: the seed_demo command only, test data for a development database
     "demo",
 ]

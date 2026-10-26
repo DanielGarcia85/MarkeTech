@@ -1,0 +1,5 @@
+{# backend/templates/notifications/appointment_proposed_message.txt — body of the e-mail: an appointment proposed, to the candidate #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ company }} vous propose un rendez-vous de {{ duration }} minutes le {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y à H:i" }}{% endtimezone %} (heure de Genève), au sujet de l'offre « {{ offer }} ». Pour l'accepter ou le refuser :{% else %}{{ company }} proposes an appointment of {{ duration }} minutes on {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y, H:i" }}{% endtimezone %} (Geneva time), about the offer "{{ offer }}". To accept or decline it:{% endif %}{% endautoescape %}{% endblock event %}

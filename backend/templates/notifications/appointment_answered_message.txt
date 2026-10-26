@@ -1,0 +1,5 @@
+{# backend/templates/notifications/appointment_answered_message.txt — body of the e-mail: an answer to an appointment, to the employer #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ candidate }} a {% if accepted %}accepté{% else %}refusé{% endif %} le rendez-vous du {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y à H:i" }}{% endtimezone %} (heure de Genève), au sujet de l'offre « {{ offer }} ». Pour lire sa réponse :{% else %}{{ candidate }} has {% if accepted %}accepted{% else %}declined{% endif %} the appointment on {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y, H:i" }}{% endtimezone %} (Geneva time), about the offer "{{ offer }}". To read their answer:{% endif %}{% endautoescape %}{% endblock event %}

@@ -1,0 +1,2 @@
+{# backend/templates/notifications/appointment_cancelled_subject.txt — subject of the e-mail: a cancelled appointment, to the candidate #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Rendez-vous annulé : {{ offer }}{% else %}Appointment cancelled: {{ offer }}{% endif %}{% endautoescape %}

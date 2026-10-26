@@ -1,0 +1,2 @@
+{# backend/templates/notifications/appointment_answered_subject.txt — subject of the e-mail: an answer to an appointment, to the employer #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Rendez-vous {% if accepted %}accepté{% else %}refusé{% endif %} : {{ offer }}{% else %}Appointment {% if accepted %}accepted{% else %}declined{% endif %}: {{ offer }}{% endif %}{% endautoescape %}

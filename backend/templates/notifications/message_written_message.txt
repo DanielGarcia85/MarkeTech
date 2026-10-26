@@ -1,0 +1,5 @@
+{# backend/templates/notifications/message_written_message.txt — body of the e-mail: a new message, to the other participant #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ sender }} vous a écrit au sujet de l'offre « {{ offer }} ». Pour lire le message et répondre, connectez-vous :{% else %}{{ sender }} has written to you about the offer "{{ offer }}". To read the message and answer, log in:{% endif %}{% endautoescape %}{% endblock event %}
