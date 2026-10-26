@@ -1,0 +1,2 @@
+{# backend/templates/notifications/appointment_proposed_subject.txt — subject of the e-mail: an appointment proposed, to the candidate #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Rendez-vous proposé : {{ offer }}{% else %}Appointment proposed: {{ offer }}{% endif %}{% endautoescape %}

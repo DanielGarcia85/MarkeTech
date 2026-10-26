@@ -15,7 +15,9 @@ What the JSON looks like
 ────────────────────────
 Every text field of the model, as it is, plus the names and the address of
 the account: the names can be changed here, the address is read only (it
-changes through allauth, with a confirmation e-mail). A country is its
+changes through allauth, with a confirmation e-mail); and the language and
+the choice of notifications of the account (accounts/models.py), changed
+here too: by the language selector and the page of the credentials. A country is its
 two-letter code (CH), or "" for none; the names are served by the
 countries route. A file field is the URL of the file (MEDIA_URL plus its
 path, relative to the site), or null.
@@ -25,6 +27,7 @@ are added and removed by their own routes.
 
 import os
 
+from django.conf import settings
 from django.db import models
 from django_countries.serializers import CountryFieldMixin
 from rest_framework import serializers
@@ -94,9 +97,13 @@ class ProfileSerializer(CountryFieldMixin, FileSerializer):
     first_name = serializers.CharField(source="user.first_name", max_length=150)
     last_name = serializers.CharField(source="user.last_name", max_length=150)
     email = serializers.EmailField(source="user.email", read_only=True)
+    # The language of the notifications, one the site offers, and whether
+    # they go (decisions of 26.10.2026)
+    language = serializers.ChoiceField(source="user.language", choices=settings.LANGUAGES)
+    notify_by_email = serializers.BooleanField(source="user.notify_by_email")
 
     # Fields of the account, listed by the two subclasses before their own
-    ACCOUNT_FIELDS = ("first_name", "last_name", "email")
+    ACCOUNT_FIELDS = ("first_name", "last_name", "email", "language", "notify_by_email")
 
     def update(self, instance, validated_data):
         """Save the profile, and the names on the account when they are sent

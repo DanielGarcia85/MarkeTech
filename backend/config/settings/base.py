@@ -80,6 +80,8 @@ INSTALLED_APPS = [
     "appointments",
     # Reviews: what the users think of the platform, public
     "reviews",
+    # Notifications: the e-mails that tell a user what happened, no model
+    "notifications",
     # Demo: the seed_demo command only, test data for a development database
     "demo",
 ]
@@ -146,8 +148,10 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # receives a confirmation link; the current address stays in force until the
 # link is opened, then the new one replaces it
 ACCOUNT_CHANGE_EMAIL = True
-# Start of the subject of every e-mail sent by allauth
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "[MarkeTech] "
+# Start of the subject of every e-mail sent by allauth: none, the sender
+# already shows "MarkeTech" (decision of 26.10.2026; "[MarkeTech] " before).
+# An empty text, not None: None would make allauth add the name of the site
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
 
 # https://docs.allauth.org/en/latest/headless/configuration.html
 # No HTML page from allauth: the Vue frontend renders everything

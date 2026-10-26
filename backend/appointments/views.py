@@ -47,6 +47,9 @@ answer says which were new before (decisions of 22.10.2026).
 A pending appointment left without answer after its time blocks a new
 proposal (one pending per application, a rule of the database): proposing
 again cancels it, in the same transaction, without notice to anyone.
+
+A proposal and a cancellation tell the candidate, an answer tells the
+employer, by e-mail (notifications/send.py, decisions of 26.10.2026).
 """
 
 from datetime import datetime
@@ -65,6 +68,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from applications.models import JobApplication
+from notifications import send as notifications
 
 from .ics import to_ics
 from .models import Appointment
@@ -158,6 +162,7 @@ class ApplicationAppointmentsView(APIView):
                 pending.save(update_fields=["status", "answered_at", "seen_at"])
             proposed = Appointment.objects.create(application=application, **form.validated_data)
         proposed = loaded(Appointment.objects).get(pk=proposed.pk)
+        notifications.appointment_proposed(request, proposed)
         data = AppointmentSerializer(proposed, context={"request": request}).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -210,6 +215,7 @@ class AnswerView(AppointmentMoveView):
             # News for the employer now
             appointment.seen_at = None
             appointment.save()
+        notifications.appointment_answered(request, appointment)
         return self.answered(request, appointment)
 
 
@@ -237,6 +243,7 @@ class CancelView(AppointmentMoveView):
             # News for the candidate now
             appointment.seen_at = None
             appointment.save()
+        notifications.appointment_cancelled(request, appointment)
         return self.answered(request, appointment)
 
 

@@ -149,7 +149,7 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 23 October 2026",
+    updated: "Last updated: 26 October 2026",
     sections: {
       controller: {
         title: "Who is responsible",
@@ -163,12 +163,12 @@ export default {
         title: "Data processed",
         intro: ["The site only stores what its features need. Depending on what you do, that is:"],
         items: [
-          { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login." },
+          { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login, language of the interface (noted at login and when you change it) and whether you receive the notification e-mails." },
           { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
           { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
           { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
           { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
-          { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application (withdrawn by the candidate, or an account or an offer deleted). No e-mail tells you of a new message: the site shows it when you log in." },
+          { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application (withdrawn by the candidate, or an account or an offer deleted). A notification e-mail tells you of a new message, only one as long as you have not read the conversation, without its text (see \"E-mails\")." },
           { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
           { term: "Appointments", text: "Proposed by an employer about an application in progress: date, time and length, place, any details; then the candidate's answer and their message, or the employer's cancellation and any message with it." },
           { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name, the initial of your last name and your role (for an employer, the name of the company), visible to every visitor. One review per account, which you may change or delete at any time; the demo accounts cannot publish one." },
@@ -190,7 +190,11 @@ export default {
       },
       emails: {
         title: "E-mails",
-        intro: ["The site writes to you about your account only: to verify your address when you sign up, and to send you a link when you forget your password. No newsletter, no advertising. The e-mails leave through the mail service of Infomaniak."],
+        intro: [
+          "The site writes to you about your account: to verify your address when you sign up or change it, and to send you a link when you forget your password. These e-mails always go.",
+          "It also writes to tell you of what concerns you: a new or withdrawn application to one of your offers, your application moved in progress, accepted or rejected, a new message, an appointment proposed, accepted, declined or cancelled. These e-mails say who, what and for which offer, with a link to the page; never the text of a message or of an answer. They go in the language you chose on the site, and you can stop them at any time by unticking the box of the \"Notifications\" section of your login details. The demo accounts receive none.",
+          "No newsletter, no advertising. The e-mails leave through the mail service of Infomaniak.",
+        ],
       },
       hosting: {
         title: "Hosting and sharing",
@@ -346,6 +350,10 @@ export default {
     newPasswordConfirm: "Confirm the new password",
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
+    notifications: "Notifications",
+    notify: "Receive an e-mail when there is something new for you on MarkeTech",
+    notifySaved: "Saved.",
+    notifyDemo: "The demo accounts receive no e-mail.",
   },
 
   // Job offers: the public list, its filters, and the detail of an offer

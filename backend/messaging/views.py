@@ -31,6 +31,10 @@ application reach its conversation, the candidate who sent it and the
 employer of the offer: anyone else gets 404, never 403 (the API does not
 say what exists). Writing needs the application in progress; before (not
 taken up) and after (decided), 400.
+
+A new message tells the other participant by e-mail when it is the first
+they have not read in the conversation (notifications/send.py, decisions
+of 26.10.2026).
 """
 
 from django.db.models import Count, Exists, OuterRef, Q, Subquery
@@ -43,6 +47,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from applications.models import JobApplication
+from notifications import send as notifications
 
 from .models import Message
 from .serializers import (
@@ -100,6 +105,7 @@ class ConversationView(APIView):
         written = Message.objects.create(
             application=application, author=request.user, body=form.validated_data["body"]
         )
+        notifications.message_written(request, written)
         data = MessageSerializer(written, context={"request": request}).data
         return Response(data, status=status.HTTP_201_CREATED)
 

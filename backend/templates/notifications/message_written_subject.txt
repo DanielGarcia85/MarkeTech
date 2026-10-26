@@ -1,0 +1,2 @@
+{# backend/templates/notifications/message_written_subject.txt — subject of the e-mail: a new message, to the other participant #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Nouveau message : {{ offer }}{% else %}New message: {{ offer }}{% endif %}{% endautoescape %}

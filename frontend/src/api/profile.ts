@@ -12,9 +12,11 @@ import { getJson, send, type Answer } from "./http";
 
 // ── Shapes ────────────────────────────────────────────────────────────
 
-// Fields shared by the two profiles. The first three are those of the
+// Fields shared by the two profiles. The first five are those of the
 // account behind the profile: the names are changed with it, the address
-// only through its own confirmation (see api/account.ts). A country is its
+// only through its own confirmation (see api/account.ts); the language of
+// the notifications ("" while unknown) and whether they go, changed by the
+// language selector and the page of the credentials. A country is its
 // two-letter code (CH), or "" for none: the names come from getCountries.
 // A file field holds the URL of the file (/api/files/...), or null when
 // there is none.
@@ -22,6 +24,8 @@ type Contact = {
   first_name: string;
   last_name: string;
   email: string;
+  language: "en" | "fr" | "";
+  notify_by_email: boolean;
   phone: string;
   address: string;
   postal_code: string;
@@ -56,12 +60,17 @@ export type EmployerProfile = Contact & {
 
 export type Profile = CandidateProfile | EmployerProfile;
 
-// The text fields a page may change: everything but the address, the files
-// and the dates
+// The text fields a page may change: everything but the address, the
+// choices of the account, the files and the dates
+type Fixed = "email" | "language" | "notify_by_email" | "updated_at";
 export type ProfileFields = Partial<
-  Omit<CandidateProfile, "email" | "photo" | "cv" | "documents" | "updated_at"> &
-    Omit<EmployerProfile, "email" | "photo" | "logo" | "updated_at">
+  Omit<CandidateProfile, Fixed | "photo" | "cv" | "documents"> &
+    Omit<EmployerProfile, Fixed | "photo" | "logo">
 >;
+
+// The choices of the account: the language of the notifications, whether
+// they go
+export type AccountChoices = Partial<Pick<Contact, "language" | "notify_by_email">>;
 
 // The file fields of the profile, by their name in the API
 export type ProfileFileField = "photo" | "cv" | "logo";
@@ -116,9 +125,9 @@ export function getProfile<T extends Profile>(): Promise<T> {
   return getJson<T>(PROFILE);
 }
 
-// Changes the text fields sent; the others keep their value
+// Changes the fields sent; the others keep their value
 export function updateProfile<T extends Profile>(
-  fields: ProfileFields,
+  fields: ProfileFields | AccountChoices,
 ): Promise<Answer<T>> {
   return send<T>("PATCH", PROFILE, fields);
 }

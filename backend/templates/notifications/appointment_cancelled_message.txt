@@ -1,0 +1,5 @@
+{# backend/templates/notifications/appointment_cancelled_message.txt — body of the e-mail: a cancelled appointment, to the candidate #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ company }} a annulé le rendez-vous du {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y à H:i" }}{% endtimezone %} (heure de Genève), au sujet de l'offre « {{ offer }} ». Pour voir la conversation :{% else %}{{ company }} has cancelled the appointment on {% timezone "Europe/Zurich" %}{{ starts_at|date:"l j F Y, H:i" }}{% endtimezone %} (Geneva time), about the offer "{{ offer }}". To see the conversation:{% endif %}{% endautoescape %}{% endblock event %}

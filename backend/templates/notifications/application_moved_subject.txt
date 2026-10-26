@@ -1,0 +1,2 @@
+{# backend/templates/notifications/application_moved_subject.txt — subject of the e-mail: a move of the state, to the candidate #}
+{% load i18n %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}Votre candidature : {{ offer }}{% else %}Your application: {{ offer }}{% endif %}{% endautoescape %}

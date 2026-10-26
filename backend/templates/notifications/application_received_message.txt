@@ -1,0 +1,5 @@
+{# backend/templates/notifications/application_received_message.txt — body of the e-mail: a new application, to the employer #}
+{% extends "notifications/base_message.txt" %}
+{% load i18n tz %}
+
+{% block event %}{% get_current_language as lang %}{% autoescape off %}{% if lang == "fr" %}{{ candidate }} a postulé à votre offre « {{ offer }} ». Retrouvez sa candidature, son CV et ses documents dans vos candidatures reçues :{% else %}{{ candidate }} has applied to your offer "{{ offer }}". Their application, CV and documents are in the applications you received:{% endif %}{% endautoescape %}{% endblock event %}
