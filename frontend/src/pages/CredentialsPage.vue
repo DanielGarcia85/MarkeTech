@@ -12,7 +12,11 @@
   side on a wide window, one under the other on a narrow one. The
   password changed shows a short confirmation next to its button. On a
   demo account, both forms are shown disabled (the server refuses the
-  changes anyway: demo/middleware.py).
+  changes anyway: demo/middleware.py). Under them, for a candidate or an
+  employer, the notifications: one box, ticked by default, that turns the
+  notification e-mails on or off, saved at once with a short confirmation
+  (the profile API; decisions of 26.10.2026). A demo account receives no
+  e-mail: the box is shown disabled.
 -->
 
 <script setup lang="ts">
@@ -27,6 +31,7 @@ import {
   type EmailAddressInfo,
 } from "../api/account";
 import { errorsByParam } from "../api/http";
+import { getProfile, updateProfile } from "../api/profile";
 import { useSession } from "../session";
 
 const { t } = useI18n();
@@ -131,6 +136,51 @@ function showBadge(text: string): void {
   badgeTimer = window.setTimeout(() => {
     badge.value = null;
   }, BADGE_DURATION);
+}
+
+// ── The notifications ─────────────────────────────────────────────────
+
+// Whether the account receives them; null until read, or for a user
+// without a role (an administrator has no profile)
+const notify = ref<boolean | null>(null);
+const notifySaving = ref(false);
+const notifyError = ref("");
+const notifyBadge = ref<{ text: string; id: number } | null>(null);
+let notifyTimer = 0;
+
+async function loadNotify(): Promise<void> {
+  if (!session.user?.role) return;
+  try {
+    notify.value = (await getProfile()).notify_by_email;
+  } catch {
+    // The section stays hidden
+  }
+}
+
+loadNotify();
+
+// Saved as soon as the box changes; put back if the server refuses
+async function saveNotify(event: Event): Promise<void> {
+  const wanted = (event.target as HTMLInputElement).checked;
+  notifyError.value = "";
+  notifySaving.value = true;
+  try {
+    const answer = await updateProfile({ notify_by_email: wanted });
+    if (answer.status === 200) {
+      notify.value = wanted;
+      notifyBadge.value = { text: t("credentials.notifySaved"), id: ++badgeId };
+      window.clearTimeout(notifyTimer);
+      notifyTimer = window.setTimeout(() => (notifyBadge.value = null), BADGE_DURATION);
+    } else {
+      notifyError.value = t("form.failed");
+    }
+  } catch {
+    notifyError.value = t("form.unreachable");
+  } finally {
+    notifySaving.value = false;
+    // The box shows what the server holds
+    (event.target as HTMLInputElement).checked = notify.value ?? wanted;
+  }
 }
 
 async function submitPassword(): Promise<void> {
@@ -240,6 +290,26 @@ async function submitPassword(): Promise<void> {
       </fieldset>
     </form>
   </div>
+
+  <!-- The notification e-mails, for a candidate or an employer -->
+  <section v-if="notify !== null" class="section notifications">
+    <h2>{{ t("credentials.notifications") }}</h2>
+    <p class="hint">{{ t("credentials.notifyHint") }}</p>
+    <p class="actions">
+      <label class="check">
+        <input
+          type="checkbox"
+          :checked="notify"
+          :disabled="locked || notifySaving"
+          @change="saveNotify"
+        />
+        {{ t("credentials.notify") }}
+      </label>
+      <span v-if="notifyBadge" :key="notifyBadge.id" class="badge">{{ notifyBadge.text }}</span>
+    </p>
+    <p v-if="locked" class="hint">{{ t("credentials.notifyDemo") }}</p>
+    <p v-if="notifyError" class="error">{{ notifyError }}</p>
+  </section>
 </template>
 
 <style scoped>
@@ -330,6 +400,30 @@ fieldset:disabled input {
   100% {
     opacity: 0;
   }
+}
+
+/* The notifications, under the two forms, across the page */
+.notifications {
+  margin-top: 16px;
+}
+
+.hint {
+  margin: 0 0 8px;
+  color: var(--mt-muted);
+}
+
+/* The box and its words on one line */
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
 /* Narrow window: one form under the other */

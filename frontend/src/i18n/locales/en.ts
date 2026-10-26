@@ -346,6 +346,11 @@ export default {
     newPasswordConfirm: "Confirm the new password",
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
+    notifications: "Notifications",
+    notifyHint: "An e-mail tells you of a new application, a change of status, a new message or an appointment, in the language you chose on the site. The e-mails of your account (address, password) always go.",
+    notify: "Receive the notification e-mails",
+    notifySaved: "Saved.",
+    notifyDemo: "The demo accounts receive no e-mail.",
   },
 
   // Job offers: the public list, its filters, and the detail of an offer

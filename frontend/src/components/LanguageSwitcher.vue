@@ -7,16 +7,27 @@
   current one filled in: a click on the other one switches the whole
   interface. Each segment shows the code of its language, which reads the
   same whatever the language displayed (no flags: they stand for countries,
-  not languages).
+  not languages). For a candidate or an employer, the language chosen
+  becomes that of their notification e-mails too (the profile API; decisions
+  of 26.10.2026): a failure there changes nothing on the page.
 -->
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-import { LOCALES, setLocale } from "../i18n";
+import { updateProfile } from "../api/profile";
+import { LOCALES, setLocale, type Locale } from "../i18n";
+import { useSession } from "../session";
 
 // t translates a key; locale is the language currently displayed
 const { t, locale } = useI18n();
+const session = useSession();
+
+// The interface first, then the account, without waiting for it
+function choose(code: Locale): void {
+  setLocale(code);
+  if (session.user?.role) updateProfile({ language: code }).catch(() => {});
+}
 </script>
 
 <template>
@@ -32,7 +43,7 @@ const { t, locale } = useI18n();
       :aria-label="item.name"
       :aria-current="item.code === locale ? 'true' : undefined"
       :title="item.name"
-      @click="setLocale(item.code)"
+      @click="choose(item.code)"
     >
       {{ item.code.toUpperCase() }}
     </button>

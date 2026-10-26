@@ -348,6 +348,11 @@ const fr: typeof en = {
     newPasswordConfirm: "Confirmez le nouveau mot de passe",
     changePassword: "Changer de mot de passe",
     passwordChanged: "Mot de passe changé.",
+    notifications: "Notifications",
+    notifyHint: "Un e-mail vous prévient d'une nouvelle candidature, d'un changement d'état, d'un nouveau message ou d'un rendez-vous, dans la langue que vous avez choisie sur le site. Les e-mails de votre compte (adresse, mot de passe) partent toujours.",
+    notify: "Recevoir les e-mails de notification",
+    notifySaved: "Enregistré.",
+    notifyDemo: "Les comptes de démonstration ne reçoivent pas d'e-mails.",
   },
 
   // Job offers: the public list, its filters, and the detail of an offer
