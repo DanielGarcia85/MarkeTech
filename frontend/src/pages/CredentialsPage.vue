@@ -15,8 +15,9 @@
   changes anyway: demo/middleware.py). Under them, for a candidate or an
   employer, the notifications: one box, ticked by default, that turns the
   notification e-mails on or off, saved at once with a short confirmation
-  (the profile API; decisions of 26.10.2026). A demo account receives no
-  e-mail: the box is shown disabled.
+  (the profile API; decisions of 26.10.2026), one generic sentence as its
+  label, the details being on the privacy page. A demo account receives no
+  e-mail: the box is shown unticked and disabled, with a line that says so.
 -->
 
 <script setup lang="ts">
@@ -294,12 +295,11 @@ async function submitPassword(): Promise<void> {
   <!-- The notification e-mails, for a candidate or an employer -->
   <section v-if="notify !== null" class="section notifications">
     <h2>{{ t("credentials.notifications") }}</h2>
-    <p class="hint">{{ t("credentials.notifyHint") }}</p>
     <p class="actions">
       <label class="check">
         <input
           type="checkbox"
-          :checked="notify"
+          :checked="notify && !locked"
           :disabled="locked || notifySaving"
           @change="saveNotify"
         />

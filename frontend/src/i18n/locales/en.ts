@@ -192,7 +192,7 @@ export default {
         title: "E-mails",
         intro: [
           "The site writes to you about your account: to verify your address when you sign up or change it, and to send you a link when you forget your password. These e-mails always go.",
-          "It also writes to tell you of what concerns you: a new or withdrawn application to one of your offers, a change of the status of your application, a new message, an appointment proposed, accepted, declined or cancelled. These e-mails say who, what and for which offer, with a link to the page; never the text of a message or of an answer. They go in the language you chose on the site, and you can stop them at any time by unticking \"Receive the notification e-mails\" in your login details. The demo accounts receive none.",
+          "It also writes to tell you of what concerns you: a new or withdrawn application to one of your offers, your application moved in progress, accepted or rejected, a new message, an appointment proposed, accepted, declined or cancelled. These e-mails say who, what and for which offer, with a link to the page; never the text of a message or of an answer. They go in the language you chose on the site, and you can stop them at any time by unticking the box of the \"Notifications\" section of your login details. The demo accounts receive none.",
           "No newsletter, no advertising. The e-mails leave through the mail service of Infomaniak.",
         ],
       },
@@ -351,8 +351,7 @@ export default {
     changePassword: "Change the password",
     passwordChanged: "Password changed.",
     notifications: "Notifications",
-    notifyHint: "An e-mail tells you of a new application, a change of status, a new message or an appointment, in the language you chose on the site. The e-mails of your account (address, password) always go.",
-    notify: "Receive the notification e-mails",
+    notify: "Receive an e-mail when there is something new for you on MarkeTech",
     notifySaved: "Saved.",
     notifyDemo: "The demo accounts receive no e-mail.",
   },

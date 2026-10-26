@@ -194,7 +194,7 @@ const fr: typeof en = {
         title: "E-mails",
         intro: [
           "Le site vous écrit au sujet de votre compte : pour vérifier votre adresse à l'inscription ou quand vous en changez, et pour vous envoyer un lien si vous oubliez votre mot de passe. Ces e-mails partent toujours.",
-          "Il vous écrit aussi pour vous prévenir de ce qui vous concerne : une nouvelle candidature ou un retrait de candidature à l'une de vos offres, un changement d'état de votre candidature, un nouveau message, un rendez-vous proposé, accepté, refusé ou annulé. Ces e-mails disent qui, quoi et pour quelle offre, avec un lien vers la page ; jamais le texte d'un message ni d'une réponse. Ils partent dans la langue que vous avez choisie sur le site, et vous pouvez les arrêter à tout moment en décochant « Recevoir les e-mails de notification » dans vos identifiants. Les comptes de démonstration n'en reçoivent aucun.",
+          "Il vous écrit aussi pour vous prévenir de ce qui vous concerne : une nouvelle candidature ou un retrait de candidature à l'une de vos offres, votre candidature mise en cours, acceptée ou refusée, un nouveau message, un rendez-vous proposé, accepté, refusé ou annulé. Ces e-mails disent qui, quoi et pour quelle offre, avec un lien vers la page ; jamais le texte d'un message ni d'une réponse. Ils partent dans la langue que vous avez choisie sur le site, et vous pouvez les arrêter à tout moment en décochant la case de la section « Notifications » de vos identifiants. Les comptes de démonstration n'en reçoivent aucun.",
           "Pas de lettre d'information, pas de publicité. Les e-mails partent par le service de messagerie d'Infomaniak.",
         ],
       },
@@ -353,8 +353,7 @@ const fr: typeof en = {
     changePassword: "Changer de mot de passe",
     passwordChanged: "Mot de passe changé.",
     notifications: "Notifications",
-    notifyHint: "Un e-mail vous prévient d'une nouvelle candidature, d'un changement d'état, d'un nouveau message ou d'un rendez-vous, dans la langue que vous avez choisie sur le site. Les e-mails de votre compte (adresse, mot de passe) partent toujours.",
-    notify: "Recevoir les e-mails de notification",
+    notify: "Recevoir un e-mail quand il y a du nouveau pour vous sur MarkeTech",
     notifySaved: "Enregistré.",
     notifyDemo: "Les comptes de démonstration ne reçoivent pas d'e-mails.",
   },
