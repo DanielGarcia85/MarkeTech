@@ -6,5 +6,5 @@
 
 {{ url }}
 
-{% if lang == "fr" %}Vous recevez cet e-mail parce que les notifications sont activées sur votre compte. Pour ne plus en recevoir, décochez « Recevoir les e-mails de notification » dans vos identifiants :{% else %}You receive this e-mail because the notifications are on for your account. To stop them, untick "Receive the notification e-mails" in your login details:{% endif %}
+{% if lang == "fr" %}Vous recevez cet e-mail parce que les notifications sont activées sur votre compte. Pour ne plus en recevoir, décochez la case de la section « Notifications » de vos identifiants :{% else %}You receive this e-mail because the notifications are on for your account. To stop them, untick the box of the "Notifications" section of your login details:{% endif %}
 {{ settings_url }}{% endautoescape %}{% endblock content %}
