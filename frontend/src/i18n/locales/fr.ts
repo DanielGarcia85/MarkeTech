@@ -151,7 +151,7 @@ const fr: typeof en = {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Politique de confidentialité",
-    updated: "Dernière mise à jour : 23 octobre 2026",
+    updated: "Dernière mise à jour : 26 octobre 2026",
     sections: {
       controller: {
         title: "Qui est responsable",
@@ -165,12 +165,12 @@ const fr: typeof en = {
         title: "Données traitées",
         intro: ["Le site n'enregistre que ce dont ses fonctions ont besoin. Selon ce que vous faites, ce sont :"],
         items: [
-          { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion." },
+          { term: "Compte", text: "Adresse e-mail, mot de passe (conservé sous forme hachée, jamais lisible), prénom, nom, rôle (candidat ou employeur), état de vérification de l'adresse, dates d'inscription et de dernière connexion, langue de l'interface (relevée à la connexion et quand vous en changez) et choix de recevoir ou non les e-mails de notification." },
           { term: "Profil candidat", text: "Adresse postale, numéro de téléphone, photo, CV et tout autre document que vous joignez." },
           { term: "Profil employeur", text: "Adresse postale, numéro de téléphone, photo, et l'entreprise : nom, adresse, téléphone, logo." },
           { term: "Offres d'emploi", text: "Titre, description, ville et pays, type de contrat, taux d'activité, télétravail, fourchette de salaire avec sa devise et sa période, années d'expérience demandées, date de publication ; le nom et le logo de l'entreprise sont lus sur le profil de l'employeur. Une offre publiée est visible par tous les visiteurs du site ; un brouillon ou une offre clôturée, par son employeur seulement. Une offre qui a reçu des candidatures ne peut plus être supprimée, seulement clôturée : les candidats gardent la trace de leur candidature." },
           { term: "Candidatures", text: "L'offre visée, le CV et la lettre de motivation déposés, les documents de votre profil que vous y joignez (copiés au moment de l'envoi : modifier votre profil ensuite ne change pas ce que l'employeur a reçu), la date, le statut (reçue, en cours, acceptée, refusée) et l'historique de ses changements. Une candidature est vue par le candidat et par l'employeur qui a publié l'offre ; celui-ci voit aussi vos prénom, nom, adresse e-mail, téléphone et ville, lus sur votre compte et votre profil. Vous pouvez la retirer tant que l'employeur n'a pas décidé : elle est alors supprimée avec ses fichiers." },
-          { term: "Messages", text: "Échangés entre un candidat et l'employeur de l'offre au sujet d'une candidature : le texte, la date d'envoi et celle de la lecture par l'autre. La conversation s'ouvre quand l'employeur met la candidature en cours ; elle reste lisible, sans plus pouvoir écrire, une fois la candidature acceptée ou refusée. Les deux participants peuvent la lire, personne d'autre. Elle est supprimée avec la candidature (retrait par le candidat, suppression d'un compte ou d'une offre). Aucun e-mail ne signale un nouveau message : le site l'indique quand vous vous connectez." },
+          { term: "Messages", text: "Échangés entre un candidat et l'employeur de l'offre au sujet d'une candidature : le texte, la date d'envoi et celle de la lecture par l'autre. La conversation s'ouvre quand l'employeur met la candidature en cours ; elle reste lisible, sans plus pouvoir écrire, une fois la candidature acceptée ou refusée. Les deux participants peuvent la lire, personne d'autre. Elle est supprimée avec la candidature (retrait par le candidat, suppression d'un compte ou d'une offre). Un e-mail de notification vous prévient d'un nouveau message, un seul tant que vous n'avez pas lu la conversation, sans en reprendre le texte (voir « E-mails »)." },
           { term: "Favoris", text: "Les offres qu'un candidat a mises de côté, avec la date. Lui seul les voit ; l'employeur d'une offre sait combien de candidats l'ont mise de côté, jamais lesquels. Un favori reste en place quand l'offre est clôturée, jusqu'à ce que le candidat le retire." },
           { term: "Rendez-vous", text: "Proposés par un employeur au sujet d'une candidature en cours : date, heure et durée, lieu, précisions éventuelles ; puis la réponse du candidat et son message, ou l'annulation par l'employeur et son message éventuel." },
           { term: "Avis sur la plateforme", text: "Une note globale, quatre notes de détail et un commentaire, publiés avec votre prénom, l'initiale de votre nom et votre rôle (pour un employeur, le nom de son entreprise), visibles par tous les visiteurs. Un avis par compte, que vous pouvez modifier ou supprimer à tout moment ; les comptes de démonstration ne peuvent pas en publier." },
@@ -192,7 +192,11 @@ const fr: typeof en = {
       },
       emails: {
         title: "E-mails",
-        intro: ["Le site ne vous écrit qu'au sujet de votre compte : pour vérifier votre adresse à l'inscription, et pour vous envoyer un lien si vous oubliez votre mot de passe. Pas de lettre d'information, pas de publicité. Les e-mails partent par le service de messagerie d'Infomaniak."],
+        intro: [
+          "Le site vous écrit au sujet de votre compte : pour vérifier votre adresse à l'inscription ou quand vous en changez, et pour vous envoyer un lien si vous oubliez votre mot de passe. Ces e-mails partent toujours.",
+          "Il vous écrit aussi pour vous prévenir de ce qui vous concerne : une nouvelle candidature ou un retrait de candidature à l'une de vos offres, un changement d'état de votre candidature, un nouveau message, un rendez-vous proposé, accepté, refusé ou annulé. Ces e-mails disent qui, quoi et pour quelle offre, avec un lien vers la page ; jamais le texte d'un message ni d'une réponse. Ils partent dans la langue que vous avez choisie sur le site, et vous pouvez les arrêter à tout moment en décochant « Recevoir les e-mails de notification » dans vos identifiants. Les comptes de démonstration n'en reçoivent aucun.",
+          "Pas de lettre d'information, pas de publicité. Les e-mails partent par le service de messagerie d'Infomaniak.",
+        ],
       },
       hosting: {
         title: "Hébergement et partage",
