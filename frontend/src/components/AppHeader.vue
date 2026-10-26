@@ -164,7 +164,8 @@ async function leave(): Promise<void> {
    one line (the links of a visitor, in French, with the demo, decide it:
    1230 px with the link to the about page, measured on 23.10.2026; 1240 px
    keeps a margin), the line goes under the logo and the links, on a row of
-   its own, centred: always shown (decision of 26.10.2026) */
+   its own, against the right edge under the links: always shown
+   (decisions of 26.10.2026) */
 .about {
   flex: none;
   margin: 0;
@@ -185,6 +186,7 @@ async function leave(): Promise<void> {
     order: 3;
     flex-basis: 100%;
     font-size: 0.85rem;
+    text-align: right;
   }
 }
 
