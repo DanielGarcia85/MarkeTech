@@ -162,6 +162,19 @@ class ProfileApiTests(TestCase):
         response = self.patch_json(client, {"email": "other@example.com"})
         self.assertEqual(response.json()["email"], "cand@example.com")
 
+    def test_the_language_and_the_notifications_change_with_the_profile(self):
+        client = self.login(self.candidate)
+        data = client.get("/api/profile/").json()
+        self.assertEqual((data["language"], data["notify_by_email"]), ("", True))
+        response = self.patch_json(client, {"language": "fr", "notify_by_email": False})
+        self.assertEqual(response.status_code, 200)
+        self.candidate.refresh_from_db()
+        self.assertEqual((self.candidate.language, self.candidate.notify_by_email), ("fr", False))
+        # Only a language the site offers
+        response = self.patch_json(client, {"language": "de"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("language", response.json())
+
     def test_patch_changes_the_fields_sent_only(self):
         client = self.login(self.employer)
         self.patch_json(client, {"company_name": "Acme SA", "city": "Geneva"})
