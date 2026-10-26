@@ -8,7 +8,8 @@
   dark one). Between the logo and the links, a small
   line centred on the window says what the site is (a demo under
   construction) and leads to the page about the project; whether the
-  backend answers is in the footer. A logged-in user is shown as a round with
+  backend answers is in the footer. On a narrow window, the line goes
+  under the logo and the links, on a row of its own. A logged-in user is shown as a round with
   their initials, which opens a small menu: their name and role, the
   profile, the way to log out. A visitor gets the links to sign up and to
   log in, then the way to the demo.
@@ -159,11 +160,11 @@ async function leave(): Promise<void> {
    pages), centred on the window whoever is logged in: the logo and the
    links get the same share of the width, so that the line sits in the
    middle whatever their own widths (the links of a visitor are wider than
-   the round of a user). Hidden below the width where the three no longer
-   fit on one line (the links of a visitor, in French, with the demo,
-   decide it: 1230 px with the link to the about page and without the
-   state of the API, measured on 23.10.2026; 1240 px keeps a margin): the logo and the links
-   then fill the header and share it as they need */
+   the round of a user). Below the width where the three no longer fit on
+   one line (the links of a visitor, in French, with the demo, decide it:
+   1230 px with the link to the about page, measured on 23.10.2026; 1240 px
+   keeps a margin), the line goes under the logo and the links, on a row of
+   its own, centred: always shown (decision of 26.10.2026) */
 .about {
   flex: none;
   margin: 0;
@@ -181,7 +182,9 @@ async function leave(): Promise<void> {
 
 @media (max-width: 1239px) {
   .about {
-    display: none;
+    order: 3;
+    flex-basis: 100%;
+    font-size: 0.85rem;
   }
 }
 
