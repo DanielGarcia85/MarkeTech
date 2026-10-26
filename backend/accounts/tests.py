@@ -9,8 +9,9 @@ Responsibility
 Check the authentication API as the frontend will use it: JSON requests to
 the browser client of allauth, CSRF protection enforced, e-mails read from
 the test outbox, in the language of the request; then the changes a
-logged-in user makes to their account (address, password). Does not test
-allauth itself, only our configuration of it.
+logged-in user makes to their account (address, password); then the
+language a login leaves on the account, for its notifications. Does not
+test allauth itself, only our configuration of it.
 """
 
 import json
@@ -262,3 +263,59 @@ class DisplayNameTests(TestCase):
         # An account created before the names were asked at sign-up
         user = User(email="lea.doe@example.com")
         self.assertEqual(display_name(user), "lea.doe@example.com")
+
+
+class LanguageTests(TestCase):
+    """The language of a user, kept at every login for the notifications."""
+
+    def setUp(self):
+        cache.clear()
+        self.user = User.objects.create_user(
+            email="lea.doe@example.com", password=PASSWORD, role="candidate", **NAMES
+        )
+        EmailAddress.objects.create(
+            user=self.user, email=self.user.email, verified=True, primary=True
+        )
+
+    def log_in(self, language):
+        """Log in through the API, the interface in this language."""
+        client = Client(enforce_csrf_checks=True, headers={"Accept-Language": language})
+        client.get(API + "auth/session")
+        token = client.cookies["csrftoken"].value
+        return client.post(
+            API + "auth/login",
+            data=json.dumps({"email": self.user.email, "password": PASSWORD}),
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=token,
+        )
+
+    def test_a_new_account_has_no_language_and_gets_the_notifications(self):
+        self.assertEqual(self.user.language, "")
+        self.assertTrue(self.user.notify_by_email)
+
+    def test_every_login_keeps_the_language_of_the_interface(self):
+        self.assertEqual(self.log_in("fr").status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.language, "fr")
+        self.log_in("en")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.language, "en")
+        # A language the site does not offer: Django falls back to English
+        self.log_in("de")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.language, "en")
+
+    def test_the_login_of_a_demo_account_keeps_it_too(self):
+        self.user.is_demo = True
+        self.user.save()
+        client = Client(enforce_csrf_checks=True, headers={"Accept-Language": "fr"})
+        client.get(API + "auth/session")
+        response = client.post(
+            "/api/demo/login/",
+            data=json.dumps({"role": "candidate", "terms": True}),
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=client.cookies["csrftoken"].value,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.language, "fr")
