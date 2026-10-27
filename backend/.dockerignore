@@ -17,6 +17,9 @@ staticfiles/
 # Files sent by the users on a development machine: never in the image
 media/
 
+# Documentation, not needed to build or run the application
+docs/
+
 # Docker files themselves
 Dockerfile
 .dockerignore
