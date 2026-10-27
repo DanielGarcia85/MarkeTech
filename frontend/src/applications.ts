@@ -6,7 +6,8 @@
 // share: a date, the state, the history as one line. And, for the page of
 // an employer, the move of an application from one state to the next,
 // with its confirmation, the message that may go with it, and its errors. Composables, because the
-// words and the date formats depend on the language displayed.
+// words and the date formats depend on the language displayed. Last, the
+// mark of the news, kept for the whole visit of a page.
 
 import { ref, type Ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -86,4 +87,16 @@ export function useApplicationMoves(applications: Ref<Application[] | null>, mov
   }
 
   return { busy, errors, move };
+}
+
+// Keeps the mark of the news ("New", "Updated") on an application for the
+// whole visit of a page: the API marks the news seen at the first reading,
+// and the page reads again at each news of the WebSocket (live.ts).
+// Returns the function that a list goes through after each reading
+export function keepNews(): (list: Application[]) => Application[] {
+  const news = new Set<number>();
+  return (list) => {
+    for (const item of list) if (item.unseen) news.add(item.id);
+    return list.map((item) => (news.has(item.id) ? { ...item, unseen: true } : item));
+  };
 }

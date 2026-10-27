@@ -9,15 +9,16 @@
 // appointments that do (a proposal or a cancellation for the candidate, an
 // answer for the employer), in all and by application. The
 // side bar shows them next to its links; a page that marks something seen
-// asks for them again at once. Read from the API every minute while
-// someone is logged in (phase 2: no WebSocket yet; phase 3 will push them
-// and this file only will change).
+// asks for them again at once. Read from the API when someone logs in,
+// then again at each news the WebSocket brings, and after a cut (live.ts,
+// decisions of 26.10.2026): no timer.
 
 import { reactive, readonly } from "vue";
 
 import { unseenApplications } from "./api/applications";
 import { unseenAppointments } from "./api/appointments";
 import { unreadCounts } from "./api/messaging";
+import { onNews } from "./live";
 
 // byApplication: the appointments that are news, by application id, for
 // the Messages buttons of the cards
@@ -28,10 +29,6 @@ const counts = reactive({
   appointments: 0,
   byApplication: {} as Record<string, number>,
 });
-
-// How often the counts are read again, in milliseconds
-const PERIOD = 60_000;
-let timer = 0;
 
 // Read-only view for the components
 export function useNotifications() {
@@ -63,18 +60,20 @@ export async function refreshNotifications(): Promise<void> {
       byApplication: appointments.applications,
     });
   } catch {
-    // Kept as they were; the next minute tries again
+    // Kept as they were; the next news tries again
   }
 }
 
-// Starts reading the counts every minute (a user logged in), or stops and
-// empties them (nobody)
+// Reads the counts for a user who logs in, or empties them (nobody)
 export function followNotifications(loggedIn: boolean): void {
-  window.clearInterval(timer);
   if (loggedIn) {
     refreshNotifications();
-    timer = window.setInterval(refreshNotifications, PERIOD);
   } else {
     Object.assign(counts, { open: 0, closed: 0, applications: 0, appointments: 0, byApplication: {} });
   }
 }
+
+// Any news may change a count, and so may what happened during a cut:
+// read them all again. The WebSocket is open only while someone is logged
+// in, so no news comes for nobody
+onNews(() => refreshNotifications());
