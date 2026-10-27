@@ -34,6 +34,27 @@ services:
     networks:
       - internal
 
+  # ── Real time ───────────────────────────────────────────────────────
+  redis:
+    # The channel layer of the WebSockets (backend/live, decisions of
+    # 26.10.2026): signals pass through it in a few milliseconds, from the
+    # views to the open tabs
+    image: redis:8-alpine
+    restart: unless-stopped
+    # Nothing is kept on disk: no snapshot ("--save" empty), no journal.
+    # A signal lost in a restart is caught up by the pages, which read
+    # everything again when they reconnect
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    # Tells Docker when Redis is ready to answer
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    # Reachable by the backend only
+    networks:
+      - internal
+
   # ── Backend ─────────────────────────────────────────────────────────
   backend:
     # Image published by GitHub Actions, fetched with "docker compose pull".
@@ -46,18 +67,22 @@ services:
     # Every variable of .env is passed to the container
     env_file: .env
     # Values that depend on this file, not on the environment: production
-    # settings, and the database reached by the name of its service
+    # settings, and the database and Redis reached by the names of their
+    # services
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
       POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/0
     # Files sent by the users (photos, CVs, logos, documents), kept outside
     # the container: the image is replaced at every update, the files stay.
     # The path is MEDIA_ROOT, created in the image with the right owner.
     volumes:
       - media:/app/media
-    # Wait for the database to be ready before starting
+    # Wait for the database and Redis to be ready before starting
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     # Talks to the database on one side, and to Nginx on the other
     networks:
