@@ -35,6 +35,10 @@ taken up) and after (decided), 400.
 A new message tells the other participant by e-mail when it is the first
 they have not read in the conversation (notifications/send.py, decisions
 of 26.10.2026).
+
+A new message, and a reading that marks messages read, send a signal to
+the open tabs of both participants (live/notify.py, decisions of
+26.10.2026): the other sees the message, the writer sees it read.
 """
 
 from django.db.models import Count, Exists, OuterRef, Q, Subquery
@@ -47,6 +51,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from applications.models import JobApplication
+from live import notify as live
 from notifications import send as notifications
 
 from .models import Message
@@ -87,7 +92,9 @@ class ConversationView(APIView):
         """The head and the messages; reading marks the other's messages
         read, in one UPDATE, before they are sent back."""
         application = self.application(request, pk)
-        application.messages.filter(unread_by(request.user)).update(read_at=timezone.now())
+        read = application.messages.filter(unread_by(request.user)).update(read_at=timezone.now())
+        if read:
+            live.news(application, live.MESSAGES)
         data = head(application, request.user)
         context = {"request": request}
         messages = MessageSerializer(application.messages.all(), many=True, context=context)
@@ -106,6 +113,7 @@ class ConversationView(APIView):
             application=application, author=request.user, body=form.validated_data["body"]
         )
         notifications.message_written(request, written)
+        live.news(application, live.MESSAGES)
         data = MessageSerializer(written, context={"request": request}).data
         return Response(data, status=status.HTTP_201_CREATED)
 

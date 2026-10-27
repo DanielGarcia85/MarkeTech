@@ -50,6 +50,9 @@ again cancels it, in the same transaction, without notice to anyone.
 
 A proposal and a cancellation tell the candidate, an answer tells the
 employer, by e-mail (notifications/send.py, decisions of 26.10.2026).
+
+A proposal, an answer and a cancellation send a signal to the open tabs
+of both people (live/notify.py, decisions of 26.10.2026).
 """
 
 from datetime import datetime
@@ -68,6 +71,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from applications.models import JobApplication
+from live import notify as live
 from notifications import send as notifications
 
 from .ics import to_ics
@@ -163,6 +167,7 @@ class ApplicationAppointmentsView(APIView):
             proposed = Appointment.objects.create(application=application, **form.validated_data)
         proposed = loaded(Appointment.objects).get(pk=proposed.pk)
         notifications.appointment_proposed(request, proposed)
+        live.news(proposed.application, live.APPOINTMENTS)
         data = AppointmentSerializer(proposed, context={"request": request}).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -216,6 +221,7 @@ class AnswerView(AppointmentMoveView):
             appointment.seen_at = None
             appointment.save()
         notifications.appointment_answered(request, appointment)
+        live.news(appointment.application, live.APPOINTMENTS)
         return self.answered(request, appointment)
 
 
@@ -244,6 +250,7 @@ class CancelView(AppointmentMoveView):
             appointment.seen_at = None
             appointment.save()
         notifications.appointment_cancelled(request, appointment)
+        live.news(appointment.application, live.APPOINTMENTS)
         return self.answered(request, appointment)
 
 

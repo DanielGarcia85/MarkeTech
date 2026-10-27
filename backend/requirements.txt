@@ -5,33 +5,54 @@
 # Every version is pinned. A version is only changed by an explicit decision.
 
 # ── Web framework ─────────────────────────────────────────────────────
+# Django: the models and the database, the admin site, the sessions and
+# the translations; every other package below builds on it
 Django==6.1.1
 
 # ── Configuration ─────────────────────────────────────────────────────
+# Reads the .env file at start-up into the environment, where the
+# settings find the secrets (never written in the code)
 python-dotenv==1.2.4
 
 # ── API ───────────────────────────────────────────────────────────────
+# Django REST framework: the JSON API the frontend calls (views,
+# serializers that check the data, permissions, throttles)
 djangorestframework==3.18.1
 
 # ── Application server ────────────────────────────────────────────────
+# Daphne: the ASGI server that runs Django in the container, able to keep
+# connections open, which the WebSockets need
 daphne==4.2.3
 
+# ── Real time ─────────────────────────────────────────────────────────
+# Channels: WebSockets in Django (consumers, routing, groups). Declares
+# Django up to 6.0; works with 6.1.1 (checked by the tests, 26.10.2026)
+channels==4.3.2
+# The channel layer on Redis: carries the signals from the views to the
+# open connections, whatever the process that holds them
+channels-redis==4.3.0
+
 # ── Static files ──────────────────────────────────────────────────────
+# WhiteNoise: serves the files of the admin site (CSS, JavaScript) from
+# Django itself, compressed, without a separate web server
 whitenoise==6.12.0
 
 # ── Database ──────────────────────────────────────────────────────────
+# psycopg 3: the driver between Django and PostgreSQL; [binary] brings it
+# already compiled, nothing to build on the machine
 psycopg[binary]==3.3.6
 
 # ── Authentication ────────────────────────────────────────────────────
+# django-allauth: sign-up, login, e-mail verification and forgotten
+# password, served to the frontend as a JSON API (headless mode)
 django-allauth==65.19.7
 
 # ── Images ────────────────────────────────────────────────────────────
-# Required by ImageField (profile photos and company logos): opens the
-# uploaded file to check that it is an image
+# Pillow: required by ImageField (profile photos, company logos), opens
+# the uploaded file to check that it is an image
 Pillow==13.0.0
 
 # ── Countries ─────────────────────────────────────────────────────────
-# ISO 3166-1 codes with their names in every language, for the country
-# fields of the profiles: a model field that validates the code, and the
-# list that fills the drop-down of the frontend
+# django-countries: the ISO 3166-1 codes with their names in every
+# language, for the country fields and the drop-down of the frontend
 django-countries==9.1.0

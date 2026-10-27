@@ -43,6 +43,10 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 # ── Applications ──────────────────────────────────────────────────────
 
 INSTALLED_APPS = [
+    # Daphne first: its runserver command replaces Django's, so that the
+    # development server speaks ASGI and accepts the WebSockets, like the
+    # server in production
+    "daphne",
     # Administration interface
     "django.contrib.admin",
     # Users, groups and permissions
@@ -82,6 +86,8 @@ INSTALLED_APPS = [
     "reviews",
     # Notifications: the e-mails that tell a user what happened, no model
     "notifications",
+    # Live: the WebSocket of a logged-in user and the signals sent to it
+    "live",
     # Demo: the seed_demo command only, test data for a development database
     "demo",
 ]
@@ -196,7 +202,12 @@ TEMPLATES = [
     },
 ]
 
-# Entry point used by the development server
+# Entry points of the application for a server. ASGI is the one MarkeTech
+# uses, in production (Daphne) and in development (runserver, given by
+# daphne above): it carries the HTTP requests and the WebSockets
+# (config/asgi.py). WSGI, HTTP only, is what Django creates by default; it
+# is kept for tools that know nothing else
+ASGI_APPLICATION = "config.asgi.application"
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ── Password validation ───────────────────────────────────────────────
