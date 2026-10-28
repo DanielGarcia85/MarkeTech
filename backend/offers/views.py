@@ -24,7 +24,8 @@ Routes (offers/urls.py, under /api/, built by the router)
   POST    offers/<id>/close/    employer: published -> closed
 
 An offer that received applications is not deleted (the candidates would
-lose their trace): closed instead. The employer's answers carry the numbers
+lose their trace): closed instead. A published offer is closed before it
+is deleted. The employer's answers carry the numbers
 of applications received and of favorites, the public ones do not; the
 detail of an offer carries them for its own employer only. For a candidate,
 every offer says whether they put it aside ("favorite", the heart).
@@ -212,9 +213,14 @@ class JobOfferViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, offer):
         """Refused once candidates applied: the offer is closed instead, and
-        the applications stay with their candidates."""
+        the applications stay with their candidates. Refused too while the
+        offer is published: it is closed first, as the page offers it
+        (decision of 28.10.2026)."""
         if offer.applications.exists():
             message = _("This offer has received applications: close it instead of deleting it.")
+            raise ValidationError({"non_field_errors": [message]})
+        if offer.status == JobOffer.Status.PUBLISHED:
+            message = _("This offer is published: close it before deleting it.")
             raise ValidationError({"non_field_errors": [message]})
         offer.delete()
 

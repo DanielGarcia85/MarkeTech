@@ -246,6 +246,14 @@ class OfferApiTests(TestCase):
         put = employer.put("/api/offers/%d/" % mine.pk, "{}", content_type="application/json")
         self.assertEqual(put.status_code, 405)
         self.assertEqual(employer.delete("/api/offers/%d/" % theirs.pk).status_code, 404)
+        # Published: closed first, then deleted
+        response = employer.delete("/api/offers/%d/" % mine.pk)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json(),
+            {"non_field_errors": ["This offer is published: close it before deleting it."]},
+        )
+        self.assertEqual(self.post(employer, "/api/offers/%d/close/" % mine.pk).status_code, 200)
         self.assertEqual(employer.delete("/api/offers/%d/" % mine.pk).status_code, 204)
         self.assertFalse(JobOffer.objects.filter(pk=mine.pk).exists())
         self.assertTrue(JobOffer.objects.filter(pk=theirs.pk).exists())
