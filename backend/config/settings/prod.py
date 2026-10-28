@@ -42,6 +42,15 @@ ALLOWED_HOSTS = os.environ["DJANGO_ALLOWED_HOSTS"].split(",")
 # https://docs.djangoproject.com/en/6.1/ref/settings/#secure-proxy-ssl-header
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# How many proxies of ours stand in front of Daphne: each one adds to the
+# X-Forwarded-For header the address that reached it, and allauth reads the
+# visitor's address just before them, counting from the right (an address
+# a visitor writes in the header stays further left, never read). Two on
+# the server (its reverse proxy, then the Nginx of the frontend), one in a
+# local Docker. Used by the login limits per address and by the security
+# notices (decision of 28.10.2026)
+ALLAUTH_TRUSTED_PROXY_COUNT = int(os.environ["TRUSTED_PROXY_COUNT"])
+
 # Send the session cookie and the form-protection cookie over HTTPS only
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

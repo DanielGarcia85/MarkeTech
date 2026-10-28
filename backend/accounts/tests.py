@@ -24,7 +24,7 @@ from urllib.parse import unquote
 from allauth.account.models import EmailAddress
 from django.core import mail
 from django.core.cache import cache
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 
 from .adapter import display_name
 from .models import User
@@ -301,6 +301,20 @@ class AccountChangesTests(TestCase):
         self.assertIn(expected, logs.output[0])
         self.assertIn("SMTPAuthenticationError", logs.output[0])
         self.assertNotIn("example.com", "".join(logs.output))
+
+    @override_settings(ALLAUTH_TRUSTED_PROXY_COUNT=2)
+    def test_the_notice_gives_the_address_of_the_visitor_behind_the_proxies(self):
+        # As on the server: the visitor wrote an address of their own, the
+        # reverse proxy added the visitor's, the Nginx of the frontend added
+        # the reverse proxy's
+        self.client.defaults["HTTP_X_FORWARDED_FOR"] = "6.6.6.6, 203.0.113.7, 172.19.0.2"
+        self.post(
+            "account/password/change",
+            {"current_password": PASSWORD, "new_password": "New-horse-10"},
+        )
+        body = mail.outbox[-1].body
+        self.assertIn("- IP address: 203.0.113.7", body)
+        self.assertNotIn("6.6.6.6", body)
 
     def test_the_security_notices_speak_french(self):
         self.client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
