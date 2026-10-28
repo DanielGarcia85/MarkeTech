@@ -16,18 +16,22 @@
   Another employer's offer is "not found". The moves of the state are the
   same for every card (ApplicationCard, shared composable); each card leads
   to its conversation, with its unread messages, read with the list, and
-  its appointments that bring news.
+  its appointments that bring news. Read again when the WebSocket brings
+  news of an application (a new one, a withdrawal) or of a message, and
+  after a cut (live.ts, decisions of 27.10.2026); a card keeps its mark
+  "New" for the whole visit.
 -->
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import { listApplications, type Application, type ApplicationStatus } from "../api/applications";
 import { listConversations } from "../api/messaging";
 import { getOffer, type Offer } from "../api/offers";
-import { useApplicationMoves, useApplicationText } from "../applications";
+import { keepNews, useApplicationMoves, useApplicationText } from "../applications";
+import { onNews } from "../live";
 import { newsOf, refreshNotifications } from "../notifications";
 import ApplicationCard from "../components/ApplicationCard.vue";
 import EmptyState from "../components/EmptyState.vue";
@@ -59,6 +63,8 @@ async function loadConversations(): Promise<void> {
 }
 
 const { busy, errors, move } = useApplicationMoves(applications, loadConversations);
+// The mark "New", kept for the whole visit (applications.ts)
+const marked = keepNews();
 
 // The filters, as the address says them: a state among the four or "" for
 // all, an offer by its number or 0 for all
@@ -96,12 +102,20 @@ async function load(): Promise<void> {
       return;
     }
   }
+  await loadList();
+}
+
+// The applications and their unread messages, with the filters of the
+// address
+async function loadList(): Promise<void> {
   loadConversations();
   try {
-    applications.value = await listApplications({
+    const list = await listApplications({
       ...(offerId.value ? { offer: offerId.value } : {}),
       ...(status.value ? { status: status.value } : {}),
     });
+    applications.value = marked(list);
+    loadFailed.value = false;
     // The news listed are seen now: the side bar counts again
     refreshNotifications();
   } catch {
@@ -118,7 +132,17 @@ function choose(event: Event): void {
 
 watch(() => [route.query.status, route.query.offer], load);
 
+// A message: the unread counts of the cards. An application (a new one, a
+// withdrawal, a move) and everything after a cut (null): the list. An
+// appointment: nothing here, its count on the cards follows the side bar
+const stop = onNews((signal) => {
+  if (notFound.value) return;
+  if (signal?.type === "messages") loadConversations();
+  else if (signal?.type !== "appointments") loadList();
+});
+
 onMounted(load);
+onUnmounted(stop);
 </script>
 
 <template>

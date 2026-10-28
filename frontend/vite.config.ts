@@ -19,14 +19,16 @@ export default defineConfig({
   resolve: { preserveSymlinks: true },
 
   // Development only: passes every request starting with /api or /_allauth
-  // (authentication API) on to the Django backend, so the browser keeps
-  // talking to a single address. changeOrigin false keeps the Host header
-  // of the browser (localhost:5173): Django checks it against the Origin of
-  // every POST, and builds the links of its e-mails from it.
+  // (authentication API) on to the Django backend, and the WebSocket /ws
+  // (ws: true, which lets the switch of protocol through), so the browser
+  // keeps talking to a single address. changeOrigin false keeps the Host
+  // header of the browser (localhost:5173): Django checks it against the
+  // Origin of every POST, and builds the links of its e-mails from it.
   server: {
     proxy: {
       "/api": { target: "http://localhost:8000", changeOrigin: false },
       "/_allauth": { target: "http://localhost:8000", changeOrigin: false },
+      "/ws": { target: "ws://localhost:8000", ws: true, changeOrigin: false },
     },
   },
 });

@@ -7,8 +7,8 @@ Production settings — configuration of the deployed application
 Responsibility
 ──────────────
 Complete the base settings for an environment exposed to real users: debug
-mode off, allowed hosts, PostgreSQL database, optimised static files and
-real e-mail sending.
+mode off, allowed hosts, PostgreSQL database, a channel layer on Redis,
+optimised static files and real e-mail sending.
 Every value that differs from one deployment to another is read from the
 environment, with no fallback value: a missing variable must stop the
 application at startup.
@@ -19,6 +19,7 @@ References
   - https://docs.djangoproject.com/en/6.1/ref/settings/#databases
   - https://whitenoise.readthedocs.io/en/stable/django.html
   - https://docs.djangoproject.com/en/6.1/topics/email/#smtp-backend
+  - https://channels.readthedocs.io/en/stable/topics/channel_layers.html
 """
 
 import os
@@ -66,6 +67,19 @@ DATABASES = {
         # Name of the machine that runs PostgreSQL. The port is the default
         # one, 5432.
         "HOST": os.environ["POSTGRES_HOST"],
+    }
+}
+
+# ── Real time ─────────────────────────────────────────────────────────
+
+# The channel layer on Redis (decision of 26.10.2026), shared by every
+# process of the backend. The address names the redis service of
+# docker-compose.yml, as in redis://redis:6379/0; it is set there, like
+# POSTGRES_HOST
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [os.environ["REDIS_URL"]]},
     }
 }
 

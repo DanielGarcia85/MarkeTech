@@ -7,8 +7,8 @@ Development settings — configuration of a developer workstation
 Responsibility
 ──────────────
 Extend the base settings with what only applies on a local machine: debug
-mode, local host names and a SQLite database stored in a file. Must never be
-used on a server.
+mode, local host names, a SQLite database stored in a file and a channel
+layer kept in memory. Must never be used on a server.
 """
 
 from .base import *
@@ -29,5 +29,16 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+# ── Real time ─────────────────────────────────────────────────────────
+
+# https://channels.readthedocs.io/en/stable/topics/channel_layers.html
+# The channel layer kept in the memory of the process: enough for runserver,
+# which is a single process, and for the tests; no Redis to install
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }

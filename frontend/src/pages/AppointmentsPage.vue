@@ -14,11 +14,14 @@
   enough for the whole card to be seen. Next to it, the
   appointments to come. The calendar asks the API for the period it shows,
   again at every change of view; reading marks the news seen, after which
-  the counts of the side bar are read again (notifications.ts).
+  the counts of the side bar are read again (notifications.ts). Both
+  lists are read again when the WebSocket brings news of an appointment or
+  of an application (a withdrawal takes its appointments away), and after
+  a cut (live.ts, decisions of 27.10.2026).
 -->
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
@@ -27,6 +30,7 @@ import { myAppointments, type Appointment } from "../api/appointments";
 import { useAppointmentMoves, useAppointmentText } from "../appointments";
 import AppointmentCard from "../components/AppointmentCard.vue";
 import EmptyState from "../components/EmptyState.vue";
+import { onNews } from "../live";
 import { refreshNotifications } from "../notifications";
 import { useSession } from "../session";
 
@@ -77,7 +81,11 @@ function marked(list: Appointment[]): Appointment[] {
 // The period vue-cal shows: from its first cell to the end of its last one
 type Period = { startDate: Date; endDate: Date; firstCellDate?: Date; lastCellDate?: Date };
 
+// The period shown last, to read it again at a news
+let current: Period | null = null;
+
 async function loadPeriod(period: Period): Promise<void> {
+  current = period;
   const start = period.firstCellDate ?? period.startDate;
   const last = period.lastCellDate ?? period.endDate;
   const end = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1);
@@ -137,7 +145,16 @@ function short(appointment: Appointment): string {
   }).format(new Date(appointment.starts_at));
 }
 
+// An appointment, an application, and everything after a cut (null): both
+// lists again. A message: nothing here
+const stop = onNews((signal) => {
+  if (signal?.type === "messages") return;
+  loadComing();
+  if (current) loadPeriod(current);
+});
+
 onMounted(loadComing);
+onUnmounted(stop);
 </script>
 
 <template>

@@ -28,6 +28,7 @@ import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
+import { followLive } from "../live";
 import { followNotifications, useNotifications } from "../notifications";
 import { useSession } from "../session";
 import Icon from "./Icon.vue";
@@ -36,8 +37,16 @@ const { t } = useI18n();
 const session = useSession();
 const counts = useNotifications();
 
-// The counts follow whoever is logged in: read every minute, or emptied
-watch(() => session.user?.id, (id) => followNotifications(id !== undefined), { immediate: true });
+// The counts and the WebSocket follow whoever is logged in: read and
+// opened for a user, emptied and closed for nobody
+watch(
+  () => session.user?.id,
+  (id) => {
+    followNotifications(id !== undefined);
+    followLive(id);
+  },
+  { immediate: true },
+);
 
 // ── The narrow window ─────────────────────────────────────────────────
 // Only the titles of the groups show, as buttons; one group is open at a

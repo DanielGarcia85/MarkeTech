@@ -61,6 +61,12 @@ The e-mails
 A new application and a withdrawal tell the employer, a move tells the
 candidate, by e-mail (notifications/send.py, decisions of 26.10.2026): one
 e-mail for a move, even with a message.
+
+The live signals
+────────────────
+A new application, a withdrawal and a move send a signal to the open tabs
+of both people (live/notify.py, decisions of 26.10.2026); a move with a
+message sends a second one, for the conversation.
 """
 
 import os
@@ -77,6 +83,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from messaging.models import MAX_LENGTH, Message
+from live import notify as live
 from notifications import send as notifications
 from offers.views import IsCandidate, IsEmployer, is_candidate, is_employer
 from profiles.models import CandidateProfile
@@ -221,6 +228,7 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         form.is_valid(raise_exception=True)
         application = form.save()
         notifications.application_received(request, application)
+        live.news(application, live.APPLICATIONS)
         data = JobApplicationSerializer(application, context=self.get_serializer_context()).data
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -230,8 +238,10 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
         if application.status in DECIDED:
             message = _("This application has been decided and can no longer be withdrawn.")
             raise ValidationError({"non_field_errors": [message]})
-        # Told before the row goes: the e-mail reads the application
+        # Told before the row goes: the e-mail and the signal read the
+        # application
         notifications.application_withdrawn(self.request, application)
+        live.news(application, live.APPLICATIONS)
         application.delete()
 
     # ── The state ─────────────────────────────────────────────────────
@@ -261,6 +271,9 @@ class JobApplicationViewSet(viewsets.ModelViewSet):
             if text:
                 Message.objects.create(application=application, author=request.user, body=text)
         notifications.application_moved(request, application, with_message=bool(text))
+        live.news(application, live.APPLICATIONS)
+        if text:
+            live.news(application, live.MESSAGES)
         return Response(self.get_serializer(application).data, status=status.HTTP_200_OK)
 
     # ── The files ─────────────────────────────────────────────────────

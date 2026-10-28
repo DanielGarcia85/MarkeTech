@@ -12,16 +12,20 @@
   progress, or once a conversation exists, with its unread messages and
   its appointments that bring news), and
   the withdrawal while the employer has not decided, after a confirmation.
+  Read again when the WebSocket brings news of an application (a move) or
+  of a message, and after a cut (live.ts, decisions of 27.10.2026); a card
+  keeps its mark "Updated" for the whole visit.
 -->
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { canWithdraw, listApplications, withdraw, type Application } from "../api/applications";
 import { listConversations } from "../api/messaging";
-import { useApplicationText } from "../applications";
+import { keepNews, useApplicationText } from "../applications";
 import EmptyState from "../components/EmptyState.vue";
+import { onNews } from "../live";
 import { newsOf, refreshNotifications } from "../notifications";
 import { confirm } from "../confirm";
 
@@ -37,6 +41,8 @@ const busy = ref<number | null>(null);
 const errors = ref<Record<number, string>>({});
 // The unread messages of each application that has a conversation
 const unread = ref<Record<number, number>>({});
+// The mark "Updated", kept for the whole visit (applications.ts)
+const marked = keepNews();
 
 async function load(): Promise<void> {
   loadFailed.value = false;
@@ -47,7 +53,7 @@ async function load(): Promise<void> {
     // The cards show the way to the conversations in progress anyway
   }
   try {
-    applications.value = await listApplications();
+    applications.value = marked(await listApplications());
     // The news listed are seen now: the side bar counts again
     refreshNotifications();
   } catch {
@@ -74,7 +80,15 @@ async function remove(application: Application): Promise<void> {
   }
 }
 
+// A move of a state, a message, and everything after a cut (null): read
+// again. An appointment: nothing here, its count on the cards follows the
+// side bar
+const stop = onNews((signal) => {
+  if (signal?.type !== "appointments") load();
+});
+
 onMounted(load);
+onUnmounted(stop);
 </script>
 
 <template>

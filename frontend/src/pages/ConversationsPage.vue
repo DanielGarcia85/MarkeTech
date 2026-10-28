@@ -9,7 +9,8 @@
   most recent activity first: the other participant (the company for a
   candidate, the candidate for an employer) with their mark, the offer, the
   last message, its date and the unread count; the whole line leads to the
-  conversation. Read again every minute with the counts of the side bar.
+  conversation. Read again when the WebSocket brings news of a message or
+  of a state, and after a cut (live.ts, decisions of 26.10.2026).
 -->
 
 <script setup lang="ts">
@@ -19,6 +20,7 @@ import { useI18n } from "vue-i18n";
 import { listConversations, type Conversation } from "../api/messaging";
 import CompanyMark from "../components/CompanyMark.vue";
 import EmptyState from "../components/EmptyState.vue";
+import { onNews } from "../live";
 import { useSession } from "../session";
 
 const props = defineProps<{ closed: boolean }>();
@@ -55,13 +57,14 @@ function when(iso: string): string {
 // From one list to the other: the same page, another kind
 watch(() => props.closed, load);
 
-// Read again every minute, like the counts of the side bar
-let timer = 0;
-onMounted(() => {
-  load();
-  timer = window.setInterval(load, 60_000);
+// A new message, a message read, a move of a state (open or closed), and
+// everything after a cut (null): read again. The appointments do not show
+// in the list
+const stop = onNews((signal) => {
+  if (signal === null || signal.type !== "appointments") load();
 });
-onUnmounted(() => window.clearInterval(timer));
+onMounted(load);
+onUnmounted(stop);
 </script>
 
 <template>

@@ -18,8 +18,9 @@
   progress and no appointment waits for an answer. Reading the page marks
   the other's messages read and the appointments seen (the API does it),
   after which the counts of the side bar are read again
-  (notifications.ts). Read again every ten seconds (phase 2: no WebSocket
-  yet).
+  (notifications.ts). Read again when the WebSocket brings news of this
+  application, a message, an appointment or its state, and after a cut
+  (live.ts, decisions of 26.10.2026).
 -->
 
 <script setup lang="ts">
@@ -36,6 +37,7 @@ import AppointmentCard from "../components/AppointmentCard.vue";
 import CompanyMark from "../components/CompanyMark.vue";
 import Icon from "../components/Icon.vue";
 import ProposeDialog from "../components/ProposeDialog.vue";
+import { onNews } from "../live";
 import { refreshNotifications } from "../notifications";
 import { useSession } from "../session";
 
@@ -181,12 +183,13 @@ watch(applicationId, () => {
   load();
 });
 
-let timer = 0;
-onMounted(() => {
-  load();
-  timer = window.setInterval(load, 10_000);
+// The news of this application, whatever its kind, and everything after a
+// cut (null): read again
+const stop = onNews((signal) => {
+  if (signal === null || signal.application === applicationId.value) load();
 });
-onUnmounted(() => window.clearInterval(timer));
+onMounted(load);
+onUnmounted(stop);
 </script>
 
 <template>
