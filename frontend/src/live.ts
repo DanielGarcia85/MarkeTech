@@ -39,7 +39,7 @@ let delay = FIRST_DELAY;
 let retry = 0;
 
 // Listens to the news; returns the function that stops listening, to call
-// when the component goes away (onBeforeUnmount)
+// when the component goes away (onUnmounted)
 export function onNews(listener: Listener): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
