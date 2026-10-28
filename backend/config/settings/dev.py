@@ -46,6 +46,6 @@ CHANNEL_LAYERS = {
 
 # ── E-mail ────────────────────────────────────────────────────────────
 
-# The moderation alerts print in the terminal like every e-mail of
-# development: the address only shows who they would go to
+# Address of the moderation alerts: in development they print in the
+# terminal like every e-mail, so it only shows who they would go to
 MODERATION_EMAIL = "moderation@localhost"
