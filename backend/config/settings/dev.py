@@ -7,8 +7,9 @@ Development settings — configuration of a developer workstation
 Responsibility
 ──────────────
 Extend the base settings with what only applies on a local machine: debug
-mode, local host names, a SQLite database stored in a file and a channel
-layer kept in memory. Must never be used on a server.
+mode, local host names, a SQLite database stored in a file, a channel layer
+kept in memory and the address of the moderation alerts. Must never be used
+on a server.
 """
 
 from .base import *
@@ -42,3 +43,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }
+
+# ── E-mail ────────────────────────────────────────────────────────────
+
+# The moderation alerts print in the terminal like every e-mail of
+# development: the address only shows who they would go to
+MODERATION_EMAIL = "moderation@localhost"

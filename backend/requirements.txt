@@ -31,6 +31,9 @@ channels==4.3.2
 # The channel layer on Redis: carries the signals from the views to the
 # open connections, whatever the process that holds them
 channels-redis==4.3.0
+# The Redis client under channels-redis, pinned because its default read
+# timeout decides how long a quiet WebSocket lives (see prod.py)
+redis==8.1.0
 
 # ── Static files ──────────────────────────────────────────────────────
 # WhiteNoise: serves the files of the admin site (CSS, JavaScript) from
