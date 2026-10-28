@@ -8,8 +8,8 @@ Responsibility
 ──────────────
 Define the user model of the project: how a user is identified, which
 role the account has, and how it hears of what happens (the language of
-its e-mails, whether it receives the notifications). Profiles are not handled here yet, and the creation of
-users lives in managers.py.
+its e-mails, whether it receives the notifications). The profiles live in
+the profiles application, and the creation of users in managers.py.
 
 Why a custom model
 ──────────────────
