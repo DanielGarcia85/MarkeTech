@@ -1,5 +1,7 @@
 {# backend/templates/moderation/base_message.txt — frame of every moderation alert: the event, then how to block the account #}
 {% autoescape off %}{% block content %}{% endblock content %}
-
+{% if author.is_demo %}
+Compte de démonstration, ouvert à tous les visiteurs : son contenu est remis à zéro chaque nuit à 01:30 UTC. Supprimer le contenu suffit ; bloquer le compte fermerait la démo à tout le monde jusqu'à ce que la case soit recochée.
+{% endif %}
 Bloquer le compte (décocher « Actif ») retire du site tous ses avis et ses offres, sans rien supprimer ; recocher la case les remet :
 {{ account_url }}{% endautoescape %}

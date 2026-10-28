@@ -20,7 +20,10 @@ The rules
   the administrator only. No alert when the setting is empty.
 - It carries the whole text, the author and their address: everything
   needed to judge without logging in. The journal never does.
-- Nothing for a demo account: its content is reset every night.
+- A demo account is moderated too: any visitor writes through it, and
+  what it publishes stays public until the reset of the night (decision of
+  28.10.2026). Only its offers can reach this code: a demo account cannot
+  write a review. Its messages and files get no alert (risk accepted).
 - It leaves once the change is in the database (transaction.on_commit), and
   a failure to send never breaks the action of the user: it is written to
   the journal with the event, never an address.
@@ -46,7 +49,7 @@ def alert(request, author, event, admin_path, **context):
     """Send the alert of an event to the administrator, once the change is
     saved. admin_path is the page of the content in the admin; the links
     are made absolute from the request."""
-    if not settings.MODERATION_EMAIL or author.is_demo:
+    if not settings.MODERATION_EMAIL:
         return
     context = {
         "author": author,

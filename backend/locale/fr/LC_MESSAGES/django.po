@@ -164,6 +164,10 @@ msgid "This offer has received applications: close it instead of deleting it."
 msgstr ""
 "Cette offre a reçu des candidatures : clôturez-la au lieu de la supprimer."
 
+#: .\offers\views.py:223
+msgid "This offer is published: close it before deleting it."
+msgstr "Cette offre est publiée : clôturez-la avant de la supprimer."
+
 #: .\offers\views.py:226
 msgid "This offer is already published."
 msgstr "Cette offre est déjà publiée."

@@ -86,7 +86,7 @@ from messaging.models import MAX_LENGTH, Message
 from live import notify as live
 from notifications import send as notifications
 from offers.views import IsCandidate, IsEmployer, is_candidate, is_employer
-from profiles.models import CandidateProfile
+from profiles.views import candidate_profile_of
 
 from .models import JobApplication, StatusChange
 from .serializers import ApplySerializer, JobApplicationSerializer
@@ -105,13 +105,6 @@ def news_for(user):
     if is_candidate(user):
         return ~received & Q(application__candidate__user=user)
     return Q(pk__in=[])
-
-
-def candidate_profile_of(user):
-    """The candidate profile of the user, created empty when missing (an
-    account made in the admin site), like the profiles API does."""
-    profile, _created = CandidateProfile.objects.get_or_create(user=user)
-    return profile
 
 
 # ── The files ─────────────────────────────────────────────────────────

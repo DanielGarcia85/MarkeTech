@@ -29,8 +29,8 @@ not by the favorite: that is what a heart on a card knows.
 from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
-from applications.views import candidate_profile_of
 from offers.views import IsCandidate
+from profiles.views import candidate_profile_of
 
 from .models import Favorite
 from .serializers import AddFavoriteSerializer, FavoriteSerializer

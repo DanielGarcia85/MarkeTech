@@ -129,3 +129,8 @@ MAILERS = {
 
 # Sender of the application's e-mails
 DEFAULT_FROM_EMAIL = os.environ["DEFAULT_FROM_EMAIL"]
+
+# Address that receives the moderation alerts, sent for each content made
+# public (notifications/moderation.py); set but empty: no alert (decision of
+# 28.10.2026: read like the other variables, no fallback)
+MODERATION_EMAIL = os.environ["MODERATION_EMAIL"]

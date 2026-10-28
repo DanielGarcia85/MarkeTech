@@ -249,13 +249,10 @@ const current = computed(() => groups.value.find((group) => PAGES[group].include
   color: #ffffff;
 }
 
-/* Narrow window: a strip under the header; each group is a line of its
-   own title and links, the groups side by side while the width allows,
-   then one under the other, aligned on the left */
 /* Narrow window: a strip under the header with the titles of the groups
    as buttons; the links of the open group under them, on one line that
-   wraps. Last, so that it wins over the rules above (section 10 of
-   CLAUDE.md) */
+   wraps. Last, so that it wins over the rules above: at equal weight, the
+   rule written last applies, a media query changes nothing to that */
 @media (max-width: 900px) {
   .sidebar {
     width: auto;

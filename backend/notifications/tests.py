@@ -15,7 +15,8 @@ Then that nobody gets an e-mail they do not want (notifications off, demo
 account, address of the seed, blocked account, the seed itself), and that
 a failure to send never breaks the action. Last, the alerts of moderation
 to the administrator: a review written or rewritten, an offer published or
-changed while published, with the text and the links to the admin. The e-mails leave once the change is saved: the
+changed while published (a demo account's included), with the text and the
+links to the admin. The e-mails leave once the change is saved: the
 tests run the callbacks of the transaction (captureOnCommitCallbacks).
 """
 
@@ -350,14 +351,22 @@ class ModerationTests(TestCase):
         # Closed: out of sight, nothing to say
         self.assertEqual(self.sent(lambda: self.post(client, f"/api/offers/{pk}/close/", {})), [])
 
-    def test_no_alert_for_a_demo_account_nor_without_an_address(self):
+    def test_an_offer_of_the_demo_is_moderated_too(self):
         User.objects.filter(pk=self.employer.pk).update(is_demo=True)
         self.employer.refresh_from_db()
         client = self.login(self.employer)
         pk = self.offer(client)
-        self.assertEqual(self.sent(lambda: self.post(client, f"/api/offers/{pk}/publish/", {})), [])
+        sent = self.sent(lambda: self.post(client, f"/api/offers/{pk}/publish/", {}))
+        self.assertEqual(len(sent), 1)
+        # The administrator is told not to block the demo for everyone
+        self.assertIn("Compte de démonstration, ouvert à tous les visiteurs", sent[0].body)
+
+    def test_no_alert_without_an_address(self):
         with override_settings(MODERATION_EMAIL=""):
             self.assertEqual(self.sent(lambda: self.review(self.login(self.candidate))), [])
+        # An ordinary account: no word of the demo
+        sent = self.sent(lambda: self.review(self.login(self.candidate), comment="Again."))
+        self.assertNotIn("démonstration", sent[0].body)
 
     def test_a_failure_to_send_an_alert_never_breaks_the_action(self):
         client = self.login(self.candidate)

@@ -468,7 +468,8 @@ class ApplicationApiTests(MediaTestCase):
     def test_the_employer_sees_how_many_applied_and_cannot_delete_the_offer(self):
         self.application()
         self.application(candidate=self.other_candidate)
-        empty = JobOffer.objects.create(employer=self.company, status="published", **OFFER)
+        # Closed and without application: the one that may be deleted
+        empty = JobOffer.objects.create(employer=self.company, status="closed", **OFFER)
         client = self.login(self.employer)
         counts = {o["id"]: o["applications_count"] for o in client.get("/api/offers/mine/").json()}
         self.assertEqual(counts, {self.offer.pk: 2, empty.pk: 0})

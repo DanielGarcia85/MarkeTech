@@ -6,9 +6,9 @@ WSGI entry point — exposes the application to a synchronous server
 
 Responsibility
 ──────────────
-Build the WSGI application object that a server calls for each request. Used
-by the development server (runserver). The asynchronous counterpart is
-asgi.py.
+Build the WSGI application object that a synchronous server calls for each
+request. Not used to serve the site: Daphne runs asgi.py, in the container
+and through runserver. Kept for the tools that expect a WSGI entry point.
 
 Settings
 ────────
