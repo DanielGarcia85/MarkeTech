@@ -1,0 +1,2 @@
+{# backend/templates/account/email/email_changed_subject.txt — subject of the notice sent to the old address after a change of address #}
+{% load i18n %}{% get_current_language as lang %}{% if lang == "fr" %}L'adresse e-mail de votre compte a changé{% else %}The e-mail address of your account has changed{% endif %}

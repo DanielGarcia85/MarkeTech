@@ -1,0 +1,16 @@
+{# backend/templates/account/email/base_notification.txt — frame of the security notices: the change, then where it came from #}
+{# Sent by allauth after a change to the account (ACCOUNT_EMAIL_NOTIFICATIONS); the greeting names the user only when the change was made logged in #}
+{% extends "account/email/base_message.txt" %}
+{% load i18n tz %}
+
+{% block content %}{% get_current_language as lang %}{% autoescape off %}{% block change %}{% endblock change %}
+
+{% if lang == "fr" %}Si c'est vous, il n'y a rien à faire. Sinon, changez tout de suite votre mot de passe et écrivez-nous à contact@marketech.ch. La modification vient de :
+
+- adresse IP : {{ ip }}
+- navigateur : {{ user_agent }}
+- date : {% timezone "Europe/Zurich" %}{{ timestamp|date:"j F Y à H:i" }}{% endtimezone %} (heure de Genève){% else %}If it was you, there is nothing to do. Otherwise, change your password at once and write to us at contact@marketech.ch. The change came from:
+
+- IP address: {{ ip }}
+- browser: {{ user_agent }}
+- date: {% timezone "Europe/Zurich" %}{{ timestamp|date:"j F Y, H:i" }}{% endtimezone %} (Geneva time){% endif %}{% endautoescape %}{% endblock content %}

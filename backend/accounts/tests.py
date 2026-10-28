@@ -9,9 +9,10 @@ Responsibility
 Check the authentication API as the frontend will use it: JSON requests to
 the browser client of allauth, CSRF protection enforced, e-mails read from
 the test outbox, in the language of the request; then the changes a
-logged-in user makes to their account (address, password); then the
-language a login leaves on the account, for its notifications. Does not
-test allauth itself, only our configuration of it.
+logged-in user makes to their account (address, password) and the security
+notices they bring; then the language a login leaves on the account, for
+its notifications. Does not test allauth itself, only our configuration of
+it.
 """
 
 import json
@@ -166,6 +167,10 @@ class AuthenticationApiTests(TestCase):
             {"email": "lea.doe@example.com", "password": "New-horse-10"},
         )
         self.assertEqual(response.status_code, 200)
+        # The security notice of the reset, sent once it is done
+        notice = [m for m in mail.outbox if m.subject == "The password of your account was reset"]
+        self.assertEqual(len(notice), 1)
+        self.assertEqual(notice[0].to, ["lea.doe@example.com"])
 
     def test_emails_follow_the_language_of_the_request(self):
         # fr-CH is not offered: Django falls back to plain fr
@@ -234,6 +239,26 @@ class AccountChangesTests(TestCase):
             list(EmailAddress.objects.filter(user=self.user).values_list("email", flat=True)),
             ["new.address@example.com"],
         )
+        # The old address is told, with where the change came from
+        notice = mail.outbox[-1]
+        self.assertEqual(notice.to, ["lea.doe@example.com"])
+        self.assertEqual(notice.subject, "The e-mail address of your account has changed")
+        self.assertIn("from lea.doe@example.com to new.address@example.com", notice.body)
+        self.assertIn("- IP address: 127.0.0.1", notice.body)
+        self.assertIn("(Geneva time)", notice.body)
+
+    def test_a_cancelled_change_tells_the_current_address(self):
+        self.post("account/email", {"email": "new.address@example.com"})
+        response = self.client.delete(
+            API + "account/email",
+            data=json.dumps({"email": "new.address@example.com"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        notice = mail.outbox[-1]
+        self.assertEqual(notice.to, ["lea.doe@example.com"])
+        self.assertEqual(notice.subject, "An e-mail address was removed from your account")
+        self.assertIn("new.address@example.com was removed", notice.body)
 
     def test_the_password_changes_with_the_current_one(self):
         response = self.post(
@@ -250,6 +275,21 @@ class AccountChangesTests(TestCase):
         self.assertTrue(self.user.check_password("New-horse-10"))
         # Still logged in afterwards
         self.assertEqual(self.client.get(API + "auth/session").status_code, 200)
+        # The security notice, in the language of the request
+        self.assertEqual(mail.outbox[-1].subject, "The password of your account has changed")
+
+    def test_the_security_notices_speak_french(self):
+        self.client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
+        self.post(
+            "account/password/change",
+            {"current_password": PASSWORD, "new_password": "New-horse-10"},
+        )
+        notice = mail.outbox[-1]
+        self.assertEqual(notice.subject, "Le mot de passe de votre compte a changé")
+        # Made logged in: the greeting knows the user
+        self.assertIn("Bonjour Léa,", notice.body)
+        self.assertIn("écrivez-nous à contact@marketech.ch", notice.body)
+        self.assertIn("(heure de Genève)", notice.body)
 
 
 class DisplayNameTests(TestCase):

@@ -55,7 +55,8 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     # Server-side sessions
     "django.contrib.sessions",
-    # One-off notifications (unrelated to the future messaging feature)
+    # One-off notices of the admin site (unrelated to the messaging between
+    # candidates and employers)
     "django.contrib.messages",
     # Management of static files
     "django.contrib.staticfiles",
@@ -88,7 +89,8 @@ INSTALLED_APPS = [
     "notifications",
     # Live: the WebSocket of a logged-in user and the signals sent to it
     "live",
-    # Demo: the seed_demo command only, test data for a development database
+    # Demo: the public demo accounts (login, guard, write limits) and the
+    # seed_demo command that fills them
     "demo",
 ]
 
@@ -158,10 +160,11 @@ ACCOUNT_CHANGE_EMAIL = True
 # already shows "MarkeTech" (decision of 26.10.2026; "[MarkeTech] " before).
 # An empty text, not None: None would make allauth add the name of the site
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
-
-# The address told of every review and offer made public, to moderate them
-# from the admin (notifications/moderation.py); empty: no alert
-MODERATION_EMAIL = os.environ.get("MODERATION_EMAIL", "contact@marketech.ch")
+# Security notices: an e-mail after every change to the account (address
+# changed, sent to the old one; password changed or reset; address removed),
+# with the IP address, the browser and the time (decision of 28.10.2026).
+# Texts in templates/account/email/, frame base_notification.txt
+ACCOUNT_EMAIL_NOTIFICATIONS = True
 
 # https://docs.allauth.org/en/latest/headless/configuration.html
 # No HTML page from allauth: the Vue frontend renders everything
