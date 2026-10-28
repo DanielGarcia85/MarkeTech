@@ -16,3 +16,8 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
+
+# ── Python ────────────────────────────────────────────────────────────
+# PEP 8: four spaces per level in Python files
+[*.py]
+indent_size = 4
