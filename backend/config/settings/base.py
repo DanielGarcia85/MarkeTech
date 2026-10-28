@@ -143,6 +143,9 @@ ACCOUNT_LOGIN_METHODS = {"email"}
 # Name shown for a user, in the API and in the e-mails: first and last name,
 # or the address while they are unknown
 ACCOUNT_USER_DISPLAY = "accounts.adapter.display_name"
+# The account adapter of the project: a security notice that fails to leave
+# never breaks the change it tells of (accounts/adapter.py)
+ACCOUNT_ADAPTER = "accounts.adapter.AccountAdapter"
 # Fields of the sign-up form; the star marks a required field. The API
 # receives the password under the name "password"; asking for it twice is
 # the frontend's job. The names and the role are added by

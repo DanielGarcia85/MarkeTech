@@ -17,6 +17,8 @@ it.
 
 import json
 import re
+import smtplib
+from unittest import mock
 from urllib.parse import unquote
 
 from allauth.account.models import EmailAddress
@@ -277,6 +279,28 @@ class AccountChangesTests(TestCase):
         self.assertEqual(self.client.get(API + "auth/session").status_code, 200)
         # The security notice, in the language of the request
         self.assertEqual(mail.outbox[-1].subject, "The password of your account has changed")
+
+    def test_a_notice_that_fails_to_leave_never_breaks_the_change(self):
+        # The mail server refuses the login, as it did on 28.10.2026
+        refused = smtplib.SMTPAuthenticationError(535, b"5.7.0 Invalid login or password")
+        with (
+            mock.patch("django.core.mail.message.EmailMessage.send", side_effect=refused),
+            self.assertLogs("accounts.adapter", level="WARNING") as logs,
+        ):
+            response = self.post(
+                "account/password/change",
+                {"current_password": PASSWORD, "new_password": "New-horse-10"},
+            )
+        # The change is answered as done, and is done; the session stays
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("New-horse-10"))
+        self.assertEqual(self.client.get(API + "auth/session").status_code, 200)
+        # The failure is in the journal, with the account and no address
+        expected = f"Security notice password_changed to user {self.user.pk} not sent"
+        self.assertIn(expected, logs.output[0])
+        self.assertIn("SMTPAuthenticationError", logs.output[0])
+        self.assertNotIn("example.com", "".join(logs.output))
 
     def test_the_security_notices_speak_french(self):
         self.client.defaults["HTTP_ACCEPT_LANGUAGE"] = "fr"
