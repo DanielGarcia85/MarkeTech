@@ -1313,8 +1313,8 @@ REVIEWS = [
         "comment": (
             "J'ai trouvé deux offres qui correspondaient à mon profil en quelques minutes, "
             "grâce aux filtres par ville et par contrat. Postuler avec le CV déjà enregistré "
-            "dans mon profil est très pratique. J'aimerais recevoir un e-mail quand un "
-            "employeur me répond, pour ne pas devoir revenir vérifier."
+            "dans mon profil est très pratique. J'aimerais être prévenue quand une nouvelle "
+            "offre correspond à mes critères, sans devoir relancer la recherche."
         ),
         "written": 12,
     },
@@ -1334,8 +1334,8 @@ REVIEWS = [
         "comment": (
             "Publier une offre prend cinq minutes, et je garde mes brouillons jusqu'à ce que "
             "le texte soit prêt. Tout l'échange avec un candidat reste au même endroit : sa "
-            "candidature, nos messages et le rendez-vous. Il me manque une alerte par e-mail "
-            "quand un candidat accepte un rendez-vous."
+            "candidature, nos messages et le rendez-vous. Il me manque la possibilité de "
+            "joindre un document à un message, comme une fiche de poste détaillée."
         ),
         "written": 9,
         "changed": 2,
@@ -1500,14 +1500,19 @@ class Command(BaseCommand):
                 raise CommandError(
                     "The test accounts already exist: run again with --reset to replace them."
                 )
-            # The profiles, the offers, the applications, the favorites, the
-            # messages, the appointments, the reviews, the addresses of
-            # allauth and the files (signals) go with the users
-            count, _ = existing.delete()
-            self.stdout.write(f"Deleted the previous test data ({count} rows).")
 
-        # All or nothing: a failure half-way leaves the database as it was
+        # All or nothing, the deletion included: a failure half-way brings the
+        # previous rows back instead of leaving the demo empty until the next
+        # night (decision of 28.10.2026). The files the signals removed with
+        # the old accounts do not come back: their pages show no document
+        # until the next run
         with transaction.atomic():
+            if existing.exists():
+                # The profiles, the offers, the applications, the favorites,
+                # the messages, the appointments, the reviews, the addresses of
+                # allauth and the files (signals) go with the users
+                count, _ = existing.delete()
+                self.stdout.write(f"Deleted the previous test data ({count} rows).")
             for person in CANDIDATES:
                 self.candidate(person)
             offers = sum(self.employer(person) for person in EMPLOYERS)
