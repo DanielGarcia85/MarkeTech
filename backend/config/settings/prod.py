@@ -79,7 +79,18 @@ DATABASES = {
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [os.environ["REDIS_URL"]]},
+        "CONFIG": {
+            "hosts": [
+                {
+                    "address": os.environ["REDIS_URL"],
+                    # A tab waits for its signals in Redis 5 seconds at a time
+                    # (brpop_timeout of channels-redis), and the client of
+                    # redis 8 gives up a reading after 5 seconds by default:
+                    # the tab's connection would be cut every 5 seconds
+                    "socket_timeout": 10,
+                }
+            ]
+        },
     }
 }
 
