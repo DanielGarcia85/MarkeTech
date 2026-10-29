@@ -752,7 +752,7 @@ export default {
       delivery: {
         title: "Delivery",
         items: [
-          { name: "Docker and Docker Compose", text: "Three containers: the database, the backend, and the frontend built with Node.js 22 then served by nginx (stable version)." },
+          { name: "Docker and Docker Compose", text: "Three containers: the database, the backend, and the frontend built with Node.js 24 then served by nginx (stable version)." },
           { name: "GitHub Actions", text: "On every push, the tests; on the main branch, the build of the two images and their publication on GitHub's registry (ghcr.io)." },
           { name: "Continuous deployment", text: "The server, at Infomaniak in Switzerland, pulls the new version within two minutes; the migrations run at start-up." },
         ],

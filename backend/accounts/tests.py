@@ -397,3 +397,28 @@ class LanguageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.user.refresh_from_db()
         self.assertEqual(self.user.language, "fr")
+
+
+class JournalTests(TestCase):
+    """What the requests leave in the journal of the backend."""
+
+    def test_the_session_of_a_visitor_writes_nothing(self):
+        client = Client()
+        # A logged-out visit and a logout: both answered 401 by design
+        with self.assertNoLogs("django.request", level="WARNING"):
+            self.assertEqual(client.get(API + "auth/session").status_code, 401)
+            self.assertEqual(client.delete(API + "auth/session").status_code, 401)
+
+    def test_any_other_401_is_still_written(self):
+        client = Client()
+        client.get(API + "auth/session")
+        token = client.cookies["csrftoken"].value
+        with self.assertLogs("django.request", level="WARNING") as logs:
+            response = client.post(
+                API + "account/password/change",
+                data=json.dumps({"current_password": PASSWORD, "new_password": "New-horse-10"}),
+                content_type="application/json",
+                HTTP_X_CSRFTOKEN=token,
+            )
+        self.assertEqual(response.status_code, 401)
+        self.assertIn("Unauthorized: /_allauth/browser/v1/account/password/change", logs.output[0])

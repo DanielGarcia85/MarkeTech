@@ -754,7 +754,7 @@ const fr: typeof en = {
       delivery: {
         title: "Livraison",
         items: [
-          { name: "Docker et Docker Compose", text: "Trois conteneurs : la base de données, le backend, et le frontend compilé par Node.js 22 puis servi par nginx (version stable)." },
+          { name: "Docker et Docker Compose", text: "Trois conteneurs : la base de données, le backend, et le frontend compilé par Node.js 24 puis servi par nginx (version stable)." },
           { name: "GitHub Actions", text: "À chaque push, les tests ; sur la branche main, la construction des deux images et leur publication sur le registre de GitHub (ghcr.io)." },
           { name: "Déploiement continu", text: "Le serveur, chez Infomaniak en Suisse, récupère la nouvelle version en moins de deux minutes ; les migrations s'appliquent au démarrage." },
         ],
