@@ -9,6 +9,10 @@
   French and English versions have the same shape. A section has a title
   and opening paragraphs; some add a list of terms with their text, and
   closing paragraphs. The contact address goes where a text says {contact}.
+  One section may be set apart at the head of the page, framed and in bold:
+  the summary of the privacy policy, the important points of the terms (a
+  clause the reader is expressly shown binds him even when he accepts the
+  terms as a whole, without reading each one).
 -->
 
 <script setup lang="ts">
@@ -22,6 +26,8 @@ const props = defineProps<{
   root: string;
   // The sections to show, in this order: keys of "<root>.sections"
   sections: readonly string[];
+  // The section set apart in a box, if any: one of the keys above
+  highlight?: string;
 }>();
 
 // t translates one key. tm returns a whole block of the language file as it
@@ -53,7 +59,11 @@ function text(message: string): string {
     <h1>{{ t(`${root}.title`) }}</h1>
     <p class="updated">{{ t(`${root}.updated`) }}</p>
 
-    <section v-for="section in blocks" :key="rt(section.title)">
+    <section
+      v-for="(section, index) in blocks"
+      :key="rt(section.title)"
+      :class="{ highlight: sections[index] === highlight }"
+    >
       <h2>{{ rt(section.title) }}</h2>
       <p v-for="(message, i) in section.intro" :key="i">{{ text(message) }}</p>
       <dl v-if="section.items" class="items">
@@ -81,6 +91,24 @@ function text(message: string): string {
 h2 {
   margin: 28px 0 8px;
   font-size: 1.15rem;
+}
+
+/* The section set apart: framed, its text in bold */
+.highlight {
+  margin-top: 20px;
+  padding: 4px 20px 12px;
+  border: 1px solid var(--mt-border);
+  border-left: 4px solid var(--mt-blue);
+  border-radius: 10px;
+  background: var(--mt-surface);
+}
+
+.highlight h2 {
+  margin-top: 12px;
+}
+
+.highlight p {
+  font-weight: 600;
 }
 
 /* Each term in bold, its text under it, without the indent browsers add */

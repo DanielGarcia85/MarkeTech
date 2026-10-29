@@ -149,81 +149,129 @@ export default {
   // of terms with their text, and closing paragraphs.
   privacy: {
     title: "Privacy policy",
-    updated: "Last updated: 26 October 2026",
+    updated: "Last updated: 29 October 2026",
     sections: {
+      summary: {
+        title: "In short",
+        intro: [
+          "MarkeTech is a demonstration project without commercial activity, run by Daniel Garcia in Geneva.",
+          "The site only stores what its features need and uses it for nothing else: no advertising, no tracking, no audience measurement, no profiling.",
+          "Everything is hosted in Switzerland, at Infomaniak. No data is sold or passed on.",
+          "Only the published offers and the reviews are public. Your documents are seen only by the employers you apply to.",
+          "You can see, correct and have deleted your data at any time, by writing to {contact}.",
+        ],
+      },
       controller: {
         title: "Who is responsible",
         intro: [
-          "MarkeTech is a demonstration project, without commercial activity: a job board for students and young graduates in computer science, built by Daniel Garcia to show his work. It works like a real platform, but nobody gets hired through it.",
-          "The person responsible for the processing of your data is Daniel Garcia, Geneva, Switzerland. For any question about this page or about your data, write to {contact}.",
+          "MarkeTech is a job board for students and young graduates in computer science, built by Daniel Garcia to show his work. It works like a real platform, but nobody gets hired through it.",
+          "The person responsible for the processing of your data is Daniel Garcia, a private person, in Geneva, Switzerland. For any question about this page or about your data, write to {contact}.",
           "The site is there to be tried out. You do not need real documents to do so, and nothing you enter is used for anything else than running the site.",
         ],
       },
       data: {
-        title: "Data processed",
+        title: "Data processed and why",
         intro: ["The site only stores what its features need. Depending on what you do, that is:"],
         items: [
-          { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login, language of the interface (noted at login and when you change it) and whether you receive the notification e-mails." },
-          { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach." },
-          { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo." },
-          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. An offer that received applications can no longer be deleted, only closed: the candidates keep the trace of their application." },
-          { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected) and the history of its changes. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, read on your account and your profile. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
-          { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application (withdrawn by the candidate, or an account or an offer deleted). A notification e-mail tells you of a new message, only one as long as you have not read the conversation, without its text (see \"E-mails\")." },
-          { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones. A favourite stays when the offer is closed, until the candidate removes it." },
-          { term: "Appointments", text: "Proposed by an employer about an application in progress: date, time and length, place, any details; then the candidate's answer and their message, or the employer's cancellation and any message with it." },
+          { term: "Account", text: "E-mail address, password (stored hashed, never readable), first name, last name, role (candidate or employer), whether the address is verified, dates of sign-up and of last login, date you accepted the terms of use, language of the interface (noted at login and when you change it) and whether you receive the notification e-mails. Purpose: to identify you and to write to you." },
+          { term: "Candidate profile", text: "Postal address, phone number, photo, CV and any other document you attach. Purpose: to apply to offers without entering them again." },
+          { term: "Employer profile", text: "Postal address, phone number, photo, and the company: name, address, phone number, logo. Only the name and the logo of the company are public, with the offers; your own details and your photo stay private." },
+          { term: "Job offers", text: "Title, description, city and country, type of contract, workload, remote work, salary range with its currency and period, years of experience asked, date of publication; the name and the logo of the company are read on the profile of the employer. A published offer is visible to every visitor of the site; a draft or a closed offer, to its employer only. A published offer must be closed before it can be deleted, and an offer that received applications can only be closed, so that the candidates keep the trace of their application." },
+          { term: "Applications", text: "The offer applied to, the CV and cover letter submitted, the documents of your profile you join to it (copied when it is sent: changing your profile afterwards does not change what the employer received), the date, the status (received, in progress, accepted, rejected), the history of its changes and when each was seen. An application is seen by the candidate and by the employer who published the offer; the employer also sees your first name, last name, e-mail address, phone number and city, never your postal address nor your photo. You may withdraw it as long as the employer has not decided: it is then deleted with its files." },
+          { term: "Messages", text: "Exchanged between a candidate and the employer of the offer about an application: the text, the date it was sent and the date the other one read it. The conversation opens when the employer moves the application in progress; once the application is accepted or rejected, it stays readable, but nobody can write in it any more. The two participants can read it, nobody else. It is deleted with the application." },
+          { term: "Appointments", text: "Proposed by an employer about an application in progress: date, time and length, place, any details; then the candidate's answer and their message, or the employer's cancellation and any message with it. Seen by the two participants only; each can export it to a calendar (.ics file), with the offer, the other participant, the place and the details." },
+          { term: "Favourites", text: "The offers a candidate has set aside, with the date. They are seen by the candidate only; the employer of an offer is told how many candidates set it aside, never which ones." },
           { term: "Reviews of the platform", text: "An overall rating, four detailed ratings and a comment, published with your first name, the initial of your last name and your role (for an employer, the name of the company), visible to every visitor. One review per account, which you may change or delete at any time; the demo accounts cannot publish one." },
-          { term: "Technical data", text: "The server logs the requests it receives: IP address, page requested, date, browser. These logs serve for security and troubleshooting only, and are erased automatically as newer ones replace them." },
+          { term: "Security notices", text: "When the e-mail address or the password of your account changes, the site writes to you (to the former address for a change of address) with the IP address, the browser and the time of the request, so that you can spot a change you did not make. The IP address is only written in this e-mail; the site stores it nowhere." },
+          { term: "Moderation", text: "Every review written or changed, and every offer published or changed while published, is sent by e-mail to the administrator, with its text and the name and e-mail address of its author, so that unlawful content can be withdrawn quickly." },
+          { term: "Protection against abuse", text: "To slow down attacks on the login and the sign-up, the site counts the attempts by IP address and by e-mail address, in memory only, for a few minutes. It also limits the number of changes each account can make per hour." },
+          { term: "Technical data", text: "The servers keep technical logs (requests received, with the IP address, the date, the page and the browser) for security and troubleshooting only." },
+          { term: "Live updates", text: "While you are logged in, each open tab keeps a connection (WebSocket) with the server, authenticated by your session cookie, so that new messages and news appear without reloading the page. It only carries signals without content, and stores nothing." },
         ],
         outro: [
-          "The administrator of the site sees all this data in its administration interface, to run the site and to answer your requests. Nothing else is collected: no profiling, no advertising, no audience measurement.",
+          "The administrator of the site sees this data in its administration interface, to run the site and to answer your requests.",
           "The two demo accounts are shared by every visitor: what you write or upload with them is seen by the next ones, until they are reset every night. Put nothing personal in them.",
         ],
       },
-      cookies: {
-        title: "Cookies and local storage",
-        intro: ["The site sets no third-party cookie and uses no tracker. It only keeps in your browser what it needs to work:"],
+      bases: {
+        title: "On what basis",
+        intro: [
+          "Under Swiss law, the site processes your data in line with the principles of the Federal Act on Data Protection (FADP). For visitors in the European Union, to whom the General Data Protection Regulation (GDPR) may apply, the bases are:",
+        ],
         items: [
-          { term: "sessionid", text: "A cookie that keeps you logged in; it lasts two weeks at most and is deleted when you log out." },
-          { term: "csrftoken", text: "A cookie that protects the forms against requests forged by another site; it lasts one year." },
-          { term: "marketech.locale", text: "The language you chose, kept in the local storage of your browser until you clear it." },
+          { term: "Running the service (GDPR, art. 6(1)(b))", text: "Your account, your profile, the offers, the applications, the messages, the appointments, the favourites, the reviews, and the e-mails about them: what you ask the site to do." },
+          { term: "Legitimate interest (GDPR, art. 6(1)(f))", text: "The security of the site and of your account (logs, limits against abuse, security notices), the moderation of public content and the backups. The interest is to keep the site safe and lawful; you may object to it (see \"Your rights\")." },
         ],
       },
-      emails: {
-        title: "E-mails",
-        intro: [
-          "The site writes to you about your account: to verify your address when you sign up or change it, and to send you a link when you forget your password. These e-mails always go.",
-          "It also writes to tell you of what concerns you: a new or withdrawn application to one of your offers, your application moved in progress, accepted or rejected, a new message, an appointment proposed, accepted, declined or cancelled. These e-mails say who, what and for which offer, with a link to the page; never the text of a message or of an answer. They go in the language you chose on the site, and you can stop them at any time by unticking the box of the \"Notifications\" section of your login details. The demo accounts receive none.",
-          "No newsletter, no advertising. The e-mails leave through the mail service of Infomaniak.",
+      recipients: {
+        title: "Who receives your data",
+        intro: ["Your data is shown or passed only to:"],
+        items: [
+          { term: "The other users", text: "As far as the features imply: an employer sees the applications to its offers, a candidate sees the company behind an offer, the participants of a conversation or an appointment see what concerns it." },
+          { term: "The public", text: "The published offers (with the name and the logo of the company) and the reviews (first name, initial of the last name, role, company)." },
+          { term: "Infomaniak", text: "Infomaniak Network SA, in Geneva, hosts the server, keeps its encrypted backups and sends its e-mails, on behalf of the site and in Switzerland." },
+          { term: "Other services", text: "GitHub hosts the public source code and the images of the application, and Healthchecks.io watches that the nightly backup ran: neither receives data of the users." },
         ],
+        outro: ["No data is sold, rented or passed on to anyone else."],
       },
-      hosting: {
-        title: "Hosting and sharing",
+      abroad: {
+        title: "Data abroad",
         intro: [
-          "The site runs on a server rented from Infomaniak, in Switzerland, and its data stays in Switzerland. Infomaniak hosts the server, keeps its backup copies and sends its e-mails; it is the only company that handles data on behalf of the site.",
-          "The source code of the site is public on GitHub and contains no personal data. No data is sold, rented or passed on to anyone else. Within the site, your data is only shown to the people its features imply: an employer sees the applications to its offers, a candidate sees the company behind an offer, and reviews are public.",
+          "Your data stays in Switzerland and is not communicated to another country. The e-mails sent to your own address go, of course, to the mail provider you chose.",
         ],
       },
       retention: {
         title: "How long data is kept",
+        intro: ["Your data is kept only as long as it is needed:"],
+        items: [
+          { term: "Account and content", text: "As long as your account exists. What you delete yourself (a document, a photo, a favourite, a review, a withdrawn application, an offer that may be deleted) disappears from the site at once, files included. When an account is deleted, everything attached to it goes with it; for an employer, so do the applications to its offers." },
+          { term: "Backups", text: "Data deleted from the site remains for a while in the encrypted backups, which are erased automatically after six months at most." },
+          { term: "Technical logs", text: "Erased automatically: the server keeps only a limited volume of them, the oldest lines being replaced by the newest." },
+          { term: "Moderation e-mails", text: "Deleted once handled." },
+          { term: "Demo accounts", text: "Reset every night, with everything done with them." },
+        ],
+        outro: ["To have your account deleted, write to {contact} from the address of the account."],
+      },
+      cookies: {
+        title: "Cookies and local storage",
         intro: [
-          "Your data is kept as long as your account exists. What you delete yourself, an offer, a withdrawn application, a favourite, a document, disappears at once, files included. When your account is deleted, everything attached to it goes with it: profile, offers, applications, messages, appointments, favourites and review.",
-          "To have your account deleted, write to {contact} from the address of the account. The server logs are erased automatically, as said above.",
+          "The site sets no third-party cookie, uses no tracker and shows no advertising. It keeps in your browser only what it needs to work, which is why it asks for no consent:",
+        ],
+        items: [
+          { term: "sessionid", text: "A cookie that keeps you logged in; it lasts two weeks at most and is deleted when you log out. Sent over HTTPS only, and out of reach of the scripts of the page." },
+          { term: "csrftoken", text: "A cookie that protects the forms against requests forged by another site; it lasts one year. Sent over HTTPS only." },
+          { term: "marketech.locale", text: "The language you chose, kept in the local storage of your browser until you clear it." },
+        ],
+        outro: [
+          "You can delete or block them in your browser: the site then forgets your language, and you can no longer log in. The font of the site is served by the site itself, without any request to Google or another provider.",
         ],
       },
       security: {
         title: "Security",
-        intro: ["The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The photos and the documents you upload (CV, letters, other documents) are private: the site checks who asks for them before handing them over, and no address leads to them directly; only the logo of the company is public, since it goes with the job offers. Access to the server itself is reserved to its administrator."],
+        intro: [
+          "The whole site is served over HTTPS. Passwords are stored hashed, never in clear. The photos and the documents you upload are private: the site checks who asks for them before handing them over, and no address leads to them directly. The documents of an application are seen by the candidate and by the employer of the offer; only the logo of the company is public, since it goes with the offers. The database cannot be reached from the Internet, the backups are encrypted, and access to the server is reserved to its administrator.",
+          "Should a breach of security put your data at high risk, the site informs the Federal Data Protection and Information Commissioner (FDPIC) and, where it is needed for your protection, tells you directly by e-mail.",
+        ],
       },
       rights: {
         title: "Your rights",
         intro: [
-          "Under the Swiss Federal Act on Data Protection (FADP), you can ask what data the site holds about you, have it corrected or deleted, and object to its processing. A message to {contact} is enough: the answer is free of charge and comes, as a rule, within 30 days. You can also change most of your data yourself, from your account.",
-          "If you think your rights are not respected, you can turn to the Federal Data Protection and Information Commissioner (FDPIC).",
+          "You can ask what data the site holds about you and receive a copy of it, also in a common electronic format to take it elsewhere; have it corrected; have it deleted; and object to a processing based on a legitimate interest. Write to {contact}, from the address of your account if you have one: the answer is free of charge and comes within 30 days. You can also change most of your data yourself, from your account.",
+          "If you think your rights are not respected, you can turn to the Federal Data Protection and Information Commissioner (FDPIC, www.edoeb.admin.ch). If you live in the European Union, you can also turn to the data protection authority of your country, for instance the CNIL in France.",
+        ],
+      },
+      automated: {
+        title: "No automated decision",
+        intro: [
+          "No decision is taken by a machine: the site does not sort, score or filter the candidates; the employers read the applications themselves.",
+          "Put no sensitive data in your documents (health, religion, political opinions, copy of an identity card, AVS number): the site does not need it.",
         ],
       },
       changes: {
         title: "Changes to this page",
-        intro: ["This page describes the site as it is. It changes when the site changes, and the date at the top says when it was last updated."],
+        intro: [
+          "This page describes the site as it is. It changes when the site changes, and the date at the top says when it was last updated. An important change is announced by e-mail to the accounts.",
+        ],
       },
     },
   },
@@ -232,20 +280,36 @@ export default {
   // privacy page (title and paragraphs)
   terms: {
     title: "Terms of use",
-    updated: "Last updated: 22 October 2026",
+    updated: "Last updated: 29 October 2026",
     sections: {
+      essentials: {
+        title: "Important points",
+        intro: [
+          "MarkeTech is a demonstration project: free, without commercial activity, and nobody is hired through it. The offers published on it are examples.",
+          "The two demo accounts are public and reset every night: never put real or personal data in them.",
+          "What you publish goes online at once; the administrator reads it afterwards and may withdraw it or block the account.",
+          "The site is provided without warranty and may stop; its author is liable only for damage caused intentionally or by gross negligence.",
+          "These terms may change; an important change is announced by e-mail 14 days in advance.",
+        ],
+      },
       purpose: {
         title: "What MarkeTech is",
         intro: [
           "MarkeTech is a demonstration project built by Daniel Garcia, in Geneva, to show his work: a job board for students and young graduates in computer science. It has no commercial activity: no offer commits anyone, nobody is hired through it, and nothing is sold on it.",
-          "By creating an account, or by trying a demo account, you accept these terms. If you do not accept them, do not use the site.",
+          "MarkeTech is not an employment agency: it does not select candidates, takes no part in the conclusion of an employment contract and receives no remuneration from anyone.",
+          "The offers on the site are examples made to try it out. Do not publish a real vacancy expecting real applications.",
+        ],
+      },
+      acceptance: {
+        title: "Acceptance",
+        intro: [
+          "You accept these terms by ticking the box of the sign-up form when you create an account, or the box of the login page when you open a demo account. If you do not accept them, do not use the site.",
         ],
       },
       account: {
         title: "Your account",
         intro: [
-          "An account is personal: one person, an e-mail address that is yours, a password you keep to yourself. You choose your role when you sign up, candidate or employer, and you are responsible for what is done with your account.",
-          "You can ask for your account to be deleted at any time, by writing to {contact} from the address of the account; everything attached to it goes with it.",
+          "The site is open to people aged 18 or over. An account is personal: one person, an e-mail address that is yours, a password you keep to yourself. You choose your role when you sign up, candidate or employer, and you are responsible for what is done with your account.",
           "Two demo accounts, a candidate and an employer, open without password from the login page. Every visitor shares them, their address and password cannot be changed, and they are reset every night: everything done with them goes, including what links your own account to them (an application to one of their offers, its messages, your favourites among those offers). Your account itself and what depends on it alone stay.",
         ],
       },
@@ -253,38 +317,74 @@ export default {
         title: "Using the site",
         intro: [
           "The site is there to be tried out. You do not need to put real documents or real data on it, and you do not put another person's data on it without their consent.",
-          "It is forbidden to publish unlawful, misleading or offensive content, to pass yourself off as someone else, to try to reach an account or data that are not yours, or to disturb the working of the site, for instance with automated requests.",
+          "It is forbidden to pass yourself off as someone else, to try to reach an account or data that are not yours, to copy the content of the site with automated means, or to disturb its working. To protect the site, each account may make up to 300 changes per hour (60 for a demo account), and the login and sign-up attempts are limited.",
         ],
       },
-      content: {
+      offers: {
+        title: "Offers",
+        intro: [
+          "An employer answers for the offers it publishes. An offer describes one position, fairly; it does not discriminate on grounds of sex, origin, nationality, age, religion, disability or sexual orientation, and it asks no payment from the candidates. Use only a logo and images you have the right to use.",
+          "A published offer must be closed before it can be deleted; an offer that received applications can only be closed.",
+        ],
+      },
+      exchanges: {
+        title: "Applications, messages, appointments and reviews",
+        intro: [
+          "A candidate may withdraw an application as long as the employer has not decided. Put no copy of an identity document, no AVS number and no health data in your documents.",
+          "The messages and the appointments are about the application only, and stay courteous.",
+          "A review is about the platform: honest, without insults, naming no other person. One review per account; the demo accounts cannot publish one.",
+        ],
+      },
+      prohibited: {
+        title: "Prohibited content and reporting",
+        intro: [
+          "It is forbidden to publish unlawful content, in particular content that attacks the honour or the personality of someone, incites to discrimination or hatred, or infringes copyright; misleading content, spam or advertising; and the personal data of another person without their consent.",
+          "To report content, write to {contact}, saying where it is: the report is examined promptly.",
+        ],
+      },
+      moderation: {
+        title: "Moderation",
+        intro: [
+          "What you publish goes online at once; the administrator is alerted and reads it afterwards. He may withdraw content contrary to these terms or to the law, and block an account: its offers and its review are then hidden, nothing is deleted, and the block can be lifted. Unless it is urgent, he tells the person concerned and gives the reason.",
+        ],
+      },
+      licence: {
         title: "What you publish",
         intro: [
-          "What you publish (profile, offers, documents) remains yours, and you answer for it: an employer is responsible for the offers it publishes. By publishing it, you allow the site to show it to the people its features imply, and to every visitor for a published offer.",
-          "The administrator of the site may withdraw content that goes against these terms, and suspend or delete the account that published it, without notice.",
+          "What you publish (profile, offers, documents, messages, review) remains yours. You allow the site, free of charge and for as long as it stays online, to store it and to show it to the people its features imply, and to every visitor for a published offer or a review, for the working of the site only. You guarantee that you hold the rights to it.",
+        ],
+      },
+      end: {
+        title: "End of use",
+        intro: [
+          "You can stop using the site at any time and have your account deleted by writing to {contact} from the address of the account; everything attached to it is deleted with it, as the privacy policy describes.",
+          "An account that breaks these terms may be blocked or deleted. If the site is to stop for good, the accounts are told by e-mail 30 days in advance, so that everyone can retrieve their documents.",
         ],
       },
       availability: {
         title: "No warranty",
         intro: [
-          "The site is provided as it is, with no warranty of availability or accuracy: it may change, be interrupted or stop at any time, without notice. Within the limits of the law, its author is not liable for any damage related to its use or its unavailability.",
+          "The site is provided free of charge, as it is, with no warranty of availability, of continuity, or of accuracy of the offers, nor that an application gets an answer: it may change or be interrupted at any time. Keep your own copy of your documents.",
         ],
       },
-      data: {
-        title: "Your data",
+      liability: {
+        title: "Liability",
         intro: [
-          "What the site does with your data is described in the privacy policy, reached from the footer. You take note of it when you create an account.",
-        ],
-      },
-      law: {
-        title: "Applicable law",
-        intro: [
-          "These terms are governed by Swiss law. The courts of Geneva have jurisdiction, subject to mandatory provisions.",
+          "Daniel Garcia is liable for damage he causes intentionally or by gross negligence. Since the site is free, his liability for slight negligence is excluded, as far as the law allows. He is not liable for the content published by the users, nor for the sites the site links to.",
         ],
       },
       changes: {
-        title: "Changes to these terms",
+        title: "Changes and language",
         intro: [
-          "These terms may change with the site; the date at the top says when they were last updated. By going on using the site after a change, you accept it.",
+          "These terms may change with the site; the date at the top says when they were last updated. An important change is announced by e-mail to the accounts at least 14 days before it applies; whoever does not accept it can have their account deleted free of charge before then.",
+          "The French version of these terms prevails; the English version is a translation.",
+        ],
+      },
+      law: {
+        title: "Applicable law and contact",
+        intro: [
+          "These terms are governed by Swiss law. The courts of Geneva have jurisdiction, subject to the mandatory jurisdictions provided by law, in particular in favour of consumers.",
+          "The site is run by Daniel Garcia, a private person, in Geneva, Switzerland. Contact: {contact}.",
         ],
       },
     },
@@ -705,7 +805,7 @@ export default {
     title: "About the project",
     headerLink: "About the project",
     footerLink: "About the project",
-    stack: "Python · Django · DRF · Vue 3 · TypeScript · Vite · PostgreSQL · nginx · Docker · GitHub Actions",
+    stack: "Python · Django · DRF · Channels · Vue 3 · TypeScript · Vite · PostgreSQL · Redis · WebSocket · nginx · Docker · GitHub Actions",
     intro: [
       "MarkeTech is a job board for students and young graduates in computer science: employers publish offers, candidates apply, and both talk through messages and appointments until the decision.",
       "The site started as a team project at the HEG Genève. Daniel Garcia then rewrote it without the original team, from the code to the deployment, with the help of Claude, the AI assistant made by Anthropic: this page describes that version.",
@@ -717,6 +817,9 @@ export default {
         "Applications with a CV, a cover letter and documents, copied when sent, and their status followed on both sides.",
         "Messaging between the candidate and the employer for every application in progress.",
         "Appointments proposed by the employer, accepted or declined by the candidate, in a calendar, and exported to an agenda (.ics file).",
+        "Live updates: new messages and news of the applications appear without reloading the page, in every open tab.",
+        "Notification e-mails in the language of each user, which anyone can stop, and security notices after a change of e-mail address or password.",
+        "Moderation after publication: the administrator is alerted of every offer and every review, and can block an account.",
         "Favourites, reviews of the platform, interface and server messages in French and in English.",
         "Two demo accounts open to everyone, reset every night.",
       ],
@@ -727,9 +830,10 @@ export default {
         title: "Backend",
         items: [
           { name: "Python 3.13 and Django 6.1", text: "The models, the migrations, the admin interface, the translations (gettext)." },
-          { name: "Django REST Framework 3.18", text: "The JSON API read by the frontend, with its permissions by role." },
-          { name: "django-allauth 65.19 (headless mode)", text: "Sign-up, login with a session cookie, e-mail verification, forgotten password." },
-          { name: "Daphne 4.2 and WhiteNoise 6.12", text: "The application server, and the static files of the admin interface." },
+          { name: "Django REST Framework 3.18", text: "The JSON API read by the frontend, with its permissions by role and its limits on writes." },
+          { name: "django-allauth 65.19 (headless mode)", text: "Sign-up, login with a session cookie, e-mail verification, forgotten password, security notices." },
+          { name: "Channels 4.3 and channels-redis 4.3", text: "The WebSocket connections, and the live signals sent to the open tabs through Redis." },
+          { name: "Daphne 4.2 and WhiteNoise 6.12", text: "The ASGI server, for HTTP and WebSocket, and the static files of the admin interface." },
           { name: "Pillow 13.0 and django-countries 9.1", text: "The check of uploaded images, the list of countries in the language of the interface." },
         ],
       },
@@ -737,31 +841,43 @@ export default {
         title: "Frontend",
         items: [
           { name: "Vue 3.5 and TypeScript 6.0", text: "A single-page application, in single-file components and the Composition API." },
-          { name: "Vite 8.3", text: "The development server and the build." },
+          { name: "Vite 8.3 and vue-tsc 3.3", text: "The development server and the build, which fails if the types of a component are wrong." },
           { name: "Vue Router 5.4 and vue-i18n 11.4", text: "The navigation, and the interface in French and in English." },
           { name: "vue-cal 4.10", text: "The calendar of the appointments, loaded only when its page opens." },
+          { name: "Poppins (Fontsource)", text: "The font, served by the site itself: no request to Google Fonts." },
         ],
       },
       data: {
         title: "Data",
         items: [
           { name: "PostgreSQL 18 and psycopg 3.3", text: "The database in production, in its own container, and the driver that links it to Django." },
+          { name: "Redis 8", text: "The channel layer of the live updates, in its own container, without persistence: it only carries signals." },
           { name: "SQLite", text: "The database in development and during the tests on GitHub Actions, built into Python." },
         ],
       },
       delivery: {
         title: "Delivery",
         items: [
-          { name: "Docker and Docker Compose", text: "Three containers: the database, the backend, and the frontend built with Node.js 24 then served by nginx (stable version)." },
-          { name: "GitHub Actions", text: "On every push, the tests; on the main branch, the build of the two images and their publication on GitHub's registry (ghcr.io)." },
+          { name: "Docker and Docker Compose", text: "Four containers: PostgreSQL, Redis, the backend, and the frontend built with Node.js 24 then served by nginx (stable version). The database and Redis sit on an internal network, out of reach of the Internet." },
+          { name: "GitHub Actions", text: "On every push to develop and main, the tests; on main, the build of the two images and their publication on GitHub's registry (ghcr.io). The actions are pinned by commit." },
           { name: "Continuous deployment", text: "The server, at Infomaniak in Switzerland, pulls the new version within two minutes; the migrations run at start-up." },
+        ],
+      },
+      operations: {
+        title: "Operations",
+        items: [
+          { name: "Linux server and reverse proxy", text: "A VPS at Infomaniak, with nginx in front of the application for HTTPS; the real address of the visitor reaches the application, for the limits against abuse and the security notices." },
+          { name: "restic and Swiss Backup", text: "Every night, the database, the files and the configuration of the server, encrypted and sent to Infomaniak's Swiss Backup; kept 14 nights, 8 weeks and 6 months. The restore follows a written procedure, tested in production." },
+          { name: "Healthchecks.io", text: "Watches the nightly backup and sends an alert by e-mail when it fails or does not run." },
+          { name: "systemd timers", text: "The updates every two minutes, the reset of the demo and the backup every night." },
+          { name: "E-mail by SMTP", text: "Infomaniak's mail service, with its own device password; a failed sending is written to the log and never breaks the action of the user." },
         ],
       },
       quality: {
         title: "Quality",
         items: [
-          { name: "More than 120 automated tests", text: "Models, API, access rights and demo data, run on every push and also checked on PostgreSQL." },
-          { name: "Rules in the database", text: "The important rules are also constraints of the database: one review per account, one pending appointment per application, scores from 1 to 5." },
+          { name: "162 automated tests", text: "Models, API, access rights, notifications, live updates, moderation and demo data, run by GitHub Actions and also checked on PostgreSQL." },
+          { name: "Rules in the database", text: "The important rules are also constraints of the database: one application per offer and candidate, one review per account, one pending appointment per application, scores from 1 to 5, consistent salary ranges, no empty message." },
         ],
       },
     },
