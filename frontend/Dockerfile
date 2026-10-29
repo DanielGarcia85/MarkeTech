@@ -9,7 +9,7 @@
 # ── Stage 1: compile the application ─────────────────────────────────────────
 
 # Official Node.js image, same major version as the development workstations
-FROM node:22-alpine AS build
+FROM node:24-alpine AS build
 
 # Folder of the application inside this stage
 WORKDIR /app
