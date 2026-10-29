@@ -67,8 +67,10 @@ export default {
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
+  // (the technologies come from "about": in their list, a non-breaking
+  // space glues each dot to the name before it, so that a line never
+  // starts with a dot nor splits a name)
   footer: {
-    about: "MarkeTech is a demonstration project, without commercial activity,\nrewritten by Daniel Garcia from a team project of HEG Genève.",
     github: "GitHub",
     linkedin: "LinkedIn",
     portfolio: "Portfolio",
@@ -805,7 +807,7 @@ export default {
     title: "About the project",
     headerLink: "About the project",
     footerLink: "About the project",
-    stack: "Python · Django · DRF · Channels · Vue 3 · TypeScript · Vite · PostgreSQL · Redis · WebSocket · nginx · Docker · GitHub Actions",
+    stack: "Python\u00a0· Django\u00a0· DRF\u00a0· Channels\u00a0· Vue\u00a03\u00a0· TypeScript\u00a0· Vite\u00a0· PostgreSQL\u00a0· Redis\u00a0· WebSocket\u00a0· nginx\u00a0· Docker\u00a0· GitHub\u00a0Actions",
     intro: [
       "MarkeTech is a job board for students and young graduates in computer science: employers publish offers, candidates apply, and both talk through messages and appointments until the decision.",
       "The site started as a team project at the HEG Genève. Daniel Garcia then rewrote it without the original team, from the code to the deployment, with the help of Claude, the AI assistant made by Anthropic: this page describes that version.",
