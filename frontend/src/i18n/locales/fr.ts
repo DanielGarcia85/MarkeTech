@@ -69,8 +69,10 @@ const fr: typeof en = {
   },
 
   // Footer: who is behind the site, where to find more, how to get in touch
+  // (the technologies come from "about": in their list, a non-breaking
+  // space glues each dot to the name before it, so that a line never
+  // starts with a dot nor splits a name)
   footer: {
-    about: "MarkeTech est un projet de démonstration, sans activité commerciale,\nréécrit par Daniel Garcia à partir d'un projet d'équipe de la HEG Genève.",
     github: "GitHub",
     linkedin: "LinkedIn",
     portfolio: "Portfolio",
@@ -807,7 +809,7 @@ const fr: typeof en = {
     title: "À propos du projet",
     headerLink: "À propos du projet",
     footerLink: "À propos du projet",
-    stack: "Python · Django · DRF · Channels · Vue 3 · TypeScript · Vite · PostgreSQL · Redis · WebSocket · nginx · Docker · GitHub Actions",
+    stack: "Python\u00a0· Django\u00a0· DRF\u00a0· Channels\u00a0· Vue\u00a03\u00a0· TypeScript\u00a0· Vite\u00a0· PostgreSQL\u00a0· Redis\u00a0· WebSocket\u00a0· nginx\u00a0· Docker\u00a0· GitHub\u00a0Actions",
     intro: [
       "MarkeTech est une plateforme d'offres d'emploi pour étudiants et jeunes diplômés en informatique : les employeurs publient des offres, les candidats postulent, et les deux échangent par messages et par rendez-vous jusqu'à la décision.",
       "Le site est né d'un projet d'équipe de la HEG Genève. Daniel Garcia l'a ensuite réécrit sans l'équipe d'origine, du code au déploiement, avec l'aide de Claude, l'assistant IA d'Anthropic : c'est cette version que décrit cette page.",

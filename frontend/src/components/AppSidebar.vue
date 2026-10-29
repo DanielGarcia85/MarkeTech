@@ -171,13 +171,14 @@ const current = computed(() => groups.value.find((group) => PAGES[group].include
   background: var(--mt-surface);
 }
 
-/* The links stay in view while the page scrolls, under the header (its
-   height in --mt-top, set by App.vue); the column keeps its colour down to
-   the footer. A window too short for all the links scrolls them */
+/* The links stay in view while the page scrolls, between the header and
+   the footer (their heights in --mt-top and --mt-bottom, set by App.vue);
+   the column keeps its colour down to the footer. A window too short for
+   all the links scrolls them */
 .inner {
   position: sticky;
   top: calc(var(--mt-top, 64px) + 20px);
-  max-height: calc(100dvh - var(--mt-top, 64px) - 40px);
+  max-height: calc(100dvh - var(--mt-top, 64px) - var(--mt-bottom, 0px) - 40px);
   overflow-y: auto;
 }
 

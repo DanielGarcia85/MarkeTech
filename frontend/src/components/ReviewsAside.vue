@@ -80,11 +80,12 @@ watch(() => session.user?.id, loadLatestReviews, { immediate: true });
   background: var(--mt-surface);
 }
 
-/* In view while the page scrolls, as the side bar on the left */
+/* In view while the page scrolls, between the header and the footer, as
+   the side bar on the left */
 .inner {
   position: sticky;
   top: calc(var(--mt-top, 64px) + 20px);
-  max-height: calc(100dvh - var(--mt-top, 64px) - 40px);
+  max-height: calc(100dvh - var(--mt-top, 64px) - var(--mt-bottom, 0px) - 40px);
   overflow-y: auto;
 }
 

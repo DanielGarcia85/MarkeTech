@@ -1,15 +1,15 @@
 <!--
   frontend/src/components/AppFooter.vue
 
-  Footer — who is behind the site, where to find more, how to get in touch
+  Footer — what the site is built with, where to find more, how to get in touch
   ───────────────────────────────────────────────────────────────────────────
-  Displayed by App.vue under the current page. One band across the whole
-  width, in the dark blue with light text, under a thin line in the accent
-  colour: a sentence on the left, the links on two rows in the centre, the
-  privacy link above the copyright on the right; under a thin line, across
-  the whole width, the technologies of the site with the way to the about
-  page, and whether the backend answers (ApiStatus, decisions of
-  23.10.2026).
+  Displayed by App.vue under the current page, and kept at the bottom of the
+  window while the page scrolls, on every width (decision of 29.10.2026).
+  One band across the whole width, in the dark blue with light text, under
+  a thin line in the accent colour: on the left, in one paragraph, the
+  technologies of the site, the way to the about page and whether the
+  backend answers (ApiStatus); the links on two rows in the centre; the terms and privacy
+  links above the copyright on the right.
 -->
 
 <script setup lang="ts">
@@ -34,7 +34,13 @@ const year = new Date().getFullYear();
 
 <template>
   <footer class="footer">
-    <p class="about">{{ t("footer.about") }}</p>
+    <!-- What the site is built with, the way to the details and whether
+         the backend answers, one after the other -->
+    <p class="technical">
+      {{ t("about.stack") }}&nbsp;·
+      <RouterLink :to="{ name: 'about' }" class="whole">{{ t("about.footerLink") }}</RouterLink>&nbsp;·
+      <span class="whole"><ApiStatus /></span>
+    </p>
     <ul class="links">
       <li v-for="link in LINKS" :key="link.key">
         <a :href="link.href" target="_blank" rel="noopener noreferrer">
@@ -57,60 +63,52 @@ const year = new Date().getFullYear();
       </span>
       <span>{{ t("footer.copyright", { year }) }}</span>
     </p>
-    <!-- Under a thin line, across the whole width: what the site is built
-         with and the way to the details, then whether the backend answers -->
-    <p class="technical">
-      <span>
-        {{ t("about.stack") }} ·
-        <RouterLink :to="{ name: 'about' }">{{ t("about.footerLink") }}</RouterLink>
-      </span>
-      <ApiStatus />
-    </p>
   </footer>
 </template>
 
 <style scoped>
-/* One band across the whole width, in three columns: the sentence on the
-   left, the links centred on the page, the privacy link and the copyright on
-   the right. The two outer columns share the room left by the links, so the
-   links stay centred whatever the length of the sentence. */
+/* One band across the whole width, in three columns: the technologies on
+   the left, the links centred on the page, the legal links and the
+   copyright on the right. The two outer columns share the room left by the
+   links, so the links stay centred whatever the length of the technologies.
+   Sticky at the bottom: it stays in the flow of the page, so nothing is
+   hidden under it, and it is drawn above the page that scrolls behind.
+   Small type and tight lines, so that it stays thin: two lines on a wide
+   window (decision of 29.10.2026) */
 .footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 8px 32px;
-  padding: 12px 16px;
+  padding: 6px 16px;
   border-top: 3px solid var(--mt-accent);
   background: var(--mt-blue-dark);
   color: #e3edf3;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 .footer a {
   color: #ffffff;
 }
 
-/* The sentence breaks where its text says so (the "\n" of the translation) */
-.about {
+/* The technologies, the about link and the state of the API in one
+   paragraph against the left edge, on two lines when the window is wide
+   enough, never reaching the links in the centre */
+.technical {
   justify-self: start;
+  max-width: 560px;
   margin: 0;
-  white-space: pre-line;
+  font-size: 0.75rem;
   color: #b7cdd9;
 }
 
-/* The last line, across the three columns, under a thin line: the
-   technologies on the left, the state of the API on the right */
-.technical {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px 24px;
-  margin: 2px 0 0;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 0.8rem;
+/* The about link and the state of the API are never cut in two */
+.whole {
+  white-space: nowrap;
 }
 
 /* The state of the API in lighter colours, readable on the dark blue */
@@ -131,7 +129,7 @@ const year = new Date().getFullYear();
 .links {
   display: grid;
   grid-template-columns: auto auto;
-  gap: 4px 24px;
+  gap: 0 24px;
   justify-self: center;
   margin: 0;
   padding: 0;
@@ -162,7 +160,7 @@ const year = new Date().getFullYear();
   gap: 2px;
   margin: 0;
   white-space: nowrap;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: #b7cdd9;
 }
 
@@ -171,6 +169,7 @@ const year = new Date().getFullYear();
 @media (max-width: 900px) {
   .footer {
     grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .links,

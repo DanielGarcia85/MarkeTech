@@ -136,7 +136,10 @@ async function leave(): Promise<void> {
 /* The logo on the left, the links on the right. When the width runs out,
    the links go under the logo rather than past the edge of the window.
    Stays at the top of the window while the page scrolls under it: it
-   needs its own background, and to be drawn above the page */
+   needs its own background, and to be drawn above the page. Thin margins
+   and a smaller logo, so that it takes little height and, on a phone,
+   the round and the languages stay on the line of the logo (decision of
+   29.10.2026) */
 .header {
   position: sticky;
   top: 0;
@@ -146,14 +149,14 @@ async function leave(): Promise<void> {
   align-items: center;
   justify-content: space-between;
   gap: 8px 16px;
-  padding: 12px 16px;
+  padding: 6px 16px;
   border-bottom: 1px solid var(--mt-blue-border);
   background: var(--mt-blue-surface);
 }
 
 .logo {
   display: block;
-  height: 40px;
+  height: 30px;
 }
 
 /* The line about the site (not .notice, the framed message of the
@@ -230,15 +233,15 @@ async function leave(): Promise<void> {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: var(--mt-blue);
   color: #ffffff;
   font: inherit;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;

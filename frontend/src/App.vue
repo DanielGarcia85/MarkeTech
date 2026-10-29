@@ -7,10 +7,12 @@
   three bands of every page: the header, the body (the side bar, the
   current page, then the reviews on a wide window) and the footer, plus the
   confirmation dialog that any page may open. The body stretches so that
-  the footer stays at the bottom of the window, even on a short page. A
-  demo account sees a band under the header (shared, made again every
-  night), kept at the top of the window with it; the two side bars stay
-  in view under them while the page scrolls (their height in --mt-top).
+  the footer sits at the bottom of the window, even on a short page, and
+  the footer stays there while the page scrolls. A demo account sees a
+  band under the header (shared, made again every night), kept at the top
+  of the window with it; the two side bars stay in view between the top
+  and the footer while the page scrolls (their heights in --mt-top and
+  --mt-bottom).
   Every page is declared in router.ts.
 -->
 
@@ -43,7 +45,22 @@ const observer = new ResizeObserver(([entry]) => {
   document.documentElement.style.setProperty("--mt-top", `${height}px`);
 });
 onMounted(() => top.value && observer.observe(top.value));
-onBeforeUnmount(() => observer.disconnect());
+
+// The height of the footer, kept in --mt-bottom for the same side bars,
+// which must stop above it. It changes with the language and with the
+// width of the window, where its columns wrap or pile up. The ref of a
+// component gives the component: its root element is in $el
+const bottom = ref<{ $el: HTMLElement } | null>(null);
+const footerObserver = new ResizeObserver(([entry]) => {
+  const height = entry.target.getBoundingClientRect().height;
+  document.documentElement.style.setProperty("--mt-bottom", `${height}px`);
+});
+onMounted(() => bottom.value && footerObserver.observe(bottom.value.$el));
+
+onBeforeUnmount(() => {
+  observer.disconnect();
+  footerObserver.disconnect();
+});
 </script>
 
 <template>
@@ -65,7 +82,7 @@ onBeforeUnmount(() => observer.disconnect());
            their own list -->
       <ReviewsAside v-if="route.name !== 'reviews'" />
     </div>
-    <AppFooter />
+    <AppFooter ref="bottom" />
     <!-- Invisible until a page asks a question -->
     <ConfirmDialog />
   </div>
@@ -80,14 +97,15 @@ onBeforeUnmount(() => observer.disconnect());
   z-index: 10;
 }
 
-/* A demo account: a thin band of the accent under the header */
+/* A demo account: a thin band of the accent under the header, in small
+   type so that it stays thin */
 .demo-band {
   margin: 0;
-  padding: 6px 16px;
+  padding: 2px 16px;
   border-bottom: 1px solid var(--mt-accent);
   background: var(--mt-accent-surface);
   color: var(--mt-accent-dark);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 500;
   text-align: center;
 }
