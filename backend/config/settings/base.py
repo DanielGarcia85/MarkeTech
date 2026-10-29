@@ -330,3 +330,20 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+# ── Logging ───────────────────────────────────────────────────────────
+
+# https://docs.djangoproject.com/en/6.1/topics/logging/
+# Django's own configuration stays as it is; only the logger of the
+# requests gets a filter: the 401 of allauth's session route, answered at
+# every visit of a logged-out visitor, is no error (config/logging.py)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "skip_anonymous_session": {"()": "config.logging.SkipAnonymousSession"},
+    },
+    "loggers": {
+        "django.request": {"filters": ["skip_anonymous_session"]},
+    },
+}
