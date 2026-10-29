@@ -6,12 +6,13 @@
   Displayed for "/about", to everyone, reached from the line in the middle
   of the header and from the technologies in the footer (decisions of
   23.10.2026). What the site does; then the technologies, by layer: the
-  backend, the frontend, the data, the delivery, the quality; last, the
-  way to the code on GitHub. The page holds no text of its own: everything
-  comes from the language files, under "about", so that the French and
-  English versions have the same shape. The versions are written in those
-  texts by hand: they follow backend/requirements.txt and
-  frontend/package.json, and change with them.
+  backend, the frontend, the data, the delivery, the operation of the
+  server, the quality; last, the way to the code on GitHub. The page holds
+  no text of its own: everything comes from the language files, under
+  "about", so that the French and English versions have the same shape.
+  The versions are written in those texts by hand: they follow
+  backend/requirements.txt and frontend/package.json, and change with
+  them.
 -->
 
 <script setup lang="ts">
@@ -27,7 +28,7 @@ const { t, tm, rt } = useI18n();
 type Group = { title: string; items: { name: string; text: string }[] };
 
 // The layers of the technologies, in the order they are displayed
-const GROUPS = ["backend", "frontend", "data", "delivery", "quality"] as const;
+const GROUPS = ["backend", "frontend", "data", "delivery", "operations", "quality"] as const;
 
 const intro = computed(() => tm("about.intro") as string[]);
 const features = computed(() => tm("about.features.items") as string[]);

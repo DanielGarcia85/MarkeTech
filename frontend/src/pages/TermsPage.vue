@@ -12,10 +12,27 @@
 <script setup lang="ts">
 import LegalText from "../components/LegalText.vue";
 
-// The sections of the page, in the order they are displayed
-const SECTIONS = ["purpose", "account", "use", "content", "availability", "data", "law", "changes"] as const;
+// The sections of the page, in the order they are displayed; the first one,
+// the important points, is set apart in a box
+const SECTIONS = [
+  "essentials",
+  "purpose",
+  "acceptance",
+  "account",
+  "use",
+  "offers",
+  "exchanges",
+  "prohibited",
+  "moderation",
+  "licence",
+  "end",
+  "availability",
+  "liability",
+  "changes",
+  "law",
+] as const;
 </script>
 
 <template>
-  <LegalText root="terms" :sections="SECTIONS" />
+  <LegalText root="terms" :sections="SECTIONS" highlight="essentials" />
 </template>
