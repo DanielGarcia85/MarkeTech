@@ -1,0 +1,462 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2702" width="1200" height="2702" role="img" aria-labelledby="title desc">
+<title id="title">MarkeTech: the Docker Compose stack</title>
+<desc id="desc">Panel A: docker-compose.yml starts four containers. db (postgres:18-alpine) and redis (redis:8-alpine) are official images; backend and frontend are the images published on ghcr.io, or built from backend/Dockerfile and frontend/Dockerfile. db and redis are on the network internal (internal: true), backend on internal and web, frontend on web and the external network proxy, where a reverse proxy outside this repository reaches it in production. Only the frontend publishes a port, 127.0.0.1:8080 to 80. The volume db_data is mounted on /var/lib/postgresql, media on /app/media. Panel B: db and redis must pass their healthchecks before the backend starts and runs entrypoint.sh; the frontend starts after the backend. Panel C: Nginx serves the Vue build and passes /api, /_allauth, /admin, /static and /ws/ to backend:8000. Panel D: which container reads which variables of .env, and the variables set by the compose file itself.</desc>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0.8 L9,5 L0,9.2 Z" fill="#475569"/></marker></defs>
+<rect width="1200" height="2702" fill="#F8FAFC"/>
+<text x="30" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" xml:space="preserve" font-weight="700">MarkeTech: the Docker Compose stack</text>
+<text x="1170" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#64748B" xml:space="preserve" text-anchor="end">docker-compose.yml · name: marketech</text>
+<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Four containers, three networks, two volumes. The same file runs on a development PC and in production. Follow the numbers 1 to 8.</text>
+<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository: docker-compose.yml, .env.example, both Dockerfiles, entrypoint.sh and nginx.conf (main, 30.10.2026).</text>
+<rect x="30" y="124" width="1140" height="810" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="154" r="12" fill="#0F172A"/>
+<text x="66" y="158.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">A</text>
+<text x="90" y="159" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Containers, networks, ports and volumes</text>
+<text x="1146" y="159" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">docker compose up · services db, redis, backend, frontend</text>
+<rect x="30" y="964" width="1140" height="318" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="994" r="12" fill="#0F172A"/>
+<text x="66" y="998.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">B</text>
+<text x="90" y="999" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Start-up order</text>
+<text x="1146" y="999" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">depends_on, healthcheck, entrypoint.sh</text>
+<rect x="30" y="1312" width="1140" height="710" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="1342" r="12" fill="#0F172A"/>
+<text x="66" y="1346.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">C</text>
+<text x="90" y="1347" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">The path of a request</text>
+<text x="1146" y="1347" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">frontend/nginx.conf · backend/config/asgi.py</text>
+<rect x="30" y="2052" width="1140" height="472" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="2082" r="12" fill="#0F172A"/>
+<text x="66" y="2086.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">D</text>
+<text x="90" y="2087" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Configuration: .env and the environment set by the file</text>
+<text x="1146" y="2087" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">.env.example · docker-compose.yml</text>
+<text x="54" y="180" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#0F766E" xml:space="preserve" font-weight="700">OUTSIDE THIS FILE</text>
+<g data-box="54,188,255,148">
+<rect x="54" y="188" width="255" height="148" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M54 198 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#0F766E"/>
+<text x="68" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Reverse proxy</text>
+<text x="297" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">outside the repo</text>
+<text x="68" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Production only, not described in</text>
+<text x="68" y="257" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">this repository. Joins the network</text>
+<text x="68" y="274" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">proxy and passes the visitors'</text>
+<text x="68" y="291" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">requests to the frontend, and to</text>
+<text x="68" y="308" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">no other container.</text>
+</g>
+<g data-box="333,188,255,148">
+<rect x="333" y="188" width="255" height="148" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5"/>
+<path d="M333 198 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#0F766E"/>
+<text x="347" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Browser on the same PC</text>
+<text x="576" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">development</text>
+<text x="347" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The only published port. Bound to</text>
+<text x="347" y="257" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">the loopback address: no other</text>
+<text x="347" y="274" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">machine can reach it.</text>
+<g data-box="343,291,235,28">
+<rect x="343" y="291" width="235" height="28" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="351" y="306" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">ports: "127.0.0.1:8080:80"</text>
+</g>
+</g>
+<g data-box="612,188,534,148">
+<rect x="612" y="188" width="534" height="148" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="626" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">The network proxy is external: this file does not create it</text>
+<text x="626" y="226" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">It must exist before "docker compose up". In production, the reverse</text>
+<text x="626" y="242" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">proxy provides it. On a development PC, create it once by hand:</text>
+<text x="626" y="258" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">    docker network create proxy</text>
+<text x="626" y="274" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">The reverse proxy is then simply absent: port 8080 is the way in.</text>
+<text x="626" y="290" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">All four containers: restart: unless-stopped.</text>
+</g>
+<rect x="54" y="358" width="232" height="28" rx="14" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="93" y="376.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#86198F" xml:space="preserve" font-weight="700">Docker network proxy (external)</text>
+<line x1="78" y1="336" x2="78" y2="358" stroke="#A21CAF" stroke-width="1.6"/>
+<line x1="78" y1="386" x2="78" y2="428" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<circle cx="78" cy="372" r="10" fill="#0F172A"/>
+<text x="78" y="376" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<path d="M461 336 V372 H290 V428" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<circle cx="461" cy="372" r="10" fill="#0F172A"/>
+<text x="461" y="376" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">2</text>
+<text x="441" y="367" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">8080 -&gt; 80</text>
+<text x="54" y="420" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#1D4ED8" xml:space="preserve" font-weight="700">CONTAINERS (services)</text>
+<g data-box="54,428,255,336">
+<rect x="54" y="428" width="255" height="336" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M54 438 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#1D4ED8"/>
+<text x="68" y="450" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">frontend</text>
+<text x="297" y="450" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">built from ./frontend</text>
+<text x="68" y="480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Nginx: serves the Vue build and</text>
+<text x="68" y="497" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">passes backend paths on.</text>
+<g data-box="64,514,235,168">
+<rect x="64" y="514" width="235" height="168" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="529" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">image   ghcr.io/danielgarcia85/</text>
+<text x="72" y="549" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">          marketech-frontend</text>
+<text x="72" y="569" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">tag     ${IMAGE_TAG:-latest}</text>
+<text x="72" y="589" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">build   ./frontend</text>
+<text x="72" y="609" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">listens 80 (Nginx)</text>
+<text x="72" y="629" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">ports   127.0.0.1:8080:80</text>
+<text x="72" y="649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">waits   backend started</text>
+<text x="72" y="669" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">.env    not read</text>
+</g>
+<text x="68" y="696" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">nothing kept: no volume</text>
+</g>
+<g data-box="333,428,255,336">
+<rect x="333" y="428" width="255" height="336" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M333 438 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#1D4ED8"/>
+<text x="347" y="450" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend</text>
+<text x="576" y="450" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">built from ./backend</text>
+<text x="347" y="480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Django, DRF and Channels, run by</text>
+<text x="347" y="497" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Daphne (ASGI).</text>
+<g data-box="343,514,235,168">
+<rect x="343" y="514" width="235" height="168" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="351" y="529" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">image   ghcr.io/danielgarcia85/</text>
+<text x="351" y="549" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">          marketech-backend</text>
+<text x="351" y="569" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">tag     ${IMAGE_TAG:-latest}</text>
+<text x="351" y="589" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">build   ./backend</text>
+<text x="351" y="609" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">listens 8000 (Daphne)</text>
+<text x="351" y="629" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">ports   none published</text>
+<text x="351" y="649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">waits   db, redis healthy</text>
+<text x="351" y="669" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">.env    env_file: .env</text>
+</g>
+<rect x="343" y="692" width="235" height="30" rx="6" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.2"/>
+<rect x="343" y="692" width="6" height="30" rx="2" fill="#9F1239"/>
+<text x="357" y="711.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#881337" xml:space="preserve" font-weight="700">media</text>
+<text x="570" y="711.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#881337" xml:space="preserve" text-anchor="end">/app/media</text>
+<text x="347" y="734" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">files sent by the users</text>
+</g>
+<g data-box="612,428,255,336">
+<rect x="612" y="428" width="255" height="336" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M612 438 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#334155"/>
+<text x="626" y="450" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">db</text>
+<text x="855" y="450" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">official image</text>
+<text x="626" y="480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">PostgreSQL 18. Its data lives in</text>
+<text x="626" y="497" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">a volume, not in the container.</text>
+<g data-box="622,514,235,148">
+<rect x="622" y="514" width="235" height="148" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="630" y="529" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">image   postgres:18-alpine</text>
+<text x="630" y="549" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">build   none, never built</text>
+<text x="630" y="569" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">listens 5432</text>
+<text x="630" y="589" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">ports   none published</text>
+<text x="630" y="609" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">health  pg_isready</text>
+<text x="630" y="629" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">env     POSTGRES_DB, _USER,</text>
+<text x="630" y="649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">          _PASSWORD from .env</text>
+</g>
+<rect x="622" y="672" width="235" height="30" rx="6" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.2"/>
+<rect x="622" y="672" width="6" height="30" rx="2" fill="#9F1239"/>
+<text x="636" y="691.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#881337" xml:space="preserve" font-weight="700">db_data</text>
+<text x="849" y="691.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#881337" xml:space="preserve" text-anchor="end">/var/lib/postgresql</text>
+<text x="626" y="714" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">survives removal or update</text>
+</g>
+<g data-box="891,428,255,336">
+<rect x="891" y="428" width="255" height="336" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M891 438 a10 10 0 0 1 10 -10 h235 a10 10 0 0 1 10 10 v24 h-255 z" fill="#334155"/>
+<text x="905" y="450" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">redis</text>
+<text x="1134" y="450" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">official image</text>
+<text x="905" y="480" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Channel layer of the WebSockets.</text>
+<text x="905" y="497" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Nothing is kept on disk.</text>
+<g data-box="901,514,235,168">
+<rect x="901" y="514" width="235" height="168" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="909" y="529" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">image   redis:8-alpine</text>
+<text x="909" y="549" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">build   none, never built</text>
+<text x="909" y="569" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">listens 6379</text>
+<text x="909" y="589" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">ports   none published</text>
+<text x="909" y="609" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">health  redis-cli ping</text>
+<text x="909" y="629" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">command redis-server</text>
+<text x="909" y="649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">          --save ""</text>
+<text x="909" y="669" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">          --appendonly no</text>
+</g>
+<text x="905" y="696" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">no volume · reads nothing from .env</text>
+</g>
+<rect x="54" y="790" width="400" height="28" rx="14" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<text x="254" y="808.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#14532D" xml:space="preserve" font-weight="700" text-anchor="middle">Docker network web: frontend and backend</text>
+<rect x="476" y="790" width="670" height="28" rx="14" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<text x="811" y="808.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#7C2D12" xml:space="preserve" font-weight="700" text-anchor="middle">Docker network internal (internal: true): backend, db, redis · no Internet in or out</text>
+<line x1="100" y1="764" x2="100" y2="790" stroke="#16A34A" stroke-width="2"/>
+<line x1="420" y1="764" x2="420" y2="790" stroke="#16A34A" stroke-width="2"/>
+<line x1="560" y1="764" x2="560" y2="790" stroke="#EA580C" stroke-width="2"/>
+<line x1="740" y1="764" x2="740" y2="790" stroke="#EA580C" stroke-width="2"/>
+<line x1="1019" y1="764" x2="1019" y2="790" stroke="#EA580C" stroke-width="2"/>
+<circle cx="100" cy="790" r="4" fill="#16A34A"/>
+<circle cx="420" cy="790" r="4" fill="#16A34A"/>
+<circle cx="560" cy="790" r="4" fill="#EA580C"/>
+<circle cx="740" cy="790" r="4" fill="#EA580C"/>
+<circle cx="1019" cy="790" r="4" fill="#EA580C"/>
+<g data-box="54,840,1092,70">
+<rect x="54" y="840" width="1092" height="70" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="68" y="862" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">The frontend never reaches the database, and the reverse proxy never reaches the backend</text>
+<text x="68" y="878" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">Each container is reached by the name of its service, inside the networks it shares: backend:8000, db, redis:6379. 8000, 5432 and 6379 are not</text>
+<text x="68" y="894" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">published on the machine. Docker keeps the volumes db_data and media when a container is removed or replaced by a new image.</text>
+</g>
+<text x="54" y="1020" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">depends_on, IN THE ORDER DOCKER FOLLOWS</text>
+<g data-box="54,1028,290,230">
+<rect x="54" y="1028" width="290" height="230" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M54 1038 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#334155"/>
+<text x="68" y="1050" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">db and redis</text>
+<text x="332" y="1050" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">start first</text>
+<text x="68" y="1080" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Docker runs their healthcheck</text>
+<text x="68" y="1097" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">until it passes.</text>
+<g data-box="64,1114,270,128">
+<rect x="64" y="1114" width="270" height="128" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="1129" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">db     pg_isready</text>
+<text x="72" y="1149" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">         -U $$POSTGRES_USER</text>
+<text x="72" y="1169" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">         -d $$POSTGRES_DB</text>
+<text x="72" y="1189" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">redis  redis-cli ping</text>
+<text x="72" y="1209" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">both   every 5s, timeout 3s,</text>
+<text x="72" y="1229" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">         10 retries</text>
+</g>
+</g>
+<g data-box="455,1028,290,230">
+<rect x="455" y="1028" width="290" height="230" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M455 1038 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="469" y="1050" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend: entrypoint.sh</text>
+<text x="733" y="1050" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">every start</text>
+<text x="469" y="1080" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">set -e: stops at the first failure,</text>
+<text x="469" y="1097" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">never serves a half-ready app.</text>
+<g data-box="465,1114,270,108">
+<rect x="465" y="1114" width="270" height="108" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="1129" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">python manage.py migrate</text>
+<text x="473" y="1149" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">python manage.py collectstatic</text>
+<text x="473" y="1169" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">admin account, first start only</text>
+<text x="473" y="1189" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">exec daphne ... -p 8000</text>
+<text x="473" y="1209" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  config.asgi:application</text>
+</g>
+<text x="469" y="1236" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">backend/entrypoint.sh, CMD of the image</text>
+</g>
+<g data-box="856,1028,290,230">
+<rect x="856" y="1028" width="290" height="230" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M856 1038 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="870" y="1050" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">frontend</text>
+<text x="1134" y="1050" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">starts last</text>
+<text x="870" y="1080" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">depends_on: backend, no condition:</text>
+<text x="870" y="1097" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">waits for the backend container to</text>
+<text x="870" y="1114" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">start, not to be ready (the backend</text>
+<text x="870" y="1131" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">has no healthcheck).</text>
+<g data-box="866,1148,270,28">
+<rect x="866" y="1148" width="270" height="28" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="874" y="1163" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">nginx listens on 80</text>
+</g>
+<text x="870" y="1190" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">frontend/nginx.conf</text>
+</g>
+<line x1="344" y1="1146" x2="455" y2="1146" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="1114" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">service_healthy</text>
+<text x="399.5" y="1129" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">(both)</text>
+<circle cx="399.5" cy="1164" r="10" fill="#0F172A"/>
+<text x="399.5" y="1168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">3</text>
+<line x1="745" y1="1146" x2="856" y2="1146" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="1122" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">started</text>
+<circle cx="800.5" cy="1164" r="10" fill="#0F172A"/>
+<text x="800.5" y="1168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">4</text>
+<text x="54" y="1368" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">ONE REQUEST, FROM THE BROWSER TO THE CONTAINERS</text>
+<g data-box="54,1376,290,150">
+<rect x="54" y="1376" width="290" height="150" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5"/>
+<path d="M54 1386 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#0F766E"/>
+<text x="68" y="1398" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Browser</text>
+<text x="332" y="1398" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">visitor</text>
+<text x="68" y="1428" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Asks for a page, a file, the API,</text>
+<text x="68" y="1445" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">or opens a WebSocket.</text>
+<g data-box="64,1462,270,28">
+<rect x="64" y="1462" width="270" height="28" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="1477" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">/  /api/...  /admin/  /ws/...</text>
+</g>
+</g>
+<g data-box="455,1376,290,150">
+<rect x="455" y="1376" width="290" height="150" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M455 1386 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#0F766E"/>
+<text x="469" y="1398" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Reverse proxy, or port 8080</text>
+<text x="733" y="1398" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">way in</text>
+<text x="469" y="1428" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Production: the reverse proxy, over</text>
+<text x="469" y="1445" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">the network proxy.</text>
+<text x="469" y="1462" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Development PC: 127.0.0.1:8080.</text>
+<g data-box="465,1479,270,28">
+<rect x="465" y="1479" width="270" height="28" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="1494" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">-&gt; frontend, port 80</text>
+</g>
+</g>
+<g data-box="856,1376,290,150">
+<rect x="856" y="1376" width="290" height="150" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M856 1386 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="870" y="1398" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">frontend: Nginx</text>
+<text x="1134" y="1398" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">port 80</text>
+<text x="870" y="1428" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Chooses by the start of the path.</text>
+<g data-box="866,1445,270,48">
+<rect x="866" y="1445" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="874" y="1460" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">listen 80;</text>
+<text x="874" y="1480" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">root /usr/share/nginx/html;</text>
+</g>
+<text x="870" y="1507" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">frontend/nginx.conf</text>
+</g>
+<line x1="344" y1="1456" x2="455" y2="1456" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="1432" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">request</text>
+<circle cx="399.5" cy="1474" r="10" fill="#0F172A"/>
+<text x="399.5" y="1478" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">5</text>
+<line x1="745" y1="1456" x2="856" y2="1456" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="800.5" y="1432" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">passes on</text>
+<circle cx="800.5" cy="1474" r="10" fill="#0F172A"/>
+<text x="800.5" y="1478" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">6</text>
+<line x1="1001.0" y1="1526" x2="1001.0" y2="1560" stroke="#475569" stroke-width="1.6"/>
+<line x1="199.0" y1="1560" x2="1001.0" y2="1560" stroke="#475569" stroke-width="1.6"/>
+<line x1="199.0" y1="1560" x2="199.0" y2="1596" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<line x1="600.0" y1="1560" x2="600.0" y2="1596" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<line x1="1001.0" y1="1560" x2="1001.0" y2="1596" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<circle cx="1023.0" cy="1544" r="10" fill="#0F172A"/>
+<text x="1023.0" y="1548" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">7</text>
+<g data-box="54,1596,290,196">
+<rect x="54" y="1596" width="290" height="196" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M54 1606 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#6D28D9"/>
+<text x="68" y="1618" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">location /</text>
+<text x="332" y="1618" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">the Vue build</text>
+<text x="68" y="1648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A file that exists is sent as is.</text>
+<text x="68" y="1665" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Any other address gets index.html:</text>
+<text x="68" y="1682" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">the Vue router chooses the page.</text>
+<g data-box="64,1699,270,48">
+<rect x="64" y="1699" width="270" height="48" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="1714" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">try_files $uri $uri/</text>
+<text x="72" y="1734" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">          /index.html;</text>
+</g>
+<text x="68" y="1761" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">served by Nginx alone</text>
+</g>
+<g data-box="455,1596,290,196">
+<rect x="455" y="1596" width="290" height="196" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M455 1606 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#6D28D9"/>
+<text x="469" y="1618" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">/api /_allauth /admin /static</text>
+<text x="733" y="1618" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">HTTP</text>
+<text x="469" y="1648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">JSON API, authentication (allauth),</text>
+<text x="469" y="1665" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">admin site and its static files.</text>
+<g data-box="465,1682,270,68">
+<rect x="465" y="1682" width="270" height="68" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="1697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">~ ^/(api|_allauth|admin|static)(/|$)</text>
+<text x="473" y="1717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">proxy_pass http://backend:8000;</text>
+<text x="473" y="1737" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">client_max_body_size 6m;</text>
+</g>
+<text x="469" y="1764" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">+ Host, X-Forwarded-Proto/-For</text>
+</g>
+<g data-box="856,1596,290,196">
+<rect x="856" y="1596" width="290" height="196" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M856 1606 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#6D28D9"/>
+<text x="870" y="1618" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">/ws/</text>
+<text x="1134" y="1618" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">WebSocket</text>
+<text x="870" y="1648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">WebSocket of a logged-in user:</text>
+<text x="870" y="1665" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">the connection then stays open.</text>
+<g data-box="866,1682,270,88">
+<rect x="866" y="1682" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="874" y="1697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">proxy_pass http://backend:8000;</text>
+<text x="874" y="1717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">proxy_http_version 1.1;</text>
+<text x="874" y="1737" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">Upgrade, Connection "upgrade"</text>
+<text x="874" y="1757" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">proxy_read_timeout 1h;</text>
+</g>
+</g>
+<line x1="600.0" y1="1792" x2="600.0" y2="1848" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<line x1="1001.0" y1="1792" x2="1001.0" y2="1848" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<circle cx="622.0" cy="1820" r="10" fill="#0F172A"/>
+<text x="622.0" y="1824" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">8</text>
+<g data-box="54,1848,290,150">
+<rect x="54" y="1848" width="290" height="150" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="68" y="1870" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Never reaches the backend</text>
+<text x="68" y="1886" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">The compiled Vue application is</text>
+<text x="68" y="1902" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">copied into the image at build time</text>
+<text x="68" y="1918" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">(frontend/Dockerfile, stage 2): Nginx</text>
+<text x="68" y="1934" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">answers alone, even when the</text>
+<text x="68" y="1950" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">backend is down.</text>
+</g>
+<g data-box="455,1848,691,150">
+<rect x="455" y="1848" width="691" height="150" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M455 1858 a10 10 0 0 1 10 -10 h671 a10 10 0 0 1 10 10 v24 h-691 z" fill="#1D4ED8"/>
+<text x="469" y="1870" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend:8000, Daphne</text>
+<text x="1134" y="1870" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">config.asgi:application</text>
+<text x="469" y="1900" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">HTTP goes to Django (DRF views, allauth, admin; static files by WhiteNoise).</text>
+<text x="469" y="1917" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A WebSocket goes to the Channels consumer, after the origin and session checks.</text>
+<g data-box="465,1934,671,48">
+<rect x="465" y="1934" width="671" height="48" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="1949" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">POSTGRES_HOST=db                 -&gt; db, port 5432, network internal</text>
+<text x="473" y="1969" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">REDIS_URL=redis://redis:6379/0   -&gt; redis, network internal</text>
+</g>
+</g>
+<text x="54" y="2108" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">WHO READS WHAT</text>
+<g data-box="54,2116,290,384">
+<rect x="54" y="2116" width="290" height="384" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M54 2126 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#6D28D9"/>
+<text x="68" y="2138" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">.env</text>
+<text x="332" y="2138" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">copy of .env.example</text>
+<text x="68" y="2168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Next to docker-compose.yml, never</text>
+<text x="68" y="2185" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">versioned. Names only here:</text>
+<g data-box="64,2202,270,268">
+<rect x="64" y="2202" width="270" height="268" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="2217" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DJANGO_SECRET_KEY</text>
+<text x="72" y="2237" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DJANGO_SUPERUSER_EMAIL</text>
+<text x="72" y="2257" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DJANGO_SUPERUSER_PASSWORD</text>
+<text x="72" y="2277" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DJANGO_ALLOWED_HOSTS</text>
+<text x="72" y="2297" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">TRUSTED_PROXY_COUNT</text>
+<text x="72" y="2317" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">EMAIL_HOST, EMAIL_PORT</text>
+<text x="72" y="2337" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">EMAIL_HOST_USER</text>
+<text x="72" y="2357" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">EMAIL_HOST_PASSWORD</text>
+<text x="72" y="2377" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DEFAULT_FROM_EMAIL</text>
+<text x="72" y="2397" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">MODERATION_EMAIL</text>
+<text x="72" y="2417" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">POSTGRES_DB, POSTGRES_USER</text>
+<text x="72" y="2437" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">POSTGRES_PASSWORD</text>
+<text x="72" y="2457" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">IMAGE_TAG</text>
+</g>
+</g>
+<g data-box="455,2116,290,196">
+<rect x="455" y="2116" width="290" height="196" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M455 2126 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#334155"/>
+<text x="469" y="2138" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">docker compose</text>
+<text x="733" y="2138" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">reads .env first</text>
+<text x="469" y="2168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Replaces every ${...} of the file</text>
+<text x="469" y="2185" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">before it starts anything.</text>
+<g data-box="465,2202,270,88">
+<rect x="465" y="2202" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="2217" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">${POSTGRES_DB:?}  -&gt; db</text>
+<text x="473" y="2237" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">${POSTGRES_USER:?}  -&gt; db</text>
+<text x="473" y="2257" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">${POSTGRES_PASSWORD:?}  -&gt; db</text>
+<text x="473" y="2277" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">${IMAGE_TAG:-latest}  -&gt; images</text>
+</g>
+<text x="469" y="2304" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">:? stops with an error if empty</text>
+</g>
+<g data-box="856,2116,290,196">
+<rect x="856" y="2116" width="290" height="196" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M856 2126 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#1D4ED8"/>
+<text x="870" y="2138" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend</text>
+<text x="1134" y="2138" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">the only env_file</text>
+<text x="870" y="2168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">env_file: .env passes every variable</text>
+<text x="870" y="2185" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">to the container, then the file sets:</text>
+<g data-box="866,2202,270,88">
+<rect x="866" y="2202" width="270" height="88" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="874" y="2217" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">DJANGO_SETTINGS_MODULE=</text>
+<text x="874" y="2237" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  config.settings.prod</text>
+<text x="874" y="2257" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">POSTGRES_HOST=db</text>
+<text x="874" y="2277" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">REDIS_URL=redis://redis:6379/0</text>
+</g>
+</g>
+<path d="M344 2246 H455" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="2222" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">substitution</text>
+<path d="M344 2346 H1001.0 V2312" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="399.5" y="2338" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">env_file</text>
+<g data-box="455,2386,691,114">
+<rect x="455" y="2386" width="691" height="114" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="469" y="2408" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Only the backend has an env_file</text>
+<text x="469" y="2424" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">db: its three POSTGRES_ values, through "environment:" and ${...:?}.</text>
+<text x="469" y="2440" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">frontend: only IMAGE_TAG, through Compose, in the tag of its image.</text>
+<text x="469" y="2456" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">redis: no variable at all.</text>
+<text x="469" y="2472" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">IMAGE_TAG: "latest" by default; "sha-" + 7 characters of a commit of main</text>
+<text x="469" y="2488" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">pins one exact version of both images (rollback).</text>
+</g>
+<rect x="30" y="2554" width="1140" height="118" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="54" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
+<rect x="130" y="2574" width="14" height="14" rx="3" fill="#1D4ED8"/>
+<text x="152" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">built from a Dockerfile here</text>
+<rect x="340" y="2574" width="14" height="14" rx="3" fill="#334155"/>
+<text x="362" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">official image, used as is</text>
+<rect x="550" y="2574" width="14" height="14" rx="3" fill="#0F766E"/>
+<text x="572" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">outside the containers</text>
+<rect x="760" y="2574" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="782" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">configuration</text>
+<rect x="970" y="2574" width="14" height="14" rx="3" fill="#9F1239"/>
+<text x="992" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Docker volume</text>
+<rect x="130" y="2604" width="40" height="16" rx="8" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<text x="180" y="2616" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Docker network web</text>
+<rect x="340" y="2604" width="40" height="16" rx="8" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<text x="390" y="2616" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Docker network internal</text>
+<rect x="550" y="2604" width="40" height="16" rx="8" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="600" y="2616" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">Docker network proxy (external)</text>
+<rect x="800" y="2604" width="40" height="16" rx="5" fill="none" stroke="#475569" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="850" y="2616" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">not part of this repository</text>
+<line x1="130" y1="2644" x2="170" y2="2644" stroke="#475569" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="180" y="2648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">request or start order</text>
+<circle cx="350" cy="2644" r="10" fill="#0F172A"/>
+<text x="350" y="2648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<text x="366" y="2648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">step to follow</text>
+<rect x="550" y="2634" width="40" height="20" rx="5" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="600" y="2648" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">note</text>
+</svg>
