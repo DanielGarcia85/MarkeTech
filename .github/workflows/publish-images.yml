@@ -16,6 +16,14 @@ on:
     branches:
       - develop
       - main
+    # A push that only changes documentation starts nothing: no tests, no
+    # images, no deployment. A push that also touches anything else runs as
+    # usual: GitHub skips the workflow only if every changed file is listed.
+    paths-ignore:
+      - "docs/**"
+      - "backend/docs/**"
+      - "frontend/docs/**"
+      - "**.md"
 
 # Rights of the temporary token GitHub gives to this workflow: read the code,
 # write to the container registry. Nothing else.
