@@ -3,7 +3,8 @@
 # Git ignore rules — files that must never be versioned
 # ─────────────────────────────────────────────────────────────────────────────
 # Entries are added only when the file or folder actually appears in the
-# project, never in advance.
+# project, or when anyone who clones it would create it with a standard
+# command (npm run build).
 
 # ── Claude Code ───────────────────────────────────────────────────────
 # Personal working context for the AI assistant (not a project deliverable)
@@ -35,6 +36,9 @@ backend/media/
 # ── Node ──────────────────────────────────────────────────────────────
 # Packages installed by npm
 node_modules/
+
+# Result of npm run build: the frontend image builds its own
+frontend/dist/
 
 # ── Personal notes ────────────────────────────────────────────────────
 # Learning diagrams and working notes, not a project deliverable

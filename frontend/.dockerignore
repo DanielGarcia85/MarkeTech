@@ -10,9 +10,6 @@ node_modules/
 # Result of a build made on this machine
 dist/
 
-# Documentation, not needed to build or run the application
-docs/
-
 # Docker files themselves
 Dockerfile
 .dockerignore
