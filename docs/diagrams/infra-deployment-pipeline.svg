@@ -1,0 +1,267 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2152" width="1200" height="2152" role="img" aria-labelledby="dp-title dp-desc" xml:lang="en">
+<title id="dp-title">MarkeTech infrastructure: from a commit to production</title>
+<desc id="dp-desc">Panel A: work is committed on develop, then merged into main with git merge --no-ff. The workflow Test and publish images runs on a push to develop or main that changes backend/, frontend/ or a workflow file (documentation and Markdown files excluded). Panel B: the job test sets up Python 3.13 and runs python manage.py test with config.settings.dev and a test-only DJANGO_SECRET_KEY; the job build needs test and runs twice, for backend and frontend: it logs in to ghcr.io with GITHUB_TOKEN, computes the tags sha-&lt;7 chars&gt; and latest (default branch only), builds the image and pushes it only from main. Each of the five actions used is pinned to a full commit SHA, with its version in a comment. Panel C: the public images ghcr.io/danielgarcia85/marketech-backend and marketech-frontend; latest is the most recent image of main, and a sha- tag exists for each commit of main that ran the workflow. Panel D: the production server, outside this repository, pulls new backend and frontend images every two minutes and recreates the changed containers; it never builds; IMAGE_TAG in its .env can pin one version for a rollback; its docker-compose.yml is not pulled but copied by hand when it changes on main. A new backend container runs entrypoint.sh (migrations, then Daphne), detailed in backend-request-flow.svg, panel A.</desc>
+<defs><marker id="dp-ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0.8 L9,5 L0,9.2 Z" fill="#475569"/></marker></defs>
+<rect width="1200" height="2152" fill="#F8FAFC"/>
+<text x="30" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" xml:space="preserve" font-weight="700">MarkeTech infrastructure: from a commit to production</text>
+<text x="1170" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#64748B" xml:space="preserve" text-anchor="end">GitHub Actions · ghcr.io · Docker Compose</text>
+<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">A push on develop that changes the code runs the tests and builds the images; on main it also publishes them, and production then runs them. Follow the numbers 1 to 7.</text>
+<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository: .github/workflows/publish-images.yml, docker-compose.yml, .env.example, backend/entrypoint.sh.</text>
+<rect x="30" y="124" width="1140" height="414" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="154" r="12" fill="#0F172A"/>
+<text x="66" y="158.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">A</text>
+<text x="90" y="159" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">From develop to main</text>
+<text x="1146" y="159" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">git · .github/workflows/publish-images.yml</text>
+<rect x="30" y="568" width="1140" height="668" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="598" r="12" fill="#0F172A"/>
+<text x="66" y="602.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">B</text>
+<text x="90" y="603" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">The workflow: test, then build</text>
+<text x="1146" y="603" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">GitHub-hosted runners, created for the run</text>
+<rect x="30" y="1266" width="1140" height="324" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="1296" r="12" fill="#0F172A"/>
+<text x="66" y="1300.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">C</text>
+<text x="90" y="1301" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">The images</text>
+<text x="1146" y="1301" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">published from main only</text>
+<rect x="30" y="1620" width="1140" height="354" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="1650" r="12" fill="#0F172A"/>
+<text x="66" y="1654.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">D</text>
+<text x="90" y="1655" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Production</text>
+<text x="1146" y="1655" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">never builds · IMAGE_TAG · entrypoint.sh</text>
+<text x="54" y="180" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">TWO BRANCHES, ONE WORKFLOW</text>
+<text x="54" y="244" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#1D4ED8" xml:space="preserve" font-weight="700">main</text>
+<text x="54" y="344" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#C2410C" xml:space="preserve" font-weight="700">develop</text>
+<line x1="130" y1="240" x2="690" y2="240" stroke="#1D4ED8" stroke-width="3"/>
+<line x1="130" y1="340" x2="690" y2="340" stroke="#C2410C" stroke-width="3"/>
+<path d="M170 240 C200 240 200 340 240 340" fill="none" stroke="#C2410C" stroke-width="3"/>
+<circle cx="170" cy="240" r="7" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="3"/>
+<circle cx="290" cy="340" r="7" fill="#FFFFFF" stroke="#C2410C" stroke-width="3"/>
+<circle cx="380" cy="340" r="7" fill="#FFFFFF" stroke="#C2410C" stroke-width="3"/>
+<circle cx="470" cy="340" r="7" fill="#FFFFFF" stroke="#C2410C" stroke-width="3"/>
+<path d="M470 340 C530 340 520 240 572 240" fill="none" stroke="#C2410C" stroke-width="2" marker-end="url(#dp-ah)"/>
+<circle cx="590" cy="240" r="9" fill="#1D4ED8" stroke="#1D4ED8" stroke-width="3"/>
+<text x="380" y="370" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" text-anchor="middle">commits, each one pushed</text>
+<circle cx="380" cy="392" r="10" fill="#0F172A"/>
+<text x="380" y="396" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<text x="590" y="220" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">merge commit</text>
+<rect x="300" y="270" width="200" height="26" rx="6" fill="#1E293B"/>
+<text x="310" y="287" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">git merge --no-ff develop</text>
+<circle cx="282" cy="283" r="10" fill="#0F172A"/>
+<text x="282" y="287" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">2</text>
+<text x="54" y="426" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#64748B" xml:space="preserve">--no-ff always creates a merge commit on main, even when a fast-forward was possible:</text>
+<text x="54" y="443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#64748B" xml:space="preserve">each merge stays visible in the history, and its push starts the run that publishes, when the merge changes the code.</text>
+<g data-box="740,188,406,252">
+<rect x="740" y="188" width="406" height="252" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M740 198 a10 10 0 0 1 10 -10 h386 a10 10 0 0 1 10 10 v24 h-406 z" fill="#6D28D9"/>
+<text x="754" y="210" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">publish-images.yml</text>
+<text x="1134" y="210" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">name: Test and publish images</text>
+<text x="754" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Runs on GitHub's machines when a push to one of</text>
+<text x="754" y="257" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">these branches touches backend/, frontend/ or a workflow.</text>
+<g data-box="750,274,386,128">
+<rect x="750" y="274" width="386" height="128" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="758" y="289" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">on:</text>
+<text x="758" y="309" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  push:</text>
+<text x="758" y="329" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    branches: [develop, main]</text>
+<text x="758" y="349" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    paths: [backend/**, frontend/**,</text>
+<text x="758" y="369" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">            .github/workflows/**]</text>
+<text x="758" y="389" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    # minus the documentation (docs/, **.md)</text>
+</g>
+<text x="754" y="416" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">permissions: the token can read the code and write packages</text>
+</g>
+<g data-box="740,456,406,58">
+<rect x="740" y="456" width="406" height="58" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2"/>
+<text x="754" y="478" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="12" fill="#C2410C" xml:space="preserve" font-weight="700">push on develop</text>
+<text x="906" y="478" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve">test, then build: nothing published</text>
+<text x="754" y="500" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="12" fill="#1D4ED8" xml:space="preserve" font-weight="700">push on main</text>
+<text x="906" y="500" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve">test, build, then push to ghcr.io</text>
+</g>
+<text x="54" y="624" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#14532D" xml:space="preserve" font-weight="700">JOBS OF THE WORKFLOW, IN ORDER</text>
+<g data-box="54,632,290,380">
+<rect x="54" y="632" width="290" height="380" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M54 642 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#15803D"/>
+<text x="68" y="654" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">job test</text>
+<text x="332" y="654" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">runs-on: ubuntu-latest</text>
+<text x="68" y="684" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Backend tests, in backend/. One</text>
+<text x="68" y="701" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">failure stops the whole workflow.</text>
+<g data-box="64,718,270,248">
+<rect x="64" y="718" width="270" height="248" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="733" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">env DJANGO_SETTINGS_MODULE=</text>
+<text x="72" y="753" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">      config.settings.dev</text>
+<text x="72" y="773" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    DJANGO_SECRET_KEY=</text>
+<text x="72" y="793" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">      test-only-key-for-this-run</text>
+<text x="72" y="813" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">1 Check out the code</text>
+<text x="72" y="833" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">2 Set up Python</text>
+<text x="72" y="853" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    python-version: "3.13"</text>
+<text x="72" y="873" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    cache: pip</text>
+<text x="72" y="893" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">3 pip install --requirement</text>
+<text x="72" y="913" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    requirements.txt</text>
+<text x="72" y="933" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">4 python manage.py test</text>
+<text x="72" y="953" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    --verbosity 2</text>
+</g>
+<text x="68" y="980" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">dev settings: SQLite; a key for this run only</text>
+</g>
+<g data-box="455,632,691,380">
+<rect x="455" y="632" width="691" height="380" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M455 642 a10 10 0 0 1 10 -10 h671 a10 10 0 0 1 10 10 v24 h-691 z" fill="#15803D"/>
+<text x="469" y="654" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">job build</text>
+<text x="1134" y="654" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">needs: test · runs-on: ubuntu-latest</text>
+<text x="469" y="684" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">strategy.matrix.service: backend, frontend. The job runs twice, in parallel: one run per image.</text>
+<text x="469" y="701" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Every step below happens in each of the two runs.</text>
+<g data-box="465,718,671,228">
+<rect x="465" y="718" width="671" height="228" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="733" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">1 Check out the code</text>
+<text x="473" y="753" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">2 Log in to the container registry   registry: ghcr.io</text>
+<text x="473" y="773" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                     username: ${{ github.actor }}</text>
+<text x="473" y="793" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                     password: ${{ secrets.GITHUB_TOKEN }}</text>
+<text x="473" y="813" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">3 Compute the image name and tags    images: ghcr.io/danielgarcia85/</text>
+<text x="473" y="833" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                       marketech-${{ matrix.service }}</text>
+<text x="473" y="853" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                     tags: type=sha   -&gt; sha-&lt;commit&gt;</text>
+<text x="473" y="873" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                       type=raw,value=latest,</text>
+<text x="473" y="893" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                                       enable={{is_default_branch}}</text>
+<text x="473" y="913" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">4 Build the image, and publish       context: ./${{ matrix.service }}</text>
+<text x="473" y="933" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  it from main                       push: ${{ github.ref_name == 'main' }}</text>
+</g>
+</g>
+<line x1="344" y1="782" x2="455" y2="782" stroke="#475569" stroke-width="1.6" marker-end="url(#dp-ah)"/>
+<text x="399.5" y="758" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">needs: test</text>
+<circle cx="399.5" cy="800" r="10" fill="#0F172A"/>
+<text x="399.5" y="804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">3</text>
+<g data-box="54,1036,760,176">
+<rect x="54" y="1036" width="760" height="176" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M54 1046 a10 10 0 0 1 10 -10 h740 a10 10 0 0 1 10 10 v24 h-760 z" fill="#6D28D9"/>
+<text x="68" y="1058" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">uses: &lt;action&gt;@&lt;full commit SHA&gt;  # &lt;version&gt;</text>
+<text x="802" y="1058" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">pinned actions</text>
+<text x="68" y="1088" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Every action of the workflow is designated this way, for example:</text>
+<g data-box="64,1105,740,28">
+<rect x="64" y="1105" width="740" height="28" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="1120" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">uses: actions/checkout@&lt;full commit SHA&gt;  # v7.0.1</text>
+</g>
+</g>
+<text x="68" y="1162" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The five actions used, each pinned this way:</text>
+<text x="68" y="1182" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">actions/checkout · actions/setup-python · docker/login-action</text>
+<text x="68" y="1200" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">docker/metadata-action · docker/build-push-action</text>
+<g data-box="838,1036,308,176">
+<rect x="838" y="1036" width="308" height="176" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="852" y="1058" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Why a full SHA, not v7</text>
+<text x="852" y="1074" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">A version tag could be moved to</text>
+<text x="852" y="1090" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">other code; the identifier of a</text>
+<text x="852" y="1106" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">commit cannot. The version stays</text>
+<text x="852" y="1122" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">readable in the comment.</text>
+<text x="852" y="1138" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">GITHUB_TOKEN is the temporary token</text>
+<text x="852" y="1154" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">GitHub gives this run: no stored</text>
+<text x="852" y="1170" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">secret.</text>
+</g>
+<text x="54" y="1322" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#86198F" xml:space="preserve" font-weight="700">GITHUB CONTAINER REGISTRY</text>
+<g data-box="54,1330,526,150">
+<rect x="54" y="1330" width="526" height="150" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
+<path d="M54 1340 a10 10 0 0 1 10 -10 h506 a10 10 0 0 1 10 10 v24 h-526 z" fill="#A21CAF"/>
+<text x="68" y="1352" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">ghcr.io/danielgarcia85/marketech-backend</text>
+<text x="568" y="1352" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">public</text>
+<text x="68" y="1382" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Built from ./backend, with backend/Dockerfile.</text>
+<g data-box="64,1399,506,68">
+<rect x="64" y="1399" width="506" height="68" rx="6" fill="#FFFFFF" stroke="#C026D3" stroke-width="1" stroke-opacity="0.35"/>
+<text x="72" y="1414" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">latest            most recent image of main</text>
+<text x="72" y="1434" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">sha-&lt;7 chars&gt;     one per commit of main that ran the workflow</text>
+<text x="72" y="1454" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                  (the first 7 characters of the commit)</text>
+</g>
+</g>
+<g data-box="620,1330,526,150">
+<rect x="620" y="1330" width="526" height="150" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
+<path d="M620 1340 a10 10 0 0 1 10 -10 h506 a10 10 0 0 1 10 10 v24 h-526 z" fill="#A21CAF"/>
+<text x="634" y="1352" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">ghcr.io/danielgarcia85/marketech-frontend</text>
+<text x="1134" y="1352" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">public</text>
+<text x="634" y="1382" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Built from ./frontend, with frontend/Dockerfile.</text>
+<g data-box="630,1399,506,68">
+<rect x="630" y="1399" width="506" height="68" rx="6" fill="#FFFFFF" stroke="#C026D3" stroke-width="1" stroke-opacity="0.35"/>
+<text x="638" y="1414" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">latest            most recent image of main</text>
+<text x="638" y="1434" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">sha-&lt;7 chars&gt;     one per commit of main that ran the workflow</text>
+<text x="638" y="1454" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">                  (the first 7 characters of the commit)</text>
+</g>
+</g>
+<circle cx="262" cy="1318" r="10" fill="#0F172A"/>
+<text x="262" y="1322" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">4</text>
+<text x="278" y="1322" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#86198F" xml:space="preserve" font-weight="700">pushed here by job build, panel B (main only)</text>
+<g data-box="54,1496,1092,70">
+<rect x="54" y="1496" width="1092" height="70" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="68" y="1518" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">From develop, nothing reaches the registry</text>
+<text x="68" y="1534" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">The two images are built (proof that they still build), then discarded: push is false outside main. "latest" is only given on the</text>
+<text x="68" y="1550" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">default branch, main, so it always designates the most recent image of main.</text>
+</g>
+<text x="54" y="1676" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#0F766E" xml:space="preserve" font-weight="700">PRODUCTION SERVER, OUTSIDE THIS REPOSITORY</text>
+<g data-box="54,1684,290,125">
+<rect x="54" y="1684" width="290" height="125" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
+<path d="M54 1694 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#A21CAF"/>
+<text x="68" y="1706" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">ghcr.io</text>
+<text x="332" y="1706" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">public images</text>
+<text x="68" y="1736" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">marketech-backend</text>
+<text x="68" y="1753" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">marketech-frontend</text>
+<text x="68" y="1770" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">tags: latest, sha-&lt;7 chars&gt;</text>
+<text x="68" y="1791" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">see panel C</text>
+</g>
+<g data-box="455,1684,290,212">
+<rect x="455" y="1684" width="290" height="212" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M455 1694 a10 10 0 0 1 10 -10 h270 a10 10 0 0 1 10 10 v24 h-290 z" fill="#0F766E"/>
+<text x="469" y="1706" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Production server</text>
+<text x="733" y="1706" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">outside the repo</text>
+<text x="469" y="1736" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Pulls new backend and frontend</text>
+<text x="469" y="1753" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">images every two minutes and</text>
+<text x="469" y="1770" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">recreates the containers that</text>
+<text x="469" y="1787" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">changed. Never builds: it only</text>
+<text x="469" y="1804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">runs the published images.</text>
+<g data-box="465,1821,270,28">
+<rect x="465" y="1821" width="270" height="28" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="473" y="1836" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">IMAGE_TAG=sha-&lt;7 chars&gt; in .env</text>
+</g>
+<text x="469" y="1863" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">pins one version: the rollback</text>
+</g>
+<line x1="344" y1="1782" x2="455" y2="1782" stroke="#475569" stroke-width="1.6" marker-end="url(#dp-ah)"/>
+<text x="399.5" y="1750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">pull, every</text>
+<text x="399.5" y="1765" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">two minutes</text>
+<circle cx="399.5" cy="1800" r="10" fill="#0F172A"/>
+<text x="399.5" y="1804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">5</text>
+<g data-box="856,1759,290,46">
+<rect x="856" y="1759" width="290" height="46" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="868" y="1778" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">entrypoint.sh: migrate, then Daphne</text>
+<text x="868" y="1795" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see backend-request-flow.svg, panel A</text>
+</g>
+<g data-box="856,1820,290,70">
+<rect x="856" y="1820" width="290" height="70" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="870" y="1842" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">docker-compose.yml is not pulled</text>
+<text x="870" y="1858" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">The server keeps its own copy, copied</text>
+<text x="870" y="1874" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">by hand when it changes on main.</text>
+</g>
+<line x1="745" y1="1782" x2="856" y2="1782" stroke="#475569" stroke-width="1.6" marker-end="url(#dp-ah)"/>
+<text x="800.5" y="1735" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">recreates the</text>
+<text x="800.5" y="1750" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">backend (and</text>
+<text x="800.5" y="1765" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">the frontend)</text>
+<circle cx="800.5" cy="1800" r="10" fill="#0F172A"/>
+<text x="800.5" y="1804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">6</text>
+<circle cx="1142" cy="1759" r="10" fill="#0F172A"/>
+<text x="1142" y="1763" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">7</text>
+<g data-box="54,1912,1092,38">
+<rect x="54" y="1912" width="1092" height="38" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="68" y="1934" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Migrations run before Daphne, with set -e: if one fails, the backend does not start, so it never serves a half-prepared application.</text>
+</g>
+<rect x="30" y="2004" width="1140" height="118" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="54" y="2036" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
+<rect x="130" y="2024" width="14" height="14" rx="3" fill="#15803D"/>
+<text x="152" y="2036" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">GitHub Actions job</text>
+<rect x="340" y="2024" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="362" y="2036" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">workflow file</text>
+<rect x="550" y="2024" width="14" height="14" rx="3" fill="#A21CAF"/>
+<text x="572" y="2036" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">image in the registry</text>
+<rect x="760" y="2021" width="40" height="20" rx="5" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="810" y="2036" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">outside this repository (dashed border)</text>
+<line x1="130" y1="2064" x2="170" y2="2064" stroke="#1D4ED8" stroke-width="3"/>
+<text x="180" y="2068" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">branch main</text>
+<line x1="340" y1="2064" x2="380" y2="2064" stroke="#C2410C" stroke-width="3"/>
+<text x="390" y="2068" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">branch develop</text>
+<rect x="550" y="2054" width="40" height="20" rx="5" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="600" y="2068" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">detail in another diagram</text>
+<line x1="130" y1="2096" x2="170" y2="2096" stroke="#475569" stroke-width="1.6" marker-end="url(#dp-ah)"/>
+<text x="180" y="2100" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">then</text>
+<circle cx="350" cy="2096" r="10" fill="#0F172A"/>
+<text x="350" y="2100" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<text x="366" y="2100" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">step to follow</text>
+<rect x="550" y="2086" width="40" height="20" rx="5" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="600" y="2100" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">note</text>
+</svg>

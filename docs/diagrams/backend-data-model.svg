@@ -1,0 +1,494 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2559" width="1200" height="2559" role="img" aria-labelledby="dm-title dm-desc" xml:lang="en">
+<title id="dm-title">MarkeTech backend: the data model</title>
+<desc id="dm-desc">Entity-relationship diagram of the MarkeTech backend: twelve models in eight Django apps. accounts: User, identified by a unique e-mail address. profiles: CandidateProfile and EmployerProfile, each one-to-one with a User, and CandidateDocument under a candidate profile. offers: JobOffer under an employer profile. favorites: Favorite, unique per candidate and offer. applications: JobApplication, unique per offer and candidate, with its StatusChange history and its Attachment copies. messaging: Message on an application, written by a User. appointments: Appointment on an application, one pending at a time. reviews: Review, one per User, scores from 1 to 5. Every foreign key cascades on delete.</desc>
+<defs><marker id="dm-ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0.8 L9,5 L0,9.2 Z" fill="#475569"/></marker></defs>
+<rect width="1200" height="2559" fill="#F8FAFC"/>
+<text x="30" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" xml:space="preserve" font-weight="700">MarkeTech backend: the data model</text>
+<text x="1170" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#64748B" xml:space="preserve" text-anchor="end">Django 6.1 · DRF 3.18 · PostgreSQL in production</text>
+<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">The tables of the application's own models, grouped by Django app, with their links and the rules the database itself</text>
+<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">enforces. The apps notifications, live and demo have no model.</text>
+<text x="30" y="118" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository: the models.py of each app (backend/&lt;app&gt;/models.py).</text>
+<text x="30" y="150" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve">How to read it: an arrow goes from the table holding the foreign key to the table it points to; 0..N and 1 say how many rows</text>
+<text x="30" y="168" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve">on each side. Every foreign key is on_delete=CASCADE: deleting an account removes its profile, offers, applications and all that hangs on them.</text>
+<rect x="60" y="190" width="354" height="389" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="72" y="200" width="10" height="10" rx="2.5" fill="#334155"/>
+<text x="88" y="209.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#334155" xml:space="preserve" font-weight="700">accounts</text>
+<rect x="436" y="190" width="354" height="324" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="448" y="200" width="10" height="10" rx="2.5" fill="#9F1239"/>
+<text x="464" y="209.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#9F1239" xml:space="preserve" font-weight="700">reviews</text>
+<rect x="60" y="643" width="1106" height="302" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="72" y="653" width="10" height="10" rx="2.5" fill="#1D4ED8"/>
+<text x="88" y="662.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#1D4ED8" xml:space="preserve" font-weight="700">profiles</text>
+<rect x="436" y="1009" width="354" height="209" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="448" y="1019" width="10" height="10" rx="2.5" fill="#A21CAF"/>
+<text x="464" y="1028.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#A21CAF" xml:space="preserve" font-weight="700">favorites</text>
+<rect x="812" y="1009" width="354" height="539" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="824" y="1019" width="10" height="10" rx="2.5" fill="#15803D"/>
+<text x="840" y="1028.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#15803D" xml:space="preserve" font-weight="700">offers</text>
+<rect x="60" y="1612" width="730" height="304" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="72" y="1622" width="10" height="10" rx="2.5" fill="#C2410C"/>
+<text x="88" y="1631.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#C2410C" xml:space="preserve" font-weight="700">applications</text>
+<rect x="60" y="1980" width="354" height="243" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="72" y="1990" width="10" height="10" rx="2.5" fill="#0F766E"/>
+<text x="88" y="1999.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#0F766E" xml:space="preserve" font-weight="700">messaging</text>
+<rect x="436" y="1980" width="354" height="397" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<rect x="448" y="1990" width="10" height="10" rx="2.5" fill="#6D28D9"/>
+<text x="464" y="1999.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6D28D9" xml:space="preserve" font-weight="700">appointments</text>
+<rect x="72" y="220" width="330" height="347" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M72 230 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#334155"/>
+<text x="84" y="240" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">User</text>
+<text x="390" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">extends AbstractUser</text>
+<rect x="82" y="259.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="99" y="270" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="122" y="270.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="392" y="270.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="82" y="276.5" width="34" height="14" rx="3" fill="#1E293B"/>
+<text x="99" y="287" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">UQ</text>
+<text x="122" y="287.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">email</text>
+<text x="392" y="287.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">EmailField, the login</text>
+<text x="122" y="304.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">password</text>
+<text x="392" y="304.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">inherited</text>
+<text x="122" y="321.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">first_name, last_name</text>
+<text x="392" y="321.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">inherited</text>
+<text x="122" y="338.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">is_active, is_staff</text>
+<text x="392" y="338.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">inherited</text>
+<text x="122" y="355.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">is_superuser</text>
+<text x="392" y="355.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">inherited</text>
+<text x="122" y="372.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">last_login, date_joined</text>
+<text x="392" y="372.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">inherited</text>
+<text x="122" y="389.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">role</text>
+<text x="392" y="389.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices, blank</text>
+<text x="122" y="404" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">candidate | employer · blank = admin</text>
+<text x="122" y="420.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">language</text>
+<text x="392" y="420.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices, blank</text>
+<text x="122" y="435" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">en | fr</text>
+<text x="122" y="451.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">notify_by_email</text>
+<text x="392" y="451.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bool</text>
+<text x="122" y="468.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">is_demo</text>
+<text x="392" y="468.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bool</text>
+<text x="122" y="485.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">terms_accepted_at</text>
+<text x="392" y="485.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime, null</text>
+<text x="82" y="502" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">username removed: USERNAME_FIELD = email</text>
+<rect x="80" y="514" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="90" y="528" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="90" y="544" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (email)</text>
+<rect x="448" y="220" width="330" height="282" rx="10" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.5"/>
+<path d="M448 230 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#9F1239"/>
+<text x="460" y="240" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Review</text>
+<text x="766" y="240" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="458" y="259.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="475" y="270" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="498" y="270.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="768" y="270.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="458" y="276.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="287" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1:1</text>
+<text x="498" y="287.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">user</text>
+<text x="768" y="287.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ User</text>
+<text x="498" y="304.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">rating</text>
+<text x="768" y="304.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">1 to 5</text>
+<text x="498" y="321.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">ease_of_use</text>
+<text x="768" y="321.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">1 to 5</text>
+<text x="498" y="338.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">offers_and_applications</text>
+<text x="768" y="338.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">1 to 5</text>
+<text x="498" y="355.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">messaging</text>
+<text x="768" y="355.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">1 to 5</text>
+<text x="498" y="372.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">appointments</text>
+<text x="768" y="372.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">1 to 5</text>
+<text x="498" y="389.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">comment</text>
+<text x="768" y="389.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text ≤ 1000</text>
+<text x="498" y="406.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">created_at, updated_at</text>
+<text x="768" y="406.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime</text>
+<rect x="456" y="419" width="314" height="69" rx="6" fill="#1E293B"/>
+<text x="466" y="433" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="466" y="449" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (user): one review per account</text>
+<text x="466" y="464" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK 1 ≤ score ≤ 5, for each of the 5</text>
+<text x="466" y="479" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK comment &lt;&gt; ''</text>
+<rect x="72" y="673" width="330" height="215" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M72 683 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#1D4ED8"/>
+<text x="84" y="693" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">CandidateProfile</text>
+<text x="390" y="693" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="82" y="712.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="99" y="723" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="122" y="723.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="392" y="723.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="82" y="729.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="99" y="740" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1:1</text>
+<text x="122" y="740.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">user</text>
+<text x="392" y="740.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ User</text>
+<rect x="82" y="746.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="99" y="757" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="122" y="757.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">photo</text>
+<text x="392" y="757.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">ImageField, blank</text>
+<rect x="82" y="763.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="99" y="774" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="122" y="774.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">cv</text>
+<text x="392" y="774.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">FileField, blank</text>
+<text x="122" y="791.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">contact details</text>
+<text x="392" y="791.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">all blank</text>
+<text x="122" y="806" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">phone, address, postal_code, city, country</text>
+<text x="122" y="822.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">updated_at</text>
+<text x="392" y="822.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now</text>
+<rect x="80" y="835" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="90" y="849" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="90" y="865" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (user)</text>
+<rect x="448" y="673" width="330" height="114" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M448 683 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#1D4ED8"/>
+<text x="460" y="693" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">CandidateDocument</text>
+<text x="766" y="693" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="458" y="712.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="475" y="723" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="498" y="723.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="768" y="723.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="458" y="729.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="740" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="740.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">candidate</text>
+<text x="768" y="740.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ CandidateProfile</text>
+<rect x="458" y="746.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="475" y="757" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="498" y="757.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">file</text>
+<text x="768" y="757.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">FileField</text>
+<text x="498" y="774.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">uploaded_at</text>
+<text x="768" y="774.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now_add</text>
+<rect x="824" y="673" width="330" height="260" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M824 683 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#1D4ED8"/>
+<text x="836" y="693" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">EmployerProfile</text>
+<text x="1142" y="693" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="834" y="712.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="851" y="723" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="874" y="723.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="1144" y="723.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="834" y="729.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="851" y="740" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1:1</text>
+<text x="874" y="740.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">user</text>
+<text x="1144" y="740.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ User</text>
+<rect x="834" y="746.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="851" y="757" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="874" y="757.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">photo</text>
+<text x="1144" y="757.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">ImageField, private</text>
+<rect x="834" y="763.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="851" y="774" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="874" y="774.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">logo</text>
+<text x="1144" y="774.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">ImageField, public</text>
+<text x="874" y="791.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">company_name</text>
+<text x="1144" y="791.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text, blank</text>
+<text x="874" y="806" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">+ company_address, _postal_code,</text>
+<text x="874" y="820" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">_city, _country, _phone</text>
+<text x="874" y="836.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">contact details</text>
+<text x="1144" y="836.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">all blank</text>
+<text x="874" y="851" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">phone, address, postal_code, city, country</text>
+<text x="874" y="867.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">updated_at</text>
+<text x="1144" y="867.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now</text>
+<rect x="832" y="880" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="842" y="894" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="842" y="910" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (user)</text>
+<rect x="448" y="1039" width="330" height="167" rx="10" fill="#FDF4FF" stroke="#C026D3" stroke-width="1.5"/>
+<path d="M448 1049 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#A21CAF"/>
+<text x="460" y="1059" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Favorite</text>
+<text x="766" y="1059" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="458" y="1078.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="475" y="1089" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="498" y="1089.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="768" y="1089.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="458" y="1095.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="1106" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="1106.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">candidate</text>
+<text x="768" y="1106.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ CandidateProfile</text>
+<rect x="458" y="1112.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="1123" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="1123.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">offer</text>
+<text x="768" y="1123.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobOffer</text>
+<text x="498" y="1140.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">created_at</text>
+<text x="768" y="1140.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now_add</text>
+<rect x="456" y="1153" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="466" y="1167" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="466" y="1183" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (candidate, offer)</text>
+<rect x="824" y="1039" width="330" height="497" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M824 1049 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#15803D"/>
+<text x="836" y="1059" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">JobOffer</text>
+<text x="1142" y="1059" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="834" y="1078.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="851" y="1089" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="874" y="1089.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="1144" y="1089.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="834" y="1095.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="851" y="1106" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="874" y="1106.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">employer</text>
+<text x="1144" y="1106.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ EmployerProfile</text>
+<text x="874" y="1123.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">title</text>
+<text x="1144" y="1123.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text (200)</text>
+<text x="874" y="1138" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">not unique: the rule was dropped in 0002</text>
+<text x="874" y="1154.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">description</text>
+<text x="1144" y="1154.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text</text>
+<text x="874" y="1171.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">city, country</text>
+<text x="1144" y="1171.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">required</text>
+<text x="874" y="1188.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">remote</text>
+<text x="1144" y="1188.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="874" y="1203" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">on_site | hybrid | remote</text>
+<text x="874" y="1219.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">contract</text>
+<text x="1144" y="1219.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="874" y="1234" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">permanent | fixed_term | internship | student</text>
+<text x="874" y="1250.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">workload_min, _max</text>
+<text x="1144" y="1250.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">integer, null</text>
+<text x="874" y="1265" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">10 to 100: Django validators, not the database</text>
+<text x="874" y="1281.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">salary_min, _max</text>
+<text x="1144" y="1281.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">integer, null</text>
+<text x="874" y="1298.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">salary_period</text>
+<text x="1144" y="1298.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="874" y="1313" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">month | year</text>
+<text x="874" y="1329.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">currency</text>
+<text x="1144" y="1329.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="874" y="1344" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">CHF | EUR</text>
+<text x="874" y="1360.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">experience_years</text>
+<text x="1144" y="1360.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">integer, null</text>
+<text x="874" y="1377.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">status</text>
+<text x="1144" y="1377.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="874" y="1392" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">draft | published | closed</text>
+<text x="874" y="1408.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">published_at</text>
+<text x="1144" y="1408.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">set by save()</text>
+<text x="874" y="1425.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">created_at, updated_at</text>
+<text x="1144" y="1425.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime</text>
+<rect x="832" y="1438" width="314" height="84" rx="6" fill="#1E293B"/>
+<text x="842" y="1452" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="842" y="1468" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK salary_min ≤ salary_max</text>
+<text x="842" y="1483" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK workload_min ≤ workload_max</text>
+<text x="842" y="1498" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">  (both: unless one of the two is null)</text>
+<text x="842" y="1513" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK ≥ 0 on the positive integers</text>
+<rect x="72" y="1642" width="330" height="147" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<path d="M72 1652 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#C2410C"/>
+<text x="84" y="1662" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">StatusChange</text>
+<text x="390" y="1662" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="82" y="1681.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="99" y="1692" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="122" y="1692.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="392" y="1692.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="82" y="1698.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="99" y="1709" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="122" y="1709.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">application</text>
+<text x="392" y="1709.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobApplication</text>
+<text x="122" y="1726.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">status</text>
+<text x="392" y="1726.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">same choices</text>
+<text x="122" y="1743.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">changed_at</text>
+<text x="392" y="1743.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now_add</text>
+<text x="122" y="1760.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">seen_at</text>
+<text x="392" y="1760.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime, null</text>
+<text x="82" y="1777" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">a row per state, written by JobApplication.save()</text>
+<rect x="72" y="1807" width="330" height="97" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<path d="M72 1817 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#C2410C"/>
+<text x="84" y="1827" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Attachment</text>
+<text x="390" y="1827" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="82" y="1846.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="99" y="1857" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="122" y="1857.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="392" y="1857.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="82" y="1863.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="99" y="1874" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="122" y="1874.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">application</text>
+<text x="392" y="1874.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobApplication</text>
+<rect x="82" y="1880.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="99" y="1891" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="122" y="1891.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">file</text>
+<text x="392" y="1891.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">a copy of a profile document</text>
+<rect x="448" y="1642" width="330" height="232" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<path d="M448 1652 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#C2410C"/>
+<text x="460" y="1662" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">JobApplication</text>
+<text x="766" y="1662" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="458" y="1681.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="475" y="1692" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="498" y="1692.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="768" y="1692.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="458" y="1698.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="1709" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="1709.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">offer</text>
+<text x="768" y="1709.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobOffer</text>
+<rect x="458" y="1715.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="1726" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="1726.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">candidate</text>
+<text x="768" y="1726.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ CandidateProfile</text>
+<rect x="458" y="1732.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="475" y="1743" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="498" y="1743.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">cv</text>
+<text x="768" y="1743.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">FileField, a copy</text>
+<rect x="458" y="1749.5" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="475" y="1760" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="498" y="1760.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">cover_letter</text>
+<text x="768" y="1760.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">FileField, blank</text>
+<text x="498" y="1777.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">status</text>
+<text x="768" y="1777.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="498" y="1792" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">received | in_progress | accepted | rejected</text>
+<text x="498" y="1808.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">created_at, updated_at</text>
+<text x="768" y="1808.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime</text>
+<rect x="456" y="1821" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="466" y="1835" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="466" y="1851" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (offer, candidate)</text>
+<rect x="72" y="2010" width="330" height="201" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5"/>
+<path d="M72 2020 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#0F766E"/>
+<text x="84" y="2030" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Message</text>
+<text x="390" y="2030" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="82" y="2049.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="99" y="2060" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="122" y="2060.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="392" y="2060.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="82" y="2066.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="99" y="2077" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="122" y="2077.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">application</text>
+<text x="392" y="2077.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobApplication</text>
+<rect x="82" y="2083.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="99" y="2094" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="122" y="2094.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">author</text>
+<text x="392" y="2094.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ User</text>
+<text x="122" y="2111.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">body</text>
+<text x="392" y="2111.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text ≤ 2000</text>
+<text x="122" y="2128.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">sent_at</text>
+<text x="392" y="2128.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now_add</text>
+<text x="122" y="2145.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">read_at</text>
+<text x="392" y="2145.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime, null</text>
+<rect x="80" y="2158" width="314" height="39" rx="6" fill="#1E293B"/>
+<text x="90" y="2172" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="90" y="2188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK body &lt;&gt; ''</text>
+<rect x="448" y="2010" width="330" height="355" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M448 2020 a10 10 0 0 1 10 -10 h310 a10 10 0 0 1 10 10 v20 h-330 z" fill="#6D28D9"/>
+<text x="460" y="2030" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Appointment</text>
+<text x="766" y="2030" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">model</text>
+<rect x="458" y="2049.5" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="475" y="2060" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="498" y="2060.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">id</text>
+<text x="768" y="2060.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">bigint</text>
+<rect x="458" y="2066.5" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475" y="2077" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="498" y="2077.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">application</text>
+<text x="768" y="2077.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">→ JobApplication</text>
+<text x="498" y="2094.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">starts_at</text>
+<text x="768" y="2094.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime (UTC)</text>
+<text x="498" y="2111.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">duration</text>
+<text x="768" y="2111.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">minutes</text>
+<text x="498" y="2126" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">30 | 45 | 60 | 90</text>
+<text x="498" y="2142.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">place</text>
+<text x="768" y="2142.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text (200)</text>
+<text x="498" y="2159.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">note, response</text>
+<text x="768" y="2159.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">text ≤ 2000, blank</text>
+<text x="498" y="2176.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">status</text>
+<text x="768" y="2176.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">choices</text>
+<text x="498" y="2191" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#64748B" xml:space="preserve" font-style="italic">pending | accepted | declined | cancelled</text>
+<text x="498" y="2207.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">answered_at, seen_at</text>
+<text x="768" y="2207.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">datetime, null</text>
+<text x="498" y="2224.5" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#0F172A" xml:space="preserve">created_at</text>
+<text x="768" y="2224.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#64748B" xml:space="preserve" text-anchor="end">auto_now_add</text>
+<rect x="456" y="2237" width="314" height="114" rx="6" fill="#1E293B"/>
+<text x="466" y="2251" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#94A3B8" xml:space="preserve" font-weight="700">ENFORCED BY THE DATABASE</text>
+<text x="466" y="2267" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">UNIQUE (application)</text>
+<text x="466" y="2282" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">  WHERE status = 'pending'</text>
+<text x="466" y="2297" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK place &lt;&gt; ''</text>
+<text x="466" y="2312" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK status accepted or declined</text>
+<text x="466" y="2327" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">  ⇒ response &lt;&gt; ''</text>
+<text x="466" y="2342" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#F8FAFC" xml:space="preserve">CHECK duration IN (30, 45, 60, 90)</text>
+<path d="M448 283.5 L402 283.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="444" y="298.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">0..1</text>
+<text x="406" y="277.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M222 673 L222 567" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="228" y="665" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..1</text>
+<text x="228" y="583" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M974 673 L974 611 L342 611 L342 567" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="980" y="665" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..1</text>
+<text x="348" y="583" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M448 736.5 L402 736.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="444" y="751.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">0..N</text>
+<text x="406" y="730.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M1094 1039 L1094 933" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="1100" y="1031" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="1100" y="949" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M778 1119.5 L824 1119.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="782" y="1134.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="820" y="1113.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">1</text>
+<path d="M598 1039 L598 977 L342 977 L342 888" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="604" y="1031" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="348" y="904" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M598 1642 L598 1580 L222 1580 L222 888" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="604" y="1634" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="228" y="904" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M718 1642 L718 1580 L974 1580 L974 1536" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="724" y="1634" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="980" y="1552" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M402 1705.5 L448 1705.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="406" y="1720.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="444" y="1699.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">1</text>
+<path d="M402 1870.5 L448 1870.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="406" y="1885.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="444" y="1864.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">1</text>
+<path d="M718 2010 L718 1874" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="724" y="2002" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="724" y="1890" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M342 2010 L342 1948 L598 1948 L598 1874" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="348" y="2002" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N</text>
+<text x="604" y="1890" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">1</text>
+<path d="M72 2090.5 L40 2090.5 L40 385.5 L72 385.5" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="68" y="2105.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">0..N</text>
+<text x="68" y="379.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="end">1</text>
+<text x="34" y="601" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle" transform="rotate(-90 34 601)">author</text>
+<rect x="812" y="190" width="354" height="146" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="826" y="212" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Not drawn here</text>
+<text x="826" y="230" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">Django's own tables (permissions, groups, sessions,</text>
+<text x="826" y="246" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">admin log) and the e-mail address tables that</text>
+<text x="826" y="262" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">allauth.account adds. The User's two many-to-many</text>
+<text x="826" y="278" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">links (groups, user_permissions) come from</text>
+<text x="826" y="294" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">AbstractUser. The models declare no ManyToMany</text>
+<text x="826" y="310" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">field of their own: Favorite is the link table</text>
+<text x="826" y="326" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">between candidates and offers.</text>
+<rect x="812" y="1612" width="354" height="130" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="826" y="1634" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Choices are not database rules</text>
+<text x="826" y="1652" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">The values listed under a field (draft | published |</text>
+<text x="826" y="1668" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">closed, ...) are checked by Django and the API, not</text>
+<text x="826" y="1684" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">by the database: no CHECK constraint on them, except</text>
+<text x="826" y="1700" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">Appointment.duration. Neither are the 10 to 100 of</text>
+<text x="826" y="1716" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">JobOffer.workload (Django validators) nor the</text>
+<text x="826" y="1732" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">≤ 2000 and ≤ 1000 limits of the TextFields.</text>
+<rect x="812" y="1762" width="354" height="146" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="826" y="1784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Where the files go</text>
+<text x="826" y="1802" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">A FILE field keeps only a relative path in the</text>
+<text x="826" y="1818" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">database. The files are under MEDIA_ROOT, the Docker</text>
+<text x="826" y="1834" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">volume media in production: candidates/&lt;user id&gt;/,</text>
+<text x="826" y="1850" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">employers/&lt;user id&gt;/, logos/&lt;user id&gt;/ (public), and</text>
+<text x="826" y="1866" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">applications/&lt;user id&gt;/&lt;offer id&gt;/ for the copies</text>
+<text x="826" y="1882" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">sent with an application. A view of the API checks</text>
+<text x="826" y="1898" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">who may read a file before serving it.</text>
+<rect x="30" y="2411" width="1140" height="118" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="54" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
+<rect x="130" y="2431" width="34" height="14" rx="3" fill="#0F172A"/>
+<text x="147" y="2442.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">PK</text>
+<text x="172" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">primary key, bigint</text>
+<rect x="318.359375" y="2431" width="34" height="14" rx="3" fill="#475569"/>
+<text x="335.359" y="2442.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">FK</text>
+<text x="360.359" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">foreign key</text>
+<rect x="458.146875" y="2431" width="34" height="14" rx="3" fill="#475569"/>
+<text x="475.147" y="2442.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1:1</text>
+<text x="500.147" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">one-to-one (a unique FK)</text>
+<rect x="684.2875" y="2431" width="34" height="14" rx="3" fill="#1E293B"/>
+<text x="701.288" y="2442.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">UQ</text>
+<text x="726.288" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">unique field</text>
+<rect x="828.096875" y="2431" width="34" height="14" rx="3" fill="#FEFCE8" stroke="#CA8A04" stroke-width="0.8"/>
+<text x="845.097" y="2442.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="9.5" fill="#713F12" xml:space="preserve" font-weight="700" text-anchor="middle">FILE</text>
+<text x="870.097" y="2443" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">FileField / ImageField</text>
+<line x1="130" y1="2469" x2="170" y2="2469" stroke="#475569" stroke-width="1.6" marker-end="url(#dm-ah)"/>
+<text x="180" y="2473" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">foreign key, to the table it points to</text>
+<text x="429.642" y="2473" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#0F172A" xml:space="preserve" font-weight="700">0..N   1   0..1</text>
+<text x="519.152" y="2473" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">how many rows on that side</text>
+<rect x="723.78125" y="2460" width="40" height="18" rx="4" fill="#1E293B"/>
+<text x="773.781" y="2473" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">rule enforced by the database</text>
+<rect x="990.71875" y="2460" width="40" height="18" rx="5" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1040.72" y="2473" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">note</text>
+<rect x="130" y="2492" width="14" height="14" rx="3" fill="#334155"/>
+<text x="152" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">accounts</text>
+<rect x="238.309375" y="2492" width="14" height="14" rx="3" fill="#1D4ED8"/>
+<text x="260.309" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">profiles</text>
+<rect x="336.30625" y="2492" width="14" height="14" rx="3" fill="#15803D"/>
+<text x="358.306" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">offers</text>
+<rect x="423.90937499999995" y="2492" width="14" height="14" rx="3" fill="#C2410C"/>
+<text x="445.909" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">applications</text>
+<rect x="551.3734374999999" y="2492" width="14" height="14" rx="3" fill="#A21CAF"/>
+<text x="573.373" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">favorites</text>
+<rect x="658.1953124999999" y="2492" width="14" height="14" rx="3" fill="#0F766E"/>
+<text x="680.195" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">messaging</text>
+<rect x="778.0109374999998" y="2492" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="800.011" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">appointments</text>
+<rect x="916.6874999999998" y="2492" width="14" height="14" rx="3" fill="#9F1239"/>
+<text x="938.687" y="2503" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#1E293B" xml:space="preserve">reviews</text>
+</svg>
