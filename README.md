@@ -1,15 +1,41 @@
-# MarkeTech
+<p align="center">
+  <img src="frontend/src/assets/logo-horizontal.svg" width="360" alt="MarkeTech">
+</p>
 
-<img src="frontend/public/favicon.svg" align="right" width="60" alt="MarkeTech logo">
+<p align="center">
+  <em>A job board for tech and student jobs, with real-time messaging, appointments and
+  continuous deployment.</em>
+</p>
+
+<p align="center">
+  <a href="https://github.com/DanielGarcia85/MarkeTech/actions/workflows/publish-images.yml"><img src="https://img.shields.io/github/actions/workflow/status/DanielGarcia85/MarkeTech/publish-images.yml?branch=main&style=flat&label=CI" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/DanielGarcia85/MarkeTech?style=flat" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/Python-3.13-3776AB?style=flat&logo=python&logoColor=white" alt="Python 3.13">
+  <img src="https://img.shields.io/badge/Django-6.1-092E20?style=flat&logo=django&logoColor=white" alt="Django 6.1">
+  <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=flat&logo=vuedotjs&logoColor=white" alt="Vue 3.5">
+  <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript 6.0">
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker Compose">
+  <a href="https://marketech.ch"><img src="https://img.shields.io/badge/live-marketech.ch-2d6f91?style=flat" alt="Live site: marketech.ch"></a>
+</p>
+
+<p align="center">
+  <a href="https://marketech.ch">Live site</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#diagrams">Diagrams</a> ·
+  <a href="#running-locally">Run it locally</a>
+</p>
 
 A job board for tech and student jobs, aimed at computer science students and recent
 graduates. Employers publish offers, candidates apply, and both follow each application through
 messages and appointments until the decision.
 
-**Live site: [https://marketech.ch](https://marketech.ch)**, with two demo accounts (candidate
-and employer) open to everyone and reset every night.
+Two demo accounts, a candidate and an employer, are open to everyone on the
+[live site](https://marketech.ch) and reset every night.
 
-![MarkeTech home page: job offers with filters and user reviews](docs/screenshots/home.png)
+<p align="center">
+  <img src="docs/screenshots/home.png" width="760" alt="MarkeTech home page: job offers with filters and user reviews">
+</p>
 
 ---
 
@@ -17,14 +43,14 @@ and employer) open to everyone and reset every night.
 
 The concept and the specifications come from a **team project**: the interschool module 65-41
 (HEG Genève, HEG Arc Neuchâtel, HES-SO Valais), spring 2025, run with Scrum by a team of four
-students. My part of that deliverable: setting up the environments, sign-up, login (with a
-teammate), profiles, access control and the display of offers.
+students. I was the team's Scrum Master, and I worked on the setup of the environments, sign-up,
+login (with a teammate), profiles, access control and the display of offers.
 
-The code in this repository is a **complete rewrite that I did on my own**, without the original
-team, with the help of Claude (see [Use of AI](#use-of-ai)). Nothing from the team's code was
-copied: the original deliverable only served as specifications. The whole infrastructure layer
-(server, Docker, reverse proxy and HTTPS, image publishing, automatic updates, backups, real time)
-is an addition of mine that did not exist in the school project.
+The code in this repository is a **complete rewrite, from the code to the deployment, without the
+original team, with the help of Claude**. Nothing from the team's code was copied: the original
+deliverable only served as specifications. The whole infrastructure layer (server, Docker, reverse
+proxy and HTTPS, image publishing, automatic updates, backups, real time) is an addition of mine
+that did not exist in the school project.
 
 ## Features
 
@@ -48,7 +74,7 @@ is an addition of mine that did not exist in the school project.
   reset every night by the server.
 
 <details>
-<summary>More screenshots</summary>
+<summary>🖼️ <b>More screenshots</b> (click to expand)</summary>
 
 Applications received by an employer, grouped by offer:
 
@@ -75,7 +101,12 @@ All dependencies are pinned to an exact version (`backend/requirements.txt`,
 
 ## Architecture
 
-![Docker Compose stack: four containers and three networks](docs/docker-compose-stack.svg)
+<details>
+<summary>📐 <b>Diagram: the Docker Compose stack</b> (click to expand)</summary>
+
+![Docker Compose stack: four containers, three networks, start-up order and Nginx routing](docs/diagrams/infra-compose-stack.svg)
+
+</details>
 
 - The browser reaches the server over HTTPS. The **reverse proxy** of the server terminates TLS,
   sets HSTS and passes the request to the **frontend** container (nginx), which serves the compiled
@@ -93,20 +124,37 @@ All dependencies are pinned to an exact version (`backend/requirements.txt`,
   tabs of both parties to the application that something changed and what kind of thing; the page
   then refetches it through the API, which remains the only gatekeeper of access rights.
 
-More diagrams, drawn from the code:
+<details>
+<summary>📐 <b>Diagram: the path of a real-time signal</b> (click to expand)</summary>
 
-- [Request flow in the backend](backend/docs/backend-request-flow.svg), from the container start
-  to the response.
-- [Data model](backend/docs/backend-data-model.svg): the 12 models, their relations and the rules
-  enforced by the database.
-- [Path of a real-time signal](backend/docs/backend-realtime.svg).
-- [Request flow in the frontend](frontend/docs/frontend-request-flow.svg).
-- [First frontend skeleton](frontend/docs/frontend-architecture.svg), dated 07.10.2026, kept as a
-  record of the starting point.
+![Real-time signal flow: from Lea's message to Marc's open tab](docs/diagrams/realtime-signal-flow.svg)
+
+</details>
+
+## Diagrams
+
+All drawn from the code, in [`docs/diagrams/`](docs/diagrams). The two general views come first;
+they point to the detailed diagrams.
+
+| Diagram | What it shows |
+|---|---|
+| [Backend architecture](docs/diagrams/backend-architecture.svg) | General view of the backend: its layers, the 11 apps, data and outside services, how it is run, tested and built. |
+| [Frontend architecture](docs/diagrams/frontend-architecture.svg) | General view of the frontend: the layers of `src/`, how it talks to the backend, how it is developed, checked and built. |
+| [Docker Compose stack](docs/diagrams/infra-compose-stack.svg) | The four containers, their networks, volumes and start-up order, and how Nginx routes a request. |
+| [From a commit to production](docs/diagrams/infra-deployment-pipeline.svg) | The workflow, the images on ghcr.io, and how the server updates itself and rolls back. |
+| [Backend request flow](docs/diagrams/backend-request-flow.svg) | From the container start-up to an answered request: ASGI, middleware, permissions, and what happens after a write. |
+| [Data model](docs/diagrams/backend-data-model.svg) | The 12 models, their relations and the rules the database enforces. |
+| [Real-time signal flow](docs/diagrams/realtime-signal-flow.svg) | How a message reaches the other person without reloading: WebSocket, Channels, Redis, then an API read. |
+| [Frontend request flow](docs/diagrams/frontend-request-flow.svg) | From the address typed by the user to the page, the API client and the live listeners. |
 
 ## Continuous deployment
 
-![From a commit to production](docs/deployment-pipeline.svg)
+<details>
+<summary>📐 <b>Diagram: from a commit to production</b> (click to expand)</summary>
+
+![From a commit to production: workflow, images, server update and rollback](docs/diagrams/infra-deployment-pipeline.svg)
+
+</details>
 
 - I work on `develop`; `main` is what runs in production.
 - A push to either branch starts the workflow (`.github/workflows/publish-images.yml`) only if it
@@ -116,7 +164,8 @@ More diagrams, drawn from the code:
 - Only `main` publishes the images to ghcr.io, tagged `sha-<commit>` and `latest`.
 - **The server pulls, GitHub never connects to it**: a systemd timer checks for new images every
   two minutes and restarts the containers that changed. The server builds nothing and holds no
-  GitHub token. The migrations run when the backend container starts.
+  GitHub token. The migrations run when the backend container starts. The server's own
+  `docker-compose.yml` is not pulled: it is copied by hand when it changes on `main`.
 - Rolling back is one line in the server's `.env` (`IMAGE_TAG=sha-<commit>`).
 - Every night, the database, the uploaded files and the server configuration are backed up with
   restic, encrypted, to Infomaniak's Swiss Backup (kept 14 nights, 8 weeks and 6 months). A missed
@@ -218,13 +267,14 @@ MarkeTech/
 ├── .github/workflows/publish-images.yml   test, build and publish the images
 ├── docker-compose.yml                     db, redis, backend, frontend
 ├── .env.example                           every variable to set (the others come from Compose)
-├── docs/                                  stack and deployment diagrams, screenshots
+├── docs/
+│   ├── diagrams/                          the eight architecture diagrams (SVG)
+│   └── screenshots/                       screenshots of the application
 ├── backend/
 │   ├── config/                            settings (base, dev, prod), ASGI routing, URLs
 │   ├── accounts/ … reviews/               one Django application per domain
 │   ├── templates/                         e-mails (English and French; moderation alerts in French)
 │   ├── locale/fr/                         French translation of the server messages
-│   ├── docs/                              backend diagrams
 │   ├── Dockerfile, entrypoint.sh
 │   └── requirements.txt
 └── frontend/
@@ -235,7 +285,6 @@ MarkeTech/
     │   ├── assets/                        logo and default photo
     │   ├── *.ts                           router, session, real time, shared state and helpers
     │   └── style.css
-    ├── docs/                              frontend diagrams
     ├── Dockerfile, nginx.conf
     └── package.json
 ```
@@ -256,4 +305,5 @@ I wrote this version with the help of Claude Opus (Anthropic).
 
 ## License
 
-[MIT](LICENSE), © 2026 Daniel Garcia.
+[MIT](LICENSE), © 2026 Daniel Garcia. The Poppins font is under the SIL Open Font License,
+self-hosted through `@fontsource/poppins`.
