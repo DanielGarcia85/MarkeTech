@@ -1,0 +1,709 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 4060" width="1200" height="4060" role="img" aria-labelledby="ba-title ba-desc" xml:lang="en">
+<title id="ba-title">MarkeTech backend: the architecture</title>
+<desc id="ba-desc">General view of the Django backend of MarkeTech, in three panels. Panel A, the layers of backend/: Daphne calls config/asgi.py for each connection; its ProtocolTypeRouter sends HTTP to Django and a WebSocket, after an origin check and the session user, to the live application. Django reads one settings module, config/settings/base.py extended by dev.py or prod.py, named by DJANGO_SETTINGS_MODULE; base.py holds REST_FRAMEWORK, the defaults of every DRF view: SessionAuthentication, IsAuthenticated and two write throttles, 60 an hour for a demo account and 300 for any other. An HTTP request passes the 11 middleware classes, then config/urls.py: admin/, api/health/, _allauth/ to allauth headless (/_allauth/browser/v1/) and api/ to the urls.py of 8 apps. The 11 apps are grouped by role: people (accounts, profiles), job market (offers, applications, favorites), conversation (messaging, appointments) and platform (reviews, demo), each with models, serializers, views, urls, admin and tests.py unless stated; then two cross-cutting apps without model that the views call after a write: notifications (the e-mails, send.py and moderation.py) and live (the WebSocket /ws/, LiveConsumer, notify.py). templates/ holds the e-mails in English and French, the moderation alerts in French; locale/fr/ the French translations. Imports go one way: urls, views, serializers, models. Panel B, data and outside services: the browser reaches the backend container (Daphne, port 8000) through the reverse proxy and the frontend Nginx in production, the Vite proxy in development; the backend uses the database (SQLite: a file in development, in memory for the tests in CI; PostgreSQL in production), the media volume whose files are served by Django under /api/files/, the channel layer (in memory in development, Redis in production), WhiteNoise for the static files of the admin site and an SMTP server outside the repository in production. Panel C, run, test, build: python manage.py runserver (Daphne's, ASGI) with config.settings.dev, python manage.py test (162 tests in 11 tests.py), the migration and translation commands, and the backend image, python:3.13-slim run by the user app, whose entrypoint.sh migrates, collects the static files, creates the administrator if missing and starts Daphne on port 8000. Reference blocks point to backend-request-flow.svg, backend-data-model.svg, realtime-signal-flow.svg, infra-compose-stack.svg and infra-deployment-pipeline.svg.</desc>
+<defs><marker id="ba-ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0.8 L9,5 L0,9.2 Z" fill="#475569"/></marker></defs>
+<rect width="1200" height="4060" fill="#F8FAFC"/>
+<text x="30" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="28" fill="#0F172A" xml:space="preserve" font-weight="700">MarkeTech backend: the architecture</text>
+<text x="1170" y="50" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#64748B" xml:space="preserve" text-anchor="end">Python 3.13 · Django 6.1 · DRF 3.18 · Channels 4.3 · allauth 65</text>
+<text x="30" y="76" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">The whole backend at a glance: its layers, the data and services it uses, and how it is run, tested and</text>
+<text x="30" y="97" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">built. Details live in the other diagrams of this folder (grey blocks). Follow the numbers 1 to 15.</text>
+<text x="30" y="118" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14.5" fill="#1E293B" xml:space="preserve">Real files of the repository: backend/config/, the 11 apps, templates/, locale/, Dockerfile, entrypoint.sh.</text>
+<rect x="30" y="152" width="1140" height="1661" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="182" r="12" fill="#0F172A"/>
+<text x="66" y="186.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">A</text>
+<text x="90" y="187" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">The layers of backend/</text>
+<text x="1146" y="187" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">who calls whom, from the door to the data</text>
+<text x="88" y="214" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">config/: THE PROJECT, READ ONCE WHEN THE PROCESS STARTS</text>
+<g data-box="88,226,304,272">
+<rect x="88" y="226" width="304" height="272" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M88 236 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#1D4ED8"/>
+<text x="102" y="248" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">config/asgi.py</text>
+<text x="380" y="248" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Python</text>
+<text x="102" y="278" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The door Daphne calls for each</text>
+<text x="102" y="295" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">connection; Django starts first.</text>
+<g data-box="98,312,284,148">
+<rect x="98" y="312" width="284" height="148" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="327" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">ProtocolTypeRouter({</text>
+<text x="106" y="347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  "http": django_application,</text>
+<text x="106" y="367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  "websocket":</text>
+<text x="106" y="387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">    AllowedHostsOriginValidator(</text>
+<text x="106" y="407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      AuthMiddlewareStack(</text>
+<text x="106" y="427" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">        URLRouter(</text>
+<text x="106" y="447" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">          websocket_urlpatterns)))})</text>
+</g>
+<text x="102" y="474" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">wsgi.py: kept for tools, not used</text>
+</g>
+<g data-box="448,226,304,272">
+<rect x="448" y="226" width="304" height="272" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M448 236 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#6D28D9"/>
+<text x="462" y="248" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">config/settings/</text>
+<text x="740" y="248" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Python</text>
+<text x="462" y="278" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">One module, named by the variable</text>
+<text x="462" y="295" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">DJANGO_SETTINGS_MODULE.</text>
+<g data-box="458,312,284,108">
+<rect x="458" y="312" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="327" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">base.py  shared, reads the .env</text>
+<text x="466" y="347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev.py   SQLite, layer in memory,</text>
+<text x="466" y="367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">         e-mails: console (base)</text>
+<text x="466" y="387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod.py  PostgreSQL, Redis, SMTP,</text>
+<text x="466" y="407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">         all from the environment</text>
+</g>
+<text x="462" y="434" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">manage.py default: config.settings.dev</text>
+</g>
+<g data-box="808,226,304,272">
+<rect x="808" y="226" width="304" height="272" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M808 236 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#6D28D9"/>
+<text x="822" y="248" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">REST_FRAMEWORK</text>
+<text x="1100" y="248" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">configuration</text>
+<text x="822" y="278" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">In base.py: the defaults of every</text>
+<text x="822" y="295" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">DRF view; a view may set its own.</text>
+<g data-box="818,312,284,108">
+<rect x="818" y="312" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="826" y="327" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">SessionAuthentication (cookie)</text>
+<text x="826" y="347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">IsAuthenticated</text>
+<text x="826" y="367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">DemoWriteThrottle     60/hour</text>
+<text x="826" y="387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">AccountWriteThrottle 300/hour</text>
+<text x="826" y="407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  writes only (demo/throttles.py)</text>
+</g>
+<text x="822" y="434" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">beyond: 429; reading is not limited</text>
+</g>
+<line x1="392" y1="296" x2="446" y2="296" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="420" y="273" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">Django</text>
+<text x="420" y="288" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">reads</text>
+<circle cx="420" cy="318" r="10" fill="#0F172A"/>
+<text x="420" y="322" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<line x1="752" y1="296" x2="806" y2="296" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="780" y="288" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">holds</text>
+<text x="88" y="564" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">EVERY HTTP REQUEST</text>
+<line x1="322" y1="498" x2="322" y2="574" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<circle cx="306" cy="530" r="10" fill="#0F172A"/>
+<text x="306" y="534" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">2</text>
+<text x="330" y="534" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">"http"</text>
+<line x1="600.0" y1="498" x2="600.0" y2="574" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="608.0" y="534" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">ROOT_URLCONF</text>
+<g data-box="88,576,304,252">
+<rect x="88" y="576" width="304" height="252" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M88 586 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#6D28D9"/>
+<text x="102" y="598" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">MIDDLEWARE</text>
+<text x="380" y="598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">11 classes</text>
+<text x="102" y="628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">11 classes: top to bottom on the</text>
+<text x="102" y="645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">way in, back up on the way out.</text>
+<g data-box="98,662,284,128">
+<rect x="98" y="662" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">Security   WhiteNoise /static/</text>
+<text x="106" y="697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">Session    Locale  en | fr</text>
+<text x="106" y="717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">Common     Csrf   Authentication</text>
+<text x="106" y="737" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">Message    XFrameOptions</text>
+<text x="106" y="757" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">allauth    AccountMiddleware</text>
+<text x="106" y="777" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">demo       DemoGuardMiddleware</text>
+</g>
+<text x="102" y="804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">MIDDLEWARE, in config/settings/base.py</text>
+</g>
+<g data-box="448,576,304,252">
+<rect x="448" y="576" width="304" height="252" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M448 586 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#1D4ED8"/>
+<text x="462" y="598" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">config/urls.py</text>
+<text x="740" y="598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Python</text>
+<text x="462" y="628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Root table, read in order: the first</text>
+<text x="462" y="645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">prefix that matches wins.</text>
+<g data-box="458,662,284,108">
+<rect x="458" y="662" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">admin/       Django admin</text>
+<text x="466" y="697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">api/health/  config/views.py</text>
+<text x="466" y="717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">_allauth/    allauth headless</text>
+<text x="466" y="737" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">api/         include() of the</text>
+<text x="466" y="757" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">             urls.py of 8 apps</text>
+</g>
+<text x="462" y="784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">no media/ route: files via /api/files/</text>
+</g>
+<g data-box="808,576,304,252">
+<rect x="808" y="576" width="304" height="252" rx="10" fill="#F0FDF4" stroke="#16A34A" stroke-width="1.5"/>
+<path d="M808 586 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#15803D"/>
+<text x="822" y="598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">allauth headless</text>
+<text x="1100" y="598" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">library</text>
+<text x="822" y="628" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Sign-up, login, e-mail check,</text>
+<text x="822" y="645" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">password reset, as JSON.</text>
+<g data-box="818,662,284,108">
+<rect x="818" y="662" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="1" stroke-opacity="0.35"/>
+<text x="826" y="677" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">/_allauth/browser/v1/</text>
+<text x="826" y="697" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  auth/signup   auth/login</text>
+<text x="826" y="717" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  auth/session</text>
+<text x="826" y="737" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  account/email</text>
+<text x="826" y="757" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  account/password/change</text>
+</g>
+<text x="822" y="784" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">HEADLESS_ONLY: no Django pages</text>
+</g>
+<line x1="392" y1="646" x2="446" y2="646" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="420" y="638" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">then</text>
+<circle cx="420" cy="668" r="10" fill="#0F172A"/>
+<text x="420" y="672" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">3</text>
+<line x1="752" y1="646" x2="806" y2="646" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="780" y="638" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">_allauth/</text>
+<circle cx="780" cy="668" r="10" fill="#0F172A"/>
+<text x="780" y="672" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">4</text>
+<rect x="76" y="900" width="1048" height="353" rx="12" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="88" y="920" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">THE 9 DOMAIN APPS, BY ROLE</text>
+<text x="88" y="936" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">standard set = models.py serializers.py views.py urls.py admin.py tests.py</text>
+<g data-box="88,944,238,295">
+<rect x="88" y="944" width="238" height="295" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M88 954 a10 10 0 0 1 10 -10 h218 a10 10 0 0 1 10 10 v24 h-238 z" fill="#1D4ED8"/>
+<text x="102" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">people</text>
+<text x="314" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">2 apps</text>
+<text x="102" y="996" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Who signs up, who they are.</text>
+<g data-box="98,1013,218,188">
+<rect x="98" y="1013" width="218" height="188" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="1028" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">accounts/   no API of its own</text>
+<text x="106" y="1048" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  User: e-mail login, role,</text>
+<text x="106" y="1068" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  is_demo, language</text>
+<text x="106" y="1088" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  adapter forms managers</text>
+<text x="106" y="1108" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  signals: language at login</text>
+<text x="106" y="1128" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">profiles/   standard set</text>
+<text x="106" y="1148" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  candidate, employer profiles</text>
+<text x="106" y="1168" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  + signals validators</text>
+<text x="106" y="1188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  FileView: /api/files/</text>
+</g>
+<text x="102" y="1215" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">accounts has no views: allauth</text>
+</g>
+<g data-box="350,944,238,295">
+<rect x="350" y="944" width="238" height="295" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M350 954 a10 10 0 0 1 10 -10 h218 a10 10 0 0 1 10 10 v24 h-238 z" fill="#1D4ED8"/>
+<text x="364" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">job market</text>
+<text x="576" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">3 apps</text>
+<text x="364" y="996" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Offers, applications, favorites.</text>
+<g data-box="360,1013,218,188">
+<rect x="360" y="1013" width="218" height="188" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="368" y="1028" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">offers/     standard set</text>
+<text x="368" y="1048" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  public reading; IsEmployer,</text>
+<text x="368" y="1068" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  IsCandidate in views.py</text>
+<text x="368" y="1088" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">applications/  standard set</text>
+<text x="368" y="1108" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  apply, move the state,</text>
+<text x="368" y="1128" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  history, attachments</text>
+<text x="368" y="1148" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  + signals: files removed</text>
+<text x="368" y="1168" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">favorites/  standard set</text>
+<text x="368" y="1188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  offers put aside</text>
+</g>
+<text x="364" y="1215" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">applications imports offers</text>
+</g>
+<g data-box="612,944,238,295">
+<rect x="612" y="944" width="238" height="295" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M612 954 a10 10 0 0 1 10 -10 h218 a10 10 0 0 1 10 10 v24 h-238 z" fill="#1D4ED8"/>
+<text x="626" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">conversation</text>
+<text x="838" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">2 apps</text>
+<text x="626" y="996" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Once an application is taken up.</text>
+<g data-box="622,1013,218,148">
+<rect x="622" y="1013" width="218" height="148" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="630" y="1028" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">messaging/  standard set</text>
+<text x="630" y="1048" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  one conversation per</text>
+<text x="630" y="1068" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  application, both sides</text>
+<text x="630" y="1088" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">appointments/  standard set</text>
+<text x="630" y="1108" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  proposed, answered,</text>
+<text x="630" y="1128" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  cancelled</text>
+<text x="630" y="1148" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  + ics.py: the .ics file</text>
+</g>
+<text x="626" y="1175" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">both read applications</text>
+</g>
+<g data-box="874,944,238,295">
+<rect x="874" y="944" width="238" height="295" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M874 954 a10 10 0 0 1 10 -10 h218 a10 10 0 0 1 10 10 v24 h-238 z" fill="#1D4ED8"/>
+<text x="888" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">platform</text>
+<text x="1100" y="966" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">2 apps</text>
+<text x="888" y="996" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The site itself and its demo.</text>
+<g data-box="884,1013,218,188">
+<rect x="884" y="1013" width="218" height="188" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="892" y="1028" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">reviews/    standard set</text>
+<text x="892" y="1048" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  one per user, public</text>
+<text x="892" y="1068" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  reading</text>
+<text x="892" y="1088" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">demo/       no model</text>
+<text x="892" y="1108" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  views: demo login</text>
+<text x="892" y="1128" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  middleware: DemoGuard</text>
+<text x="892" y="1148" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  throttles: 60/h, 300/h</text>
+<text x="892" y="1168" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  management/commands/</text>
+<text x="892" y="1188" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">    seed_demo</text>
+</g>
+<text x="888" y="1215" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">seed_demo: invented data</text>
+</g>
+<line x1="600.0" y1="828" x2="600.0" y2="898" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<circle cx="584.0" cy="860" r="10" fill="#0F172A"/>
+<text x="584.0" y="864" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">5</text>
+<text x="608.0" y="864" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">api/: include()</text>
+<path d="M1112 448 H1146 V960 H1126" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="1152" y="704.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle" transform="rotate(90 1152 704.0)">checks before each view</text>
+<circle cx="1146" cy="930" r="10" fill="#0F172A"/>
+<text x="1146" y="934" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">6</text>
+<text x="88" y="1341" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">CROSS-CUTTING APPS</text>
+<line x1="469.0" y1="1253" x2="469.0" y2="1281" stroke="#475569" stroke-width="1.6"/>
+<line x1="731.0" y1="1253" x2="731.0" y2="1281" stroke="#475569" stroke-width="1.6"/>
+<line x1="322" y1="1281" x2="731.0" y2="1281" stroke="#475569" stroke-width="1.6"/>
+<line x1="322" y1="1281" x2="322" y2="1351" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<line x1="682" y1="1281" x2="682" y2="1351" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<circle cx="698" cy="1311" r="10" fill="#0F172A"/>
+<text x="698" y="1315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">7</text>
+<text x="674" y="1315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">after a write</text>
+<path d="M993.0 1253 V1305 H722 V1351" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="985.0" y="1297" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">reviews: moderation</text>
+<text x="330" y="1315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">live.news()</text>
+<g data-box="88,1353,304,252">
+<rect x="88" y="1353" width="304" height="252" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M88 1363 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#1D4ED8"/>
+<text x="102" y="1375" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">live/</text>
+<text x="380" y="1375" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">WebSocket</text>
+<text x="102" y="1405" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The line to each open tab, a</text>
+<text x="102" y="1422" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">signal on it, never the data.</text>
+<g data-box="98,1439,284,128">
+<rect x="98" y="1439" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="1454" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">routing.py   path("ws/")</text>
+<text x="106" y="1474" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">consumers.py LiveConsumer:</text>
+<text x="106" y="1494" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  a visitor is refused,</text>
+<text x="106" y="1514" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  group user_&lt;id&gt;</text>
+<text x="106" y="1534" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">notify.py    news(application,</text>
+<text x="106" y="1554" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  kind): on commit, group_send</text>
+</g>
+<text x="102" y="1581" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">called by applications, messaging, appointments</text>
+</g>
+<g data-box="448,1353,304,252">
+<rect x="448" y="1353" width="304" height="252" rx="10" fill="#EFF6FF" stroke="#2563EB" stroke-width="1.5"/>
+<path d="M448 1363 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#1D4ED8"/>
+<text x="462" y="1375" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">notifications/</text>
+<text x="740" y="1375" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">e-mails</text>
+<text x="462" y="1405" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">The e-mails of the events.</text>
+<g data-box="458,1422,284,128">
+<rect x="458" y="1422" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#2563EB" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="1437" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">send.py  to the users, 7 events</text>
+<text x="466" y="1457" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  active, opted in, not demo</text>
+<text x="466" y="1477" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">moderation.py  in French, to</text>
+<text x="466" y="1497" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  MODERATION_EMAIL: offers,</text>
+<text x="466" y="1517" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  reviews</text>
+<text x="466" y="1537" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">transaction.on_commit(send)</text>
+</g>
+<text x="462" y="1564" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">a failed send is logged, never raised</text>
+</g>
+<g data-box="808,1353,304,252">
+<rect x="808" y="1353" width="304" height="252" rx="10" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.5"/>
+<path d="M808 1363 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#9F1239"/>
+<text x="822" y="1375" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">templates/ · locale/fr/</text>
+<text x="1100" y="1375" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">text files</text>
+<text x="822" y="1405" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">What the e-mails say; the French</text>
+<text x="822" y="1422" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">of the texts in the code.</text>
+<g data-box="818,1439,284,128">
+<rect x="818" y="1439" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#E11D48" stroke-width="1" stroke-opacity="0.35"/>
+<text x="826" y="1454" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">account/email/  allauth, 9</text>
+<text x="826" y="1474" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">notifications/  the 7 events</text>
+<text x="826" y="1494" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">moderation/     2, French only</text>
+<text x="826" y="1514" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  account/, notifications/: en+fr</text>
+<text x="826" y="1534" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">locale/fr/LC_MESSAGES/</text>
+<text x="826" y="1554" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  django.po -&gt; django.mo</text>
+</g>
+<text x="822" y="1581" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">gettext: _("...") in the code</text>
+</g>
+<line x1="752" y1="1423" x2="806" y2="1423" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="780" y="1415" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">renders</text>
+<circle cx="780" cy="1445" r="10" fill="#0F172A"/>
+<text x="780" y="1449" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">8</text>
+<path d="M88 276 H66 V1403 H86" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="60" y="839.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle" transform="rotate(-90 60 839.5)">"websocket": the line to live/</text>
+<line x1="240.0" y1="1605" x2="240.0" y2="1659" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="248.0" y="1635" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">group_send</text>
+<line x1="600.0" y1="1605" x2="600.0" y2="1659" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="608.0" y="1635" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">send_mail</text>
+<path d="M1124 1203 H1146 V1678 H1114" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<circle cx="1146" cy="1273" r="10" fill="#0F172A"/>
+<text x="1146" y="1277" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">9</text>
+<text x="1152" y="1477.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle" transform="rotate(90 1152 1477.0)">models (ORM), files</text>
+<g data-box="88,1661,1024,34">
+<rect x="88" y="1661" width="1024" height="34" rx="8" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<text x="600.0" y="1683" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700" text-anchor="middle">the data and the outside services: panel B</text>
+</g>
+<g data-box="88,1719,1024,70">
+<rect x="88" y="1719" width="1024" height="70" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="102" y="1741" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">One direction only</text>
+<text x="102" y="1757" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">urls.py  -&gt;  views  -&gt;  serializers  -&gt;  models. After a write, a view calls notifications and live; neither imports a view.</text>
+<text x="102" y="1773" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">Apps reuse each other's models and helpers (applications imports the permissions of offers), never a view of a later layer.</text>
+</g>
+<rect x="30" y="1843" width="1140" height="1013" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="1873" r="12" fill="#0F172A"/>
+<text x="66" y="1877.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">B</text>
+<text x="90" y="1878" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Data and outside services</text>
+<text x="1146" y="1878" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">development / production, from the settings</text>
+<text x="88" y="1905" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">THE WAY IN: ONE ORIGIN, ONE PROCESS</text>
+<g data-box="88,1917,304,229">
+<rect x="88" y="1917" width="304" height="229" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M88 1927 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F766E"/>
+<text x="102" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Browser</text>
+<text x="380" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">outside the repo</text>
+<text x="102" y="1969" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Sends /api/, /_allauth/, /admin/,</text>
+<text x="102" y="1986" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">/static/ and /ws/ to the address</text>
+<text x="102" y="2003" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">of the page.</text>
+<g data-box="98,2020,284,48">
+<rect x="98" y="2020" width="284" height="48" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="2035" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">session cookie, every request</text>
+<text x="106" y="2055" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">X-CSRFToken on every write</text>
+</g>
+<text x="102" y="2082" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">the Vue app, or the admin site</text>
+</g>
+<g data-box="448,1917,304,229">
+<rect x="448" y="1917" width="304" height="229" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M448 1927 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#334155"/>
+<text x="462" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Reverse proxy, then Nginx</text>
+<text x="740" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">relay</text>
+<text x="462" y="1969" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Production: the server's reverse</text>
+<text x="462" y="1986" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">proxy (HTTPS), then the frontend</text>
+<text x="462" y="2003" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Nginx, port 80.</text>
+<g data-box="458,2020,284,88">
+<rect x="458" y="2020" width="284" height="88" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="2035" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">/api /_allauth /admin /static</text>
+<text x="466" y="2055" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">/ws/ (Upgrade)  -&gt; backend:8000</text>
+<text x="466" y="2075" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev: Vite /api /_allauth /ws</text>
+<text x="466" y="2095" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">     -&gt; runserver</text>
+</g>
+<text x="462" y="2122" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">frontend/nginx.conf</text>
+</g>
+<g data-box="808,1917,304,229">
+<rect x="808" y="1917" width="304" height="229" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M808 1927 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#334155"/>
+<text x="822" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">backend container</text>
+<text x="1100" y="1939" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">Daphne</text>
+<text x="822" y="1969" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Daphne, one process for HTTP and</text>
+<text x="822" y="1986" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">WebSocket, port 8000 (not published).</text>
+<g data-box="818,2003,284,88">
+<rect x="818" y="2003" width="284" height="88" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="826" y="2018" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">DJANGO_SETTINGS_MODULE=</text>
+<text x="826" y="2038" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  config.settings.prod</text>
+<text x="826" y="2058" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">env_file: .env</text>
+<text x="826" y="2078" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">networks: internal, web</text>
+</g>
+<text x="822" y="2105" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">docker-compose.yml, service backend</text>
+</g>
+<line x1="392" y1="1987" x2="446" y2="1987" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="420" y="1979" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">sends</text>
+<circle cx="420" cy="2009" r="10" fill="#0F172A"/>
+<text x="420" y="2013" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">10</text>
+<line x1="752" y1="1987" x2="806" y2="1987" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="780" y="1979" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">relays</text>
+<circle cx="780" cy="2009" r="10" fill="#0F172A"/>
+<text x="780" y="2013" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">11</text>
+<text x="88" y="2234" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">READS AND WRITES</text>
+<line x1="960.0" y1="2146" x2="960.0" y2="2174" stroke="#475569" stroke-width="1.6"/>
+<line x1="240.0" y1="2174" x2="960.0" y2="2174" stroke="#475569" stroke-width="1.6"/>
+<line x1="240.0" y1="2174" x2="240.0" y2="2244" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<line x1="600.0" y1="2174" x2="600.0" y2="2244" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<line x1="960.0" y1="2174" x2="960.0" y2="2244" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<circle cx="978.0" cy="2204" r="10" fill="#0F172A"/>
+<text x="978.0" y="2208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">12</text>
+<text x="248.0" y="2208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">models (ORM)</text>
+<text x="608.0" y="2208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="start">uploaded files</text>
+<text x="952.0" y="2208" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="end">group_send</text>
+<g data-box="88,2246,304,252">
+<rect x="88" y="2246" width="304" height="252" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<path d="M88 2256 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#C2410C"/>
+<text x="102" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Database</text>
+<text x="380" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">data store</text>
+<text x="102" y="2298" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">DATABASES["default"]; schema by the</text>
+<text x="102" y="2315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">migrations of each app.</text>
+<g data-box="98,2332,284,108">
+<rect x="98" y="2332" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#EA580C" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="2347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev   SQLite, db.sqlite3</text>
+<text x="106" y="2367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">CI    SQLite in memory (tests)</text>
+<text x="106" y="2387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod  PostgreSQL 18, service db</text>
+<text x="106" y="2407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      volume db_data</text>
+<text x="106" y="2427" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      network internal only</text>
+</g>
+<text x="102" y="2454" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">12 models of our own</text>
+</g>
+<g data-box="448,2246,304,252">
+<rect x="448" y="2246" width="304" height="252" rx="10" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.5"/>
+<path d="M448 2256 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#9F1239"/>
+<text x="462" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">media volume</text>
+<text x="740" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">uploaded files</text>
+<text x="462" y="2298" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Photos, CVs, documents, logos,</text>
+<text x="462" y="2315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">attachments: MEDIA_ROOT /app/media.</text>
+<g data-box="458,2332,284,128">
+<rect x="458" y="2332" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#E11D48" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="2347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">prod: volume media</text>
+<text x="466" y="2367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">/api/files/&lt;path&gt;  profiles FileView</text>
+<text x="466" y="2387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  logos/ public, candidates/ and</text>
+<text x="466" y="2407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  employers/ owner or admin</text>
+<text x="466" y="2427" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">applications/: the routes of</text>
+<text x="466" y="2447" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1E293B" xml:space="preserve">  the application (cv, attachments)</text>
+</g>
+<text x="462" y="2474" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">Django serves them; no Nginx route</text>
+</g>
+<g data-box="808,2246,304,252">
+<rect x="808" y="2246" width="304" height="252" rx="10" fill="#FFF7ED" stroke="#EA580C" stroke-width="1.5"/>
+<path d="M808 2256 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#C2410C"/>
+<text x="822" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Channel layer</text>
+<text x="1100" y="2268" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">data store</text>
+<text x="822" y="2298" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Carries the signals from the views</text>
+<text x="822" y="2315" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">to the open WebSockets.</text>
+<g data-box="818,2332,284,88">
+<rect x="818" y="2332" width="284" height="88" rx="6" fill="#FFFFFF" stroke="#EA580C" stroke-width="1" stroke-opacity="0.35"/>
+<text x="826" y="2347" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev   InMemoryChannelLayer</text>
+<text x="826" y="2367" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod  RedisChannelLayer</text>
+<text x="826" y="2387" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      Redis 8, service redis</text>
+<text x="826" y="2407" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      REDIS_URL, no persistence</text>
+</g>
+<text x="822" y="2434" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">dev: one process, memory is enough</text>
+</g>
+<text x="88" y="2536" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">ALSO SERVED OR SENT</text>
+<g data-box="88,2548,304,212">
+<rect x="88" y="2548" width="304" height="212" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M88 2558 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#334155"/>
+<text x="102" y="2570" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Static files</text>
+<text x="380" y="2570" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">/static/</text>
+<text x="102" y="2600" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">WhiteNoise: CSS and JavaScript of</text>
+<text x="102" y="2617" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">the admin site, from Django itself.</text>
+<g data-box="98,2634,284,88">
+<rect x="98" y="2634" width="284" height="88" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="2649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">collectstatic -&gt; STATIC_ROOT</text>
+<text x="106" y="2669" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  /app/staticfiles</text>
+<text x="106" y="2689" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod: CompressedManifest-</text>
+<text x="106" y="2709" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  StaticFilesStorage</text>
+</g>
+<text x="102" y="2736" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">the frontend has its own: its Nginx</text>
+</g>
+<g data-box="448,2548,304,212">
+<rect x="448" y="2548" width="304" height="212" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M448 2558 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F766E"/>
+<text x="462" y="2570" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">SMTP server</text>
+<text x="740" y="2570" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">outside the repo</text>
+<text x="462" y="2600" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Infomaniak mail server, port 587,</text>
+<text x="462" y="2617" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">STARTTLS (use_tls).</text>
+<g data-box="458,2634,284,88">
+<rect x="458" y="2634" width="284" height="88" rx="6" fill="#FFFFFF" stroke="#0D9488" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="2649" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">dev   console backend (base.py)</text>
+<text x="466" y="2669" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">prod  SMTP backend: EMAIL_HOST,</text>
+<text x="466" y="2689" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      EMAIL_PORT, EMAIL_HOST_USER</text>
+<text x="466" y="2709" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">      DEFAULT_FROM_EMAIL</text>
+</g>
+<text x="462" y="2736" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">account e-mails, events, alerts</text>
+</g>
+<g data-box="808,2548,304,212">
+<rect x="808" y="2548" width="304" height="212" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="822" y="2570" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Which one where</text>
+<text x="822" y="2586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">dev.py: SQLite, memory, console;</text>
+<text x="822" y="2602" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">nothing to install but Python.</text>
+<text x="822" y="2618" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">prod.py: every value comes from the</text>
+<text x="822" y="2634" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">environment, with no fallback: a</text>
+<text x="822" y="2650" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">missing variable stops the start.</text>
+<text x="822" y="2666" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">CI tests: settings.dev, SQLite in memory.</text>
+</g>
+<path d="M420 2174 V2618 H394" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<path d="M780 2174 V2618 H754" fill="none" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="432" y="2372.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle" transform="rotate(90 432 2372.0)">serves: /static/</text>
+<text x="792" y="2372.0" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle" transform="rotate(90 792 2372.0)">sends: send_mail</text>
+<g data-box="88,2784,304,48">
+<rect x="88" y="2784" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="100" y="2804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">The 12 models and their links</text>
+<text x="100" y="2821" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see backend-data-model.svg</text>
+</g>
+<g data-box="448,2784,304,48">
+<rect x="448" y="2784" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="460" y="2804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">Real time: the line, a signal</text>
+<text x="460" y="2821" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see realtime-signal-flow.svg, panels A and B</text>
+</g>
+<g data-box="808,2784,304,48">
+<rect x="808" y="2784" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="820" y="2804" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">Containers, volumes, Nginx</text>
+<text x="820" y="2821" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see infra-compose-stack.svg, panels A and C</text>
+</g>
+<rect x="30" y="2886" width="1140" height="986" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<circle cx="66" cy="2916" r="12" fill="#0F172A"/>
+<text x="66" y="2920.5" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">C</text>
+<text x="90" y="2921" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="17" fill="#0F172A" xml:space="preserve" font-weight="700">Run, test, build</text>
+<text x="1146" y="2921" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#64748B" xml:space="preserve" text-anchor="end">manage.py commands · Dockerfile · entrypoint.sh</text>
+<text x="88" y="2948" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">ON THE WORKSTATION (from backend/)</text>
+<g data-box="88,2960,304,192">
+<rect x="88" y="2960" width="304" height="192" rx="10" fill="#0F172A" stroke="#0F172A" stroke-width="1.5"/>
+<path d="M88 2970 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F172A"/>
+<text x="102" y="2982" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">terminal</text>
+<text x="380" y="2982" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">you type</text>
+<text x="102" y="3012" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">Starts the server; leave it running</text>
+<text x="102" y="3029" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">while you work.</text>
+<g data-box="98,3046,284,68">
+<rect x="98" y="3046" width="284" height="68" rx="6" fill="#1E293B"/>
+<text x="106" y="3061" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py migrate</text>
+<text x="106" y="3081" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py seed_demo</text>
+<text x="106" y="3101" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py runserver</text>
+</g>
+<text x="102" y="3128" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#94A3B8" xml:space="preserve">http://localhost:8000: API, admin, /ws/</text>
+</g>
+<g data-box="448,2960,304,192">
+<rect x="448" y="2960" width="304" height="192" rx="10" fill="#F1F5F9" stroke="#475569" stroke-width="1.5"/>
+<path d="M448 2970 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#334155"/>
+<text x="462" y="2982" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">runserver (Daphne)</text>
+<text x="740" y="2982" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">tool</text>
+<text x="462" y="3012" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Daphne's runserver: HTTP and</text>
+<text x="462" y="3029" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">WebSocket in one process.</text>
+<g data-box="458,3046,284,68">
+<rect x="458" y="3046" width="284" height="68" rx="6" fill="#FFFFFF" stroke="#475569" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="3061" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">INSTALLED_APPS = ["daphne", ...]</text>
+<text x="466" y="3081" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">ASGI_APPLICATION =</text>
+<text x="466" y="3101" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  config.asgi.application</text>
+</g>
+<text x="462" y="3128" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">settings: config.settings.dev</text>
+</g>
+<g data-box="808,2960,304,192">
+<rect x="808" y="2960" width="304" height="192" rx="10" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="822" y="2982" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve" font-weight="700">Why Daphne's runserver?</text>
+<text x="822" y="2998" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">Django's own runserver is WSGI:</text>
+<text x="822" y="3014" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">no WebSocket. With daphne first in</text>
+<text x="822" y="3030" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">INSTALLED_APPS, the same command</text>
+<text x="822" y="3046" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">serves config/asgi.py, like the</text>
+<text x="822" y="3062" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">container. seed_demo fills the</text>
+<text x="822" y="3078" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.8" fill="#713F12" xml:space="preserve">database with invented data.</text>
+</g>
+<line x1="392" y1="3030" x2="446" y2="3030" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="420" y="3022" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">starts</text>
+<circle cx="420" cy="3052" r="10" fill="#0F172A"/>
+<text x="420" y="3056" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">13</text>
+<text x="88" y="3190" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">CHECK, MIGRATE, TRANSLATE</text>
+<g data-box="88,3202,304,272">
+<rect x="88" y="3202" width="304" height="272" rx="10" fill="#0F172A" stroke="#0F172A" stroke-width="1.5"/>
+<path d="M88 3212 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F172A"/>
+<text x="102" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">tests</text>
+<text x="380" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">you type</text>
+<text x="102" y="3254" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">162 tests, one tests.py per app;</text>
+<text x="102" y="3271" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">CI runs the same command.</text>
+<g data-box="98,3288,284,148">
+<rect x="98" y="3288" width="284" height="148" rx="6" fill="#1E293B"/>
+<text x="106" y="3303" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py test</text>
+<text x="106" y="3323" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">accounts 20  profiles 16</text>
+<text x="106" y="3343" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">offers 13  applications 21</text>
+<text x="106" y="3363" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">favorites 8  messaging 13</text>
+<text x="106" y="3383" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">appointments 20  reviews 15</text>
+<text x="106" y="3403" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">demo 13  notifications 15</text>
+<text x="106" y="3423" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">live 8</text>
+</g>
+<text x="102" y="3450" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#94A3B8" xml:space="preserve">CI: settings.dev, SQLite in memory</text>
+</g>
+<g data-box="448,3202,304,272">
+<rect x="448" y="3202" width="304" height="272" rx="10" fill="#0F172A" stroke="#0F172A" stroke-width="1.5"/>
+<path d="M448 3212 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F172A"/>
+<text x="462" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">migrations</text>
+<text x="740" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">you type</text>
+<text x="462" y="3254" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">After a change to a models.py;</text>
+<text x="462" y="3271" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">the image applies them at start.</text>
+<g data-box="458,3288,284,88">
+<rect x="458" y="3288" width="284" height="88" rx="6" fill="#1E293B"/>
+<text x="466" y="3303" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py makemigrations</text>
+<text x="466" y="3323" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">  writes &lt;app&gt;/migrations/</text>
+<text x="466" y="3343" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py migrate</text>
+<text x="466" y="3363" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#F8FAFC" xml:space="preserve">  applies them to the database</text>
+</g>
+<text x="462" y="3390" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#94A3B8" xml:space="preserve">8 apps with models, 16 migrations</text>
+</g>
+<g data-box="808,3202,304,272">
+<rect x="808" y="3202" width="304" height="272" rx="10" fill="#0F172A" stroke="#0F172A" stroke-width="1.5"/>
+<path d="M808 3212 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F172A"/>
+<text x="822" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">translations</text>
+<text x="1100" y="3224" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">you type</text>
+<text x="822" y="3254" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">After a change to a text marked</text>
+<text x="822" y="3271" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#F8FAFC" xml:space="preserve">_("...") in the Python code.</text>
+<g data-box="818,3288,284,108">
+<rect x="818" y="3288" width="284" height="108" rx="6" fill="#1E293B"/>
+<text x="826" y="3303" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py makemessages</text>
+<text x="826" y="3323" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#F8FAFC" xml:space="preserve">    -l fr</text>
+<text x="826" y="3343" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#F8FAFC" xml:space="preserve">  updates locale/fr/.../django.po</text>
+<text x="826" y="3363" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#F8FAFC" xml:space="preserve">&gt; python manage.py compilemessages</text>
+<text x="826" y="3383" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11" fill="#F8FAFC" xml:space="preserve">  writes django.mo, read at run time</text>
+</g>
+<text x="822" y="3410" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#94A3B8" xml:space="preserve">both files are in the repository</text>
+</g>
+<text x="88" y="3512" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#713F12" xml:space="preserve" font-weight="700">IN PRODUCTION: THE BACKEND IMAGE (backend/Dockerfile)</text>
+<g data-box="88,3524,304,252">
+<rect x="88" y="3524" width="304" height="252" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M88 3534 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#6D28D9"/>
+<text x="102" y="3546" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Dockerfile</text>
+<text x="380" y="3546" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">configuration</text>
+<text x="102" y="3576" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Recipe of the image, the same in</text>
+<text x="102" y="3593" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">every environment.</text>
+<g data-box="98,3610,284,128">
+<rect x="98" y="3610" width="284" height="128" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="106" y="3625" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">FROM python:3.13-slim</text>
+<text x="106" y="3645" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">pip install -r requirements.txt</text>
+<text x="106" y="3665" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">COPY . .</text>
+<text x="106" y="3685" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">USER app   (never root)</text>
+<text x="106" y="3705" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">EXPOSE 8000</text>
+<text x="106" y="3725" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">CMD ["./entrypoint.sh"]</text>
+</g>
+<text x="102" y="3752" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">pinned versions: requirements.txt</text>
+</g>
+<g data-box="448,3524,304,252">
+<rect x="448" y="3524" width="304" height="252" rx="10" fill="#F5F3FF" stroke="#7C3AED" stroke-width="1.5"/>
+<path d="M448 3534 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#6D28D9"/>
+<text x="462" y="3546" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">entrypoint.sh</text>
+<text x="740" y="3546" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">shell script</text>
+<text x="462" y="3576" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Prepares the application, then</text>
+<text x="462" y="3593" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">becomes the server (set -e).</text>
+<g data-box="458,3610,284,108">
+<rect x="458" y="3610" width="284" height="108" rx="6" fill="#FFFFFF" stroke="#7C3AED" stroke-width="1" stroke-opacity="0.35"/>
+<text x="466" y="3625" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">manage.py migrate --noinput</text>
+<text x="466" y="3645" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">manage.py collectstatic --noinput</text>
+<text x="466" y="3665" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">administrator, if missing</text>
+<text x="466" y="3685" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">exec daphne -b 0.0.0.0 -p 8000</text>
+<text x="466" y="3705" font-family="Consolas, 'SF Mono', Menlo, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#1E293B" xml:space="preserve">  config.asgi:application</text>
+</g>
+<text x="462" y="3732" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">admin only if DJANGO_SUPERUSER_* set</text>
+</g>
+<g data-box="808,3524,304,252">
+<rect x="808" y="3524" width="304" height="252" rx="10" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<path d="M808 3534 a10 10 0 0 1 10 -10 h284 a10 10 0 0 1 10 10 v24 h-304 z" fill="#0F766E"/>
+<text x="822" y="3546" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="13" fill="#FFFFFF" xml:space="preserve" font-weight="700">Production server</text>
+<text x="1100" y="3546" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#FFFFFF" xml:space="preserve" text-anchor="end">outside the repo</text>
+<text x="822" y="3576" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">A timer pulls the new image every</text>
+<text x="822" y="3593" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">two minutes and recreates the</text>
+<text x="822" y="3610" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">container when it changed.</text>
+<text x="822" y="3631" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#64748B" xml:space="preserve">settings: config.settings.prod</text>
+</g>
+<line x1="392" y1="3594" x2="446" y2="3594" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="420" y="3571" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">CMD</text>
+<text x="420" y="3586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">runs</text>
+<circle cx="420" cy="3616" r="10" fill="#0F172A"/>
+<text x="420" y="3620" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">14</text>
+<line x1="752" y1="3594" x2="806" y2="3594" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="780" y="3571" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">runs</text>
+<text x="780" y="3586" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12" fill="#1E293B" xml:space="preserve" font-weight="700" text-anchor="middle">on</text>
+<circle cx="780" cy="3616" r="10" fill="#0F172A"/>
+<text x="780" y="3620" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">15</text>
+<g data-box="88,3800,304,48">
+<rect x="88" y="3800" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="100" y="3820" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">Start-up of the container</text>
+<text x="100" y="3837" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see backend-request-flow.svg, panel A</text>
+</g>
+<g data-box="448,3800,304,48">
+<rect x="448" y="3800" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="460" y="3820" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">CI: tests, then the images</text>
+<text x="460" y="3837" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see infra-deployment-pipeline.svg, panel B</text>
+</g>
+<g data-box="808,3800,304,48">
+<rect x="808" y="3800" width="304" height="48" rx="8" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="820" y="3820" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.5" fill="#0F172A" xml:space="preserve" font-weight="700">Production: timer, rollback</text>
+<text x="820" y="3837" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#475569" xml:space="preserve">see infra-deployment-pipeline.svg, panel D</text>
+</g>
+<rect x="30" y="3902" width="1140" height="128" rx="14" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+<text x="56" y="3934" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="14" fill="#0F172A" xml:space="preserve" font-weight="700">Legend</text>
+<rect x="160" y="3917" width="14" height="14" rx="3" fill="#0F172A"/>
+<text x="184" y="3929" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">command you type</text>
+<rect x="410" y="3917" width="14" height="14" rx="3" fill="#334155"/>
+<text x="434" y="3929" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">tool / server</text>
+<rect x="660" y="3917" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="684" y="3929" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">configuration</text>
+<rect x="910" y="3917" width="14" height="14" rx="3" fill="#1D4ED8"/>
+<text x="934" y="3929" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">Python code of the project</text>
+<rect x="160" y="3945" width="14" height="14" rx="3" fill="#15803D"/>
+<text x="184" y="3957" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">library</text>
+<rect x="410" y="3945" width="14" height="14" rx="3" fill="#C2410C"/>
+<text x="434" y="3957" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">data store</text>
+<rect x="660" y="3945" width="14" height="14" rx="3" fill="#9F1239"/>
+<text x="684" y="3957" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">files and volumes</text>
+<line x1="160" y1="3986" x2="210" y2="3986" stroke="#475569" stroke-width="1.6" marker-end="url(#ba-ah)"/>
+<text x="220" y="3991" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">calls, reads or sends</text>
+<circle cx="417" cy="3986" r="10" fill="#0F172A"/>
+<text x="417" y="3990" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="11" fill="#FFFFFF" xml:space="preserve" font-weight="700" text-anchor="middle">1</text>
+<text x="435" y="3991" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">step to follow</text>
+<rect x="560" y="3977" width="36" height="18" rx="4" fill="#F0FDFA" stroke="#0D9488" stroke-width="1.5" stroke-dasharray="7 5"/>
+<text x="604" y="3991" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">outside this repository</text>
+<rect x="770" y="3977" width="36" height="18" rx="4" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.2"/>
+<text x="814" y="3991" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">detail in another diagram</text>
+<rect x="985" y="3977" width="36" height="18" rx="4" fill="#FEFCE8" stroke="#CA8A04" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1029" y="3991" font-family="'Segoe UI', 'Helvetica Neue', Arial, 'DejaVu Sans', sans-serif" font-size="12.2" fill="#1E293B" xml:space="preserve">note</text>
+</svg>
