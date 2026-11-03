@@ -861,7 +861,7 @@ export default {
         title: "Delivery",
         items: [
           { name: "Docker and Docker Compose", text: "Four containers: PostgreSQL, Redis, the backend, and the frontend built with Node.js 24 then served by nginx (stable version). The database and Redis sit on an internal network, out of reach of the Internet." },
-          { name: "GitHub Actions", text: "On every push to develop and main, the tests; on main, the build of the two images and their publication on GitHub's registry (ghcr.io). The actions are pinned by commit." },
+          { name: "GitHub Actions", text: "On every push to develop and main that changes the code, the tests, then the build of the two images; on main, their publication on GitHub's registry (ghcr.io). The actions are pinned by commit." },
           { name: "Continuous deployment", text: "The server, at Infomaniak in Switzerland, pulls the new version within two minutes; the migrations run at start-up." },
         ],
       },

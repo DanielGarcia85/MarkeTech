@@ -863,7 +863,7 @@ const fr: typeof en = {
         title: "Livraison",
         items: [
           { name: "Docker et Docker Compose", text: "Quatre conteneurs : PostgreSQL, Redis, le backend, et le frontend compilé par Node.js 24 puis servi par nginx (version stable). La base de données et Redis sont sur un réseau interne, hors de portée d'Internet." },
-          { name: "GitHub Actions", text: "À chaque push sur develop et main, les tests ; sur main, la construction des deux images et leur publication sur le registre de GitHub (ghcr.io). Les actions sont épinglées par commit." },
+          { name: "GitHub Actions", text: "À chaque push sur develop et main qui modifie le code, les tests, puis la construction des deux images ; sur main, leur publication sur le registre de GitHub (ghcr.io). Les actions sont épinglées par commit." },
           { name: "Déploiement continu", text: "Le serveur, chez Infomaniak en Suisse, récupère la nouvelle version en moins de deux minutes ; les migrations s'appliquent au démarrage." },
         ],
       },
