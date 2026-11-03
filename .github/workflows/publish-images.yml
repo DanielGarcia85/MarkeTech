@@ -2,8 +2,9 @@
 #
 # GitHub Actions — tests the backend, builds the images and publishes them
 # ─────────────────────────────────────────────────────────────────────────────
-# Runs on GitHub's own machines at every push. First the backend tests: if one
-# fails, nothing else runs. Then, on "develop", the two images are only built,
+# Runs on GitHub's own machines at every push that changes backend/, frontend/
+# or a workflow (Markdown excluded). First the backend tests: if one fails,
+# nothing else runs. Then, on "develop", the two images are only built,
 # which checks that they still build. On "main", they are also published to
 # the GitHub container registry (ghcr.io), where the production server
 # fetches them.
@@ -21,8 +22,6 @@ on:
       - "backend/**"
       - "frontend/**"
       - ".github/workflows/**"
-      - "!backend/docs/**"
-      - "!frontend/docs/**"
       - "!**.md"
 
 # Rights of the temporary token GitHub gives to this workflow: read the code,
